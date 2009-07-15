@@ -194,9 +194,9 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	
 
 					##### EARLIER STOPPING TESTS
-					#if ( (r1domi[1]+r1domi[2]+r1domi[3]+r1domi[4]+r1domi[5]+r1domi[6]+r1domi[7]) == 1){
-					#	# first confirm with r2domi
-					#	# then return
+					#if ( (r1domi[[1]]+r1domi[[2]]+r1domi[[3]]+r1domi[[4]]+r1domi[[5]]+r1domi[[6]]+r1domi[[7]]) == 1){
+						# first confirm with r2domi
+						# then return
 					#	if(r1domi$defDominating==1){		return(1)};
 					#	if(r1domi$defDominated==1){		return(2)};
 					#	if(r1domi$defNonDominating==1){	return(3)};
@@ -215,8 +215,6 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	anyOfThem <- decNo*perNo;
 	allOfThem <- decNo*perNo * decNo*perNo;
 
-print(r1);
-print(r2);
 	## definitive non domination
 	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==0])==decPerNo){
 		return(3);										
