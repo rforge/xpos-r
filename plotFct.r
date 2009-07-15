@@ -92,7 +92,7 @@ init_visualisation <- function(seeItThrough,decS,criS)
 
 	graphics.off();
 	
-	if (seeItThrough=="y"){	# one graph including pro, pen and unb
+	if (seeItThrough=="g"){	# one graph including pro, pen and unb
 
 		##### decision space
 		windows(title=" *** xPos-a : decision space visulalisation ***");
@@ -152,7 +152,7 @@ init_visualisation <- function(seeItThrough,decS,criS)
 update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 {
 	
-	if (seeItThrough=="y"){
+	if (seeItThrough=="g"){
 		decDev <- scrList$dDev;
 		criDev <- scrList$cDev;
 		criS <- scrList$criS;
@@ -223,7 +223,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
  ####################################################################
 last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 {
-	if (seeItThrough=="y"){
+	if (seeItThrough=="g"){
 		decDev <- scrList$dDev;
 		criDev <- scrList$cDev;
 		criS <- scrList$criS;
