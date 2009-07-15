@@ -20,6 +20,7 @@
 
 ## TO DO:
 # > check ?file.path for windows path
+# > add ctrl-C for abort
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
@@ -145,7 +146,6 @@ repeat{
 		sep=""),quote=FALSE);
 
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList);
-readline();
 	}
 }
 # update unbreakable list evaluations

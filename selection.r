@@ -21,25 +21,35 @@ select_fct <- function(penList)
 	for (r in seq(penList$itemNo-1,1,-1)){
 		index <- indices[1];
 		if(penList$regEva[[r]]$selCri[1,1] < penList$regEva[[index]]$selCri[1,1]){
-			index <- array(r,dim=1);
-			break;
+			indices <- array(r,dim=1);
+		}else{
+			if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
+			&& penList$regEva[[r]]$selCri[1,2] < penList$regEva[[index]]$selCri[1,2]){
+				indices <- array(r,dim=1);
+			}else{
+				if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
+				&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
+				&& penList$regEva[[r]]$selCri[2,1] > penList$regEva[[index]]$selCri[2,1]){
+					indices <- array(r,dim=1);
+				}else{
+					if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
+					&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
+					&& penList$regEva[[r]]$selCri[2,1] == penList$regEva[[index]]$selCri[2,1]
+					&& penList$regEva[[r]]$selCri[2,2] > penList$regEva[[index]]$selCri[2,2]){
+						indices <- array(r,dim=1);
+					}else{
+						if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
+						&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
+						&& penList$regEva[[r]]$selCri[2,1] == penList$regEva[[index]]$selCri[2,1]
+						&& penList$regEva[[r]]$selCri[2,2] == penList$regEva[[index]]$selCri[2,2]){
+							indices <- rbind(indices,r);
+						}
+					}
+				}
+			}
 		}
-		if(penList$regEva[[r]]$selCri[1,2] < penList$regEva[[index]]$selCri[1,2]){
-			index <- array(r,dim=1);
-			break;
-		}
-		if(penList$regEva[[r]]$selCri[2,1] > penList$regEva[[index]]$selCri[2,1]){
-			index <- array(r,dim=1);
-			break;
-		}
-		if(penList$regEva[[r]]$selCri[2,2] > penList$regEva[[index]]$selCri[2,2]){
-			index <- array(r,dim=1);
-			break;
-		}
-		# otherwise selCri[r] == selCri[index]
-		indices <- rbind(indices,r);
 	}
-print(indices);
+
 return(indices);
 }
 

@@ -325,8 +325,5 @@ evaluate <- function(uneList,evalMeth)
 		);
 	}
 
-for (reg in 1:uneList$itemNo){
-	print(uneList$regEva[[reg]]$selCri);
-}
 return(uneList);
 }
