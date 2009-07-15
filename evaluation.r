@@ -259,9 +259,10 @@ groupDomi_regVSreg <- function(reg1,reg2)
  ####################################################################
 evaluate <- function(uneList,evalMeth,simNo)
 {
-	if(simNo>=850){
-		browser();
-	}
+#if(simNo>=850){
+#	browser();
+#}
+
 	for (reg in 1:uneList$itemNo){
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
 	}

@@ -8,12 +8,6 @@
  # D.R. Jones, C.D. Perttunen, and B.E. Stuckman, Lipschitzian Optimization Without the Lipschitz Constant, Journal of Optimization Theory and Application, vol. 79(1), pages 157-181, 1993
  ####################################################################
  # > INPUT:
- # model: 		integer such that 1:multifrontal; 2:discontinuous; 3:nonConvex; 4:convexNonConvex
- # decSpace:	definition of the decision space
- # dec[1:3,var]:	min,max,underscinable for every decision variables
- # simuPerReg:	simulation number allowed per evaluated region
- # decPerRatio: 	from 0: 1 decision subject to 'simuPerReg' perturbation parameters
- #			to 1: 'simuPerReg' decisions subject to 1 perturbation parameter each
  # > FUNCTION CALLS:
  # > OUTPUT:
  ####################################################################
@@ -23,14 +17,15 @@
 # > add ctrl-C for abort
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
+# > change visualisation options v:verbose, g:graph, d:decomposed graphs
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
-			decNo,		## decision number per region
-			perNo,		## perturbation param number
+			decNo,	## decision number per region
+			perNo,	## perturbation param number
 			simLimit,	## simulation number limit
 			timLimit,	## time limit in sec
-		      seeItThrough=NULL,## for graphics {"y","d"}
+		      seeItThrough=NULL,## for graphics {"g","d"}
 			seed=NULL)	## if needed (integer)
 {
 
@@ -171,8 +166,10 @@ if (!is.null(seeItThrough)){
 		proList$itemNo," + ",
 		penList$itemNo," + ",
 		unbList$itemNo,
+		" : ",
+		memory.size(),
 	sep=""),quote=FALSE);
-	
+
 	last_visualisation(seeItThrough,scrList,proList,penList,unbList);
 }
 
