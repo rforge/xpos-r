@@ -17,7 +17,6 @@
 # > add ctrl-C for abort
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
-# > change visualisation options v:verbose, g:graph, d:decomposed graphs
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
