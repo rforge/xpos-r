@@ -21,6 +21,8 @@
 ## TO DO:
 # > check ?file.path for windows path
 # > add ctrl-C for abort
+# > pay attention to memory
+# > reduce multicriteria comparison redondancy
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
@@ -121,7 +123,7 @@ repeat{
 	##### evaluate
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
-	penList <- evaluate(penList,evalMeth);
+	penList <- evaluate(penList,evalMeth,simNo);
 
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
@@ -143,6 +145,8 @@ repeat{
 			proList$itemNo," + ",
 			penList$itemNo," + ",
 			unbList$itemNo,
+			" : ",
+			memory.size(),
 		sep=""),quote=FALSE);
 
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList);

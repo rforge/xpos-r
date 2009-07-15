@@ -12,4 +12,4 @@ decS <- matrix(c(0,1,0.2,0,1,0.1),3);
 
 
 ## CALL EXAMPLE
-## seed <- xPos(1,decS,50,10,10000,10,"y")
+## xPos(1,decS,50,10,10000,10,"y")
