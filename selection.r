@@ -6,46 +6,40 @@
  ####################################################################
 
 ##
- # SELECTION BASED ON 2x2 mulDom
+ # SELECTION BASED ON 2x2 selCri
  ####################################################################
- # mulDom[1,]: number of regions dominating reg
- # mulDom[2,]: number of regions dominated by reg 
+ # selCri[1,]: minimize col1, if two even minimize col2
+ # if two even candidates
+ # selCri[2,]: maximize col1, if two even maximize col2
  ####################################################################
 select_fct <- function(penList)
 {
 	#this fct is not called if penList == 1
+	# countdown to avoid to sort it when removing the promising region from the pending List
 	indices <- array(penList$itemNo,dim=1);
 
-	# countdown to avoid to sort it when removing the promising region from the pending List
 	for (r in seq(penList$itemNo-1,1,-1)){
-		if(sum(penList$regEva[[r]]$mulDom[1,]) < sum(penList$regEva[[indices]]$mulDom[1,])){	# reg_r is dominated by less reg than reg_indices is
-			indices <- array(r,dim=1);
+		index <- indices[1];
+		if(penList$regEva[[r]]$selCri[1,1] < penList$regEva[[index]]$selCri[1,1]){
+			index <- array(r,dim=1);
 			break;
 		}
-		if(sum(penList$regEva[[r]]$mulDom[1,]) == sum(penList$regEva[[indices]]$mulDom[1,])){	# reg_r is dominated by as many reg as reg_indices is
-			if(penList$regEva[[r]]$mulDom[1,1] < penList$regEva[[indices]]$mulDom[1,1]){		# reg_r is dominated definitely by less reg than reg_indices is
-				indices <- array(r,dim=1);
-				break;
-			}
-			if(penList$regEva[[r]]$mulDom[1,1] == penList$regEva[[indices]]$mulDom[1,1]){		# reg_r is dominated definitely by as many reg as reg_indices is
-				if(sum(penList$regEva[[r]]$mulDom[2,]) > sum(penList$regEva[[indices]]$mulDom[2,])){	# reg_r is dominating more reg than reg_indices is
-					indices <- array(r,dim=1);
-					break;
-				}
-				if(sum(penList$regEva[[r]]$mulDom[2,]) == sum(penList$regEva[[indices]]$mulDom[2,])){	# reg_r is dominating as many reg than reg_indices is
-					if(penList$regEva[[r]]$mulDom[2,1] > penList$regEva[[indices]]$mulDom[2,1]){		# reg_r is dominating definitely more reg than reg_indices is
-						indices <- array(r,dim=1);
-						break;
-					}
-					if(penList$regEva[[r]]$mulDom[2,1] == penList$regEva[[indices]]$mulDom[2,1]){		# reg_r is dominating definitely as many reg as reg_indices is
-						# i.e. mulDom[r] == mulDom[indices]
-						indices <- rbind(indices,r);
-					}
-				}
-			}
+		if(penList$regEva[[r]]$selCri[1,2] < penList$regEva[[index]]$selCri[1,2]){
+			index <- array(r,dim=1);
+			break;
 		}
+		if(penList$regEva[[r]]$selCri[2,1] > penList$regEva[[index]]$selCri[2,1]){
+			index <- array(r,dim=1);
+			break;
+		}
+		if(penList$regEva[[r]]$selCri[2,2] > penList$regEva[[index]]$selCri[2,2]){
+			index <- array(r,dim=1);
+			break;
+		}
+		# otherwise selCri[r] == selCri[index]
+		indices <- rbind(indices,r);
 	}
-
+print(indices);
 return(indices);
 }
 

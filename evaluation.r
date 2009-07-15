@@ -9,17 +9,14 @@
  ####################################################################
 eval_mean <- function(regEva, criterion)
 {
-	mulDom <- array(0,dim=c(2,2));
-
 	regMean <- array(0,dim=dim(regEva$decEva[[1]])[2]);
 	for (d in 1:regEva$itemNo){
 		decMean <- apply(regEva$decEva[[d]],2,mean);
 		regMean <- regMean + decMean;
 	}
 	regMean <- regMean / regEva$itemNo;
-	mulDom[1,1] <- regMean[criterion];
-	
-return(mulDom);
+		
+return(regMean[criterion]);
 }
 
 ##
@@ -27,8 +24,6 @@ return(mulDom);
  ####################################################################
 eval_minMean <- function(regEva, criterion)
 {
-	mulDom <- array(0,dim=c(2,2));
-
 	regMinMean <- apply(regEva$decEva[[1]],2,mean);
 	if(regEva$itemNo>1){
 	for (d in 2:regEva$itemNo){
@@ -37,9 +32,8 @@ eval_minMean <- function(regEva, criterion)
 			regMinMean <- decMean;
 		}
 	}}
-	mulDom[1,1] <- regMinMean[criterion];
-	
-return(mulDom);
+		
+return(regMinMean[criterion]);
 }
 
 ##
@@ -47,8 +41,6 @@ return(mulDom);
  ####################################################################
 eval_maxMean <- function(regEva, criterion)
 {
-	mulDom <- array(0,dim=c(2,2));
-
 	regMaxMean <- apply(regEva$decEva[[1]],2,mean);
 	if(regEva$itemNo>1){
 	for (d in 2:regEva$itemNo){
@@ -57,9 +49,8 @@ eval_maxMean <- function(regEva, criterion)
 			regMaxMean <- decMean;
 		}
 	}}
-	mulDom[2,1] <- regMaxMean[criterion];
 	
-return(mulDom);
+return(regMaxMean[criterion]);
 }
 
 #####################################################################
@@ -123,6 +114,13 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
  # 6: r1 is acceptably dominated by r2
  # 7: r1 and r2 are acceptably non dominated
  # 9: otherwise
+ ####################################################################
+ #  MULTICRITERIA GROUP DOMINANCE EVALUATION
+ ####################################################################
+ # > REFERENCE:
+ # O. Crespo, F. Garcia, J.E. Bergez,
+ # Multiobjective optimization subject to uncertainty: application to agricultural resources management,
+ # to be submitted
  ####################################################################
 groupDomi_regVSreg <- function(reg1,reg2)
 {
@@ -257,18 +255,78 @@ groupDomi_regVSreg <- function(reg1,reg2)
 }
 
 ##
- #  MULTICRITERIA GROUP DOMINANCE EVALUATION
+ #  reg: List of dec matrix (perNo,criNo) dominance comparison
  ####################################################################
- # > REFERENCE:
- # O. Crespo, F. Garcia, J.E. Bergez,
- # Multiobjective optimization subject to uncertainty: application to agricultural resources management,
- # to be submitted
- ####################################################################
- # 1 if s1 is dominating s2
- # -1 if s1 is dominated by s2
- # 0 otherwise
- ####################################################################
-eval_multiGroupDomi <- function()
+evaluate <- function(uneList,evalMeth)
 {
-	
+	for (reg in 1:uneList$itemNo){
+		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
+	}
+
+	##### remember selCri selection
+	#  -------------
+	# | min1 | min2 |
+	# |------|------|
+	# | max3 | max4 |
+	#  -------------
+	# min1 : def worstThan + acc worstThan
+	# min2 : def worstThan
+	# max3 : undecidable no
+	# max4 : def betterThan + acc betterThan
+	#####
+	for (reg in 1:uneList$itemNo){
+		switch(	evalMeth,
+			# mean evaluation
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_mean(uneList$regEva[[reg]],1);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_minMean(uneList$regEva[[reg]],1);	# why not!
+			},
+			# minMean evaluation
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_minMean(uneList$regEva[[reg]],1);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_maxMean(uneList$regEva[[reg]],1);	# why not!
+			},
+			# maxMean evaluation
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_maxMean(uneList$regEva[[reg]],1);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_mean(uneList$regEva[[reg]],1);	# why not!
+			},
+			{},
+			## multicriteria evaluation
+			{	if(reg<uneList$itemNo){
+				for (r in (reg+1):uneList$itemNo){
+					switch(	regVSreg <- groupDomi_regVSreg(uneList$regEva[[reg]],uneList$regEva[[r]]),
+						# reg definitively dominates r
+						{	uneList$regEva[[r]]$selCri[1,1] <- uneList$regEva[[r]]$selCri[1,1] +1;
+							uneList$regEva[[r]]$selCri[1,2] <- uneList$regEva[[r]]$selCri[1,2] +1;
+							uneList$regEva[[reg]]$selCri[2,2] <- uneList$regEva[[reg]]$selCri[2,2] +1;
+						},
+						# r definitively dominates reg
+						{	uneList$regEva[[reg]]$selCri[1,1] <- uneList$regEva[[reg]]$selCri[1,1] +1;
+							uneList$regEva[[reg]]$selCri[1,2] <- uneList$regEva[[reg]]$selCri[1,2] +1;
+							uneList$regEva[[r]]$selCri[2,2] <- uneList$regEva[[r]]$selCri[2,2] +1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# reg acceptably dominates r
+						{	uneList$regEva[[r]]$selCri[1,1] <- uneList$regEva[[r]]$selCri[1,1] +1;
+							uneList$regEva[[reg]]$selCri[2,2] <- uneList$regEva[[reg]]$selCri[2,2] +1;
+						},
+						# r acceptably dominates reg
+						{	uneList$regEva[[reg]]$selCri[1,1] <- uneList$regEva[[reg]]$selCri[1,1] +1;
+							uneList$regEva[[r]]$selCri[2,2] <- uneList$regEva[[r]]$selCri[2,2] +1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# undecidable: might be good to cut it down before maximizing the no of dominated ones
+						{	uneList$regEva[[reg]]$selCri[2,1] <- uneList$regEva[[reg]]$selCri[2,1] +1;
+							uneList$regEva[[r]]$selCri[2,1] <- uneList$regEva[[r]]$selCri[2,1] +1;
+						}
+					);
+				}}
+			}
+		);
+	}
+
+for (reg in 1:uneList$itemNo){
+	print(uneList$regEva[[reg]]$selCri);
+}
+return(uneList);
 }

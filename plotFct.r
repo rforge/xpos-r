@@ -161,7 +161,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		dev.set(decDev);
 		if(unbList$item>0){watchDecSpace(unbList,"red");}
 		if(penList$item>0){watchDecSpace(penList,"blue");}
-		if(proList$item>0){watchDecSpace(proList,"black");}
+		if(proList$item>0){watchDecSpace(proList,"gold");}
 
 		## criteria space
 		dev.set(criDev);
@@ -184,7 +184,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			par(mfg=proScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
 			if(penList$item>0){watchDecSpace(penList,"white");}
-			watchDecSpace(proList,"black");
+			watchDecSpace(proList,"gold");
 		}
 		if(penList$itemNo>0){
 			par(mfg=penScreen);
@@ -232,7 +232,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		dev.set(decDev);
 		if(unbList$item>0){watchDecSpace(unbList,"red");}
 		if(penList$item>0){watchDecSpace(penList,"blue");}
-		if(proList$item>0){watchDecSpace(proList,"black");}
+		if(proList$item>0){watchDecSpace(proList,"gold");}
 
 		## criteria space
 		dev.set(criDev);
@@ -255,7 +255,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			par(mfg=proScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
 			if(penList$item>0){watchDecSpace(penList,"white");}
-			watchDecSpace(proList,"black");
+			watchDecSpace(proList,"gold");
 		}
 		if(penList$itemNo>0){
 			par(mfg=penScreen);

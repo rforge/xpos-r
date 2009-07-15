@@ -31,7 +31,9 @@ xPos <- function(	mod,		## model to be simulated for evaluation
 			seed=NULL)	## if needed (integer)
 {
 
+## to add as inputs
 criS <- matrix(c(0,1,0,10),2);
+evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
 
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
@@ -72,7 +74,7 @@ if(is.null(seed)){	runif(1);
 # region boundaries in DS:
 # 	regDef <- array(,dim=c(3,varNo))
 # region evaluation:
-#	regEva <- list(itemNo,regDef,list(decDef),list(decEva),mulDom)
+#	regEva <- list(itemNo,regDef,list(decDef),list(decEva),selCri)
 # list of pending regions:
 #	penList <- list(itemNo,list(regEva))
 # list of promising region (potentially optimal regions):
@@ -97,10 +99,10 @@ repeat{
 	##### divide every of the promising regions (i.e. proList)
 	proList <- divide_List(proList);
 
-	##### sample, simulate and evaluate
-	## sample
+	##### sample
 	proList <- sample_List(proList,decNo,varNo,perNo,criNo);
-	## simulate	
+
+	##### simulate	
 	for (reg in 1:proList$itemNo){
 		simTime <- Sys.time();
 		black <- simulateMathModel(mod,proList$regEva[[reg]],perNo,criNo);
@@ -108,17 +110,17 @@ repeat{
 		proList$regEva[[reg]] <- black$eva;
 		simNo <- simNo + black$simNo;
 	}
-	## evaluate
-	for (reg in 1:proList$itemNo){
-		proList$regEva[[reg]]$mulDom <- eval_minMean(proList$regEva[[reg]],1);
-	}
-	# update pending list evaluations for multicriteria
-	
+
 	##### update lists
-	black <- mergeBreakable(penList,unbList,proList,varNo);
-	penList <- black$pen;
-	unbList <- black$unb;
+	temp <- mergeBreakable(penList,unbList,proList,varNo);
+	penList <- temp$pen;
+	unbList <- temp$unb;
 	proList <- list("itemNo"=0,"regEva"=NULL);
+
+	##### evaluate
+	# should be able to do it smootherly by removing one region and adding two,
+	# instead of re-computing everything?
+	penList <- evaluate(penList,evalMeth);
 
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
@@ -127,9 +129,9 @@ repeat{
 	) {break;}
 
 	##### select equally potentially optimal regions (proList)
-	black <- select(proList,penList);
-	proList <- black$pro;
-	penList <- black$pen;
+	temp <- select(proList,penList);
+	proList <- temp$pro;
+	penList <- temp$pen;
 
 	## watch it run
 	if (!is.null(seeItThrough)){
@@ -143,6 +145,7 @@ repeat{
 		sep=""),quote=FALSE);
 
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList);
+readline();
 	}
 }
 # update unbreakable list evaluations

@@ -20,25 +20,16 @@ create_naDecEva <- function(perNo,criNo)
 create_naRegDef <- function(varNo)
 {	return(array(NA,dim=c(3,varNo)));}
 
-## create a NA multicriteria dominance evaluation matrix
-# 2x2:
-# mulDom[1,]: number of regions dominating this one
-# mulDom[2,]: number of regions dominated by this one
-# mulDom[,1]: definitive group dominance
-# mulDom[,2]: acceptable group dominance
-create_naMulDom <- function()
-{	return(array(NA,dim=c(2,2)));}
-
 ## create an NA region evaluation (including decNo decisions):
 create_naRegEva <- function(varNo,decNo,perNo,criNo)
 {
 	decDef <- create_emptyDecDef(varNo);
 	decEva <- create_emptyDecEva(perNo,criNo);
 	regDef <- create_emptyRegDef(varNo);	
-	mulDom <- create_emptyMulDom();
-	regEva <- list("itemNo"=NA,"regDef"=regDef,"decDef"=list(decDef),"decEva"=list(decEva),"mulDom"=mulDom);
+	selCri <- create_emptyselCri();
+	regEva <- list("itemNo"=NA,"regDef"=regDef,"decDef"=list(decDef),"decEva"=list(decEva),"selCri"=selCri);
 	for (d in 2:decNo){
-		regEva <- list("itemNo"=regEva$itemNo,"regDef"=regEva$regDef,"decDef"=c(regEva$decDef,list(decDef)),"decEva"=c(regEva$decEva,list(decEva)),"mulDom"=regEva$mulDom);
+		regEva <- list("itemNo"=regEva$itemNo,"regDef"=regEva$regDef,"decDef"=c(regEva$decDef,list(decDef)),"decEva"=c(regEva$decEva,list(decEva)),"selCri"=regEva$selCri);
 	}
 return(regEva);
 }
@@ -46,7 +37,7 @@ return(regEva);
 ## create an empty region evaluation (NULL elements):
 create_emptyRegEva <- function()
 {
-	regEva <- list("itemNo"=0,"regDef"=NULL,"decDef"=NULL,"decEva"=NULL,"mulDom"=NULL);
+	regEva <- list("itemNo"=0,"regDef"=NULL,"decDef"=NULL,"decEva"=NULL,"selCri"=NULL);
 
 return(regEva);
 }
@@ -61,7 +52,7 @@ decSpaceAsOnlyRegInList <- function(decS,varNo,decNo,perNo,criNo)
 	# decision space boundaries are the whole decision space
 	regEva$regDef <- decS;
 	# multicriteria group dominance at origin:
-	regEva$mulDom <- array(0,dim=c(2,2));	
+	regEva$selCri <- array(0,dim=c(2,2));	
 
 	# create the initial pending region List:
 	temp <- list("itemNo"=1,"regEva"=list(regEva));
