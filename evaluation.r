@@ -1,7 +1,7 @@
 ##
  # FILE evaluation.r
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 13
+ # DATE july 2009 - july 2009, 15
  ####################################################################
 
 ##
@@ -75,8 +75,8 @@ return(mulDom);
  ####################################################################
 paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
 {
-	criNo <- dim(decPer1)[1];
-	
+	criNo <- length(decPer1);
+
 	## is v1 dominating?
 	atLeastAsGood_no <- 0;
 	strictlyDominating_no <- 0;
@@ -127,8 +127,13 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
 groupDomi_regVSreg <- function(reg1,reg2)
 {
 	decNo <- reg1$itemNo;
-	perNo <- dim(reg1$decEva[[1]])[1];
-	criNo <- dim(reg1$decEva[[1]])[2];
+	if(decNo>1){
+		perNo <- dim(reg1$decEva[[1]])[1];
+		criNo <- dim(reg1$decEva[[1]])[2];
+	}else{
+		perNo <- dim(reg1$decEva)[1];
+		criNo <- dim(reg1$decEva)[2];
+	}
 	
 	#####
 	# I want to avoid computing multicriteria demanding comparisons if i can
@@ -136,25 +141,30 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	# instead of computing all and finding out what domination it is
 	#####
 	# I start with all results possible=1 (always say r1 first, r2 last)
-	initReg <- list("defDominating"=1,"defDominated"=1,"defNonDominated"=1,"accDominating"=1,"accDominated"=1,"accNonDominated"=1,"undecidable"=1);
 	# and plan to 'return' as soon as the sum of either r1 or r2 is =1 
 	# potentially confirm with the other region which should have reached the according result
-	r1domi <- initReg;
-	r2domi <- initReg;
 	# I do not know if it is worth the trouble, let us see ...
 	#####
-
+	initReg <- list("defDominating"=1,"defDominated"=1,"defNonDominated"=1,"accDominating"=1,"accDominated"=1,"accNonDominated"=1,"undecidable"=1);
+	r1domi <- initReg;
+	r2domi <- initReg;
+	
 	decPer <- array(0,dim=c(decNo,perNo));
 	r1 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
 	r2 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
-	allOfThem <- decNo*perNo * decNo*perNo;
-	
+
 	for (d1 in 1:decNo){
 		for (p1 in 1:perNo){
 			for (d2 in 1:decNo){
 				for (p2 in 1:perNo){
-					##### MULTICRITERIA DECPER COMPARISON
-					switch(paretoDomi_decPerVSdecPer(reg1$decEva[[d1]][p1,1:criNo],reg2$decEva[[d2]][p2,1:criNo]),
+					if (decNo>1){
+						vect1 <- reg1$decEva[[d1]][p1,1:criNo];
+						vect2 <- reg2$decEva[[d2]][p2,1:criNo];
+					}else{
+						vect1 <- reg1$decEva[p1,1:criNo];
+						vect2 <- reg2$decEva[p2,1:criNo];
+					}##### MULTICRITERIA DECPER COMPARISON
+					switch(paretoDomi_decPerVSdecPer(vect1,vect2),
 						## this response of reg1 is dominating this response of reg2
 						{	r1$betterTh[d1,p1] <- r1$betterTh[d1,p1] +1;
 							r2$worstTh[d2,p2] <- r2$worstTh[d2,p2] +1;
@@ -171,11 +181,11 @@ groupDomi_regVSreg <- function(reg1,reg2)
 
 					##### ELIMINATION CONDITIONS
 					## not definitely non dominating as soon as
-					if(sum(r1$worstTh)>0 || sum(r2$worstTh)>0 || sum(r1$betterTh)>0 || sum(r2$betterTh)>0){
-						r1domi$defNonDominated=0;
-						r2domi$defNonDominated=0;
-						# everything else is possible
-					}
+					#if(sum(r1$worstTh)>0 || sum(r2$worstTh)>0 || sum(r1$betterTh)>0 || sum(r2$betterTh)>0){
+					#	r1domi$defNonDominated=0;
+					#	r2domi$defNonDominated=0;
+					#	# everything else is possible
+					#}
 					## not r1 definitely dominating r2 as soon as
 					## not r2 definitely dominating r1 as soon as
 					## not acceptably non dominating as soon as
@@ -184,39 +194,64 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	
 
 					##### EARLIER STOPPING TESTS
-					if ( (r1domi[1]+r1domi[2]+r1domi[3]+r1domi[4]+r1domi[5]+r1domi[6]+r1domi[7]) == 1){
-						# first confirm with r2domi
-						# then return
-						if(r1domi$defDominating==1){		return(1)};
-						if(r1domi$defDominated==1){		return(2)};
-						if(r1domi$defNonDominating==1){	return(3)};
-						if(r1domi$accDominating==1){		return(5)};
-						if(r1domi$accDominated==1){		return(6)};
-						if(r1domi$accNonDominating==1){	return(7)};
-						if(r1domi$undecidable==1){		return(9)};
-					}
+					#if ( (r1domi[1]+r1domi[2]+r1domi[3]+r1domi[4]+r1domi[5]+r1domi[6]+r1domi[7]) == 1){
+					#	# first confirm with r2domi
+					#	# then return
+					#	if(r1domi$defDominating==1){		return(1)};
+					#	if(r1domi$defDominated==1){		return(2)};
+					#	if(r1domi$defNonDominating==1){	return(3)};
+					#	if(r1domi$accDominating==1){		return(5)};
+					#	if(r1domi$accDominated==1){		return(6)};
+					#	if(r1domi$accNonDominating==1){	return(7)};
+					#	if(r1domi$undecidable==1){		return(9)};
+					#}
 				}	
 			}
 		}	
 	}
+
 	##### HERE EVERY DECPER PAIR COMPARISON HAS BEEN COMPUTED
-	if (sum(r1$worstTh)==0 && sum(r2$worstTh)==0 && sum(r1$betterTh)==0 && sum(r2$betterTh)==0){
-		return(3);	## definitive non domination
+	decPerNo <- decNo*perNo;
+	anyOfThem <- decNo*perNo;
+	allOfThem <- decNo*perNo * decNo*perNo;
+
+print(r1);
+print(r2);
+	## definitive non domination
+	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==0])==decPerNo){
+		return(3);										
 	}
-	if (sum(r1$worstTh)==0 && sum(r2$worstTh)==allOfThem && sum(r1$betterTh)==allOfThem && sum(r2$betterTh)==0){
-		return(1);	## r1 definitively dominates r2
+	## r1 definitively dominates r2
+	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==decPerNo])==decPerNo){
+		return(1);										
 	}
-	if (sum(r1$worstTh)==allOfThem && sum(r2$worstTh)==0 && sum(r1$betterTh)==0 && sum(r2$betterTh)==allOfThem){
-		return(2);	## r2 definitively dominates r1
+	## r2 definitively dominates r1
+	if (length(r2$worstTh[r2$worstTh==0])==decPerNo && length(r1$worstTh[r1$worstTh==decPerNo])==decPerNo){
+		return(2);										
 	}
-	if (sum(r1$worstTh) <- allOfThem && sum(r2$worstTh) < allOfThem){
-		return(7);	## acceptable non domination
+	## acceptable non domination
+	if (length(r1$worstTh[r1$worstTh==0])>0 && length(r2$worstTh[r2$worstTh==0]) > 0){
+		return(7);										
 	}else{
-		if (sum(r1$worstTh)==0 && sum(r2$worstTh)==allOfThem && sum(r1$betterTh)==allOfThem && sum(r2$betterTh)==0){
-			return(5);	## r1 acceptably dominates r2
+	## r1 acceptably dominates r2
+		if (length(r2$worstTh[r2$worstTh==0]) == 0){	## r1 is potentially dominating r2
+			if(length(r1$betterTh[r1$betterTh==0]) == 0){
+				return(5);					
+			}else{	# length(r1$betterTh[r1$betterTh==0]) > 0
+				if(length(r1$nonDomi[r1$nonDomi>0]) > 0){
+					return(5);
+				}
+			}
 		}
-		if (sum(r1$worstTh)==allOfThem && sum(r2$worstTh)==0 && sum(r1$betterTh)==0 && sum(r2$betterTh)==allOfThem){
-			return(6);	## r2 acceptably dominates r1
+	## r2 acceptably dominates r1
+		if (length(r1$worstTh[r1$worstTh==0]) == 0){	## r2 is potentially dominating r1
+			if(length(r2$betterTh[r2$betterTh==0]) == 0){
+				return(6);					
+			}else{	# length(r2$betterTh[r2$betterTh==0]) > 0
+				if(length(r2$nonDomi[r2$nonDomi>0]) > 0){
+					return(6);
+				}
+			}
 		}
 	}
 	## otherwise
