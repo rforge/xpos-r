@@ -124,14 +124,12 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
  ####################################################################
 groupDomi_regVSreg <- function(reg1,reg2)
 {
+	## as soon as decEva is non NULL it has to be a list
+	## otherwise perNo and criNo are going to be NULL
 	decNo <- reg1$itemNo;
-	if(decNo>1){
-		perNo <- dim(reg1$decEva[[1]])[1];
-		criNo <- dim(reg1$decEva[[1]])[2];
-	}else{
-		perNo <- dim(reg1$decEva)[1];
-		criNo <- dim(reg1$decEva)[2];
-	}
+	perNo <- dim(reg1$decEva[[1]])[1];
+	criNo <- dim(reg1$decEva[[1]])[2];
+	decPerNo <- decNo*perNo;
 	
 	#####
 	# I want to avoid computing multicriteria demanding comparisons if i can
@@ -146,23 +144,24 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	initReg <- list("defDominating"=1,"defDominated"=1,"defNonDominated"=1,"accDominating"=1,"accDominated"=1,"accNonDominated"=1,"undecidable"=1);
 	r1domi <- initReg;
 	r2domi <- initReg;
-	
+#	##### to eliminate accNonDomination and undecidability
+#	r1_dpWorstThanAllExists <- 0;
+#	r1_dpBetterThanAllExists <- 0;
+#	r1_dpNonDomExists <- 0;
+
 	decPer <- array(0,dim=c(decNo,perNo));
 	r1 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
 	r2 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
 
 	for (d1 in 1:decNo){
 		for (p1 in 1:perNo){
+#			dp1_worstTh <- 0;
+#			dp1_betterTh <- 0;
+#			dp1_nonDom <- 0;
 			for (d2 in 1:decNo){
 				for (p2 in 1:perNo){
-					if (decNo>1){
-						vect1 <- reg1$decEva[[d1]][p1,1:criNo];
-						vect2 <- reg2$decEva[[d2]][p2,1:criNo];
-					}else{
-						vect1 <- reg1$decEva[p1,1:criNo];
-						vect2 <- reg2$decEva[p2,1:criNo];
-					}##### MULTICRITERIA DECPER COMPARISON
-					switch(paretoDomi_decPerVSdecPer(vect1,vect2),
+					##### MULTICRITERIA DECPER COMPARISON
+					switch(regVSreg <- paretoDomi_decPerVSdecPer(reg1$decEva[[d1]][p1,1:criNo],reg2$decEva[[d2]][p2,1:criNo]),
 						## this response of reg1 is dominating this response of reg2
 						{	r1$betterTh[d1,p1] <- r1$betterTh[d1,p1] +1;
 							r2$worstTh[d2,p2] <- r2$worstTh[d2,p2] +1;
@@ -176,43 +175,61 @@ groupDomi_regVSreg <- function(reg1,reg2)
 							r2$nonDomi[d2,p2] <- r2$nonDomi[d2,p2] +1;
 						}
 					);
-
 					##### ELIMINATION CONDITIONS
-					## not definitely non dominating as soon as
-					#if(sum(r1$worstTh)>0 || sum(r2$worstTh)>0 || sum(r1$betterTh)>0 || sum(r2$betterTh)>0){
-					#	r1domi$defNonDominated=0;
-					#	r2domi$defNonDominated=0;
-					#	# everything else is possible
-					#}
-					## not r1 definitely dominating r2 as soon as
-					## not r2 definitely dominating r1 as soon as
-					## not acceptably non dominating as soon as
-					## not r1 acceptably dominating r2 as soon as
-					## not r2 acceptably dominating r1 as soon as
-	
+# WORKING ON THE			if( regVSreg !=1 ){
+# REDUCTION OF THE			r1domi$defDominating=0;
+# MULTICRITERIA				r2domi$defDominated=0;
+# COMPARISON			}
+#					if( regVSreg !=2 ){
+#						r2domi$defDominating=0;
+#						r1domi$defDominated=0;
+#					}
+#					if( regVSreg != 3){
+#						r1domi$defNonDominated=0;
+#						r2domi$defNonDominated=0;
+#					}
+#					if( regVSreg == 1){
+#						dp1_betterTh <- dp1_betterTh +1;
+#					}
+#					if( regVSreg == 2){
+#						dp1_worstTh <- dp1_worstTh +1;
+#					}
+#					if( regVSreg == 3){
+#						dp1_nonDom <- dp1_nonDom +1;
+#					}
 
 					##### EARLIER STOPPING TESTS
-					#if ( (r1domi[[1]]+r1domi[[2]]+r1domi[[3]]+r1domi[[4]]+r1domi[[5]]+r1domi[[6]]+r1domi[[7]]) == 1){
-						# first confirm with r2domi
-						# then return
-					#	if(r1domi$defDominating==1){		return(1)};
-					#	if(r1domi$defDominated==1){		return(2)};
-					#	if(r1domi$defNonDominating==1){	return(3)};
-					#	if(r1domi$accDominating==1){		return(5)};
-					#	if(r1domi$accDominated==1){		return(6)};
-					#	if(r1domi$accNonDominating==1){	return(7)};
-					#	if(r1domi$undecidable==1){		return(9)};
-					#}
+#					if ( (r1domi[[1]]+r1domi[[2]]+r1domi[[3]]+r1domi[[4]]+r1domi[[5]]+r1domi[[6]]+r1domi[[7]]) == 1){
+#						# confirmation with r2domi should be useless...
+#						# then return
+#						if(r1domi$defDominating==1){		return(1)};
+#						if(r1domi$defDominated==1){		return(2)};
+#						if(r1domi$defNonDominating==1){	return(3)};
+#						if(r1domi$accDominating==1){		return(5)};
+#						if(r1domi$accDominated==1){		return(6)};
+#						if(r1domi$accNonDominating==1){	return(7)};
+#						if(r1domi$undecidable==1){		return(9)};
+#					}
 				}	
 			}
+#			if( dp1_worstTh == decPerNo){
+#				r1_dpWorstThanAllExists <- 1;
+#			}
+#			if( dp1_betterTh == decPerNo){
+#				r1_dpBetterThanAllExists <- 1;
+#				r1domi$accNonDominated <- 0;
+#			}
+#			if( dp1_nonDom == decPerNo){
+#				r1_dpNonDomExists <- 1;
+#			}
 		}	
 	}
 
-	##### HERE EVERY DECPER PAIR COMPARISON HAS BEEN COMPUTED
-	decPerNo <- decNo*perNo;
-	anyOfThem <- decNo*perNo;
-	allOfThem <- decNo*perNo * decNo*perNo;
+#print(r1domi);
+#print(r2domi);
+#print("earlier elimination rules are useless");
 
+	##### HERE EVERY DECPER PAIR COMPARISON HAS BEEN COMPUTED
 	## definitive non domination
 	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==0])==decPerNo){
 		return(3);										
@@ -259,10 +276,6 @@ groupDomi_regVSreg <- function(reg1,reg2)
  ####################################################################
 evaluate <- function(uneList,evalMeth,simNo)
 {
-#if(simNo>=850){
-#	browser();
-#}
-
 	for (reg in 1:uneList$itemNo){
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
 	}

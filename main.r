@@ -14,7 +14,6 @@
 
 ## TO DO:
 # > check ?file.path for windows path
-# > add ctrl-C for abort
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
 
