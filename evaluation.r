@@ -272,10 +272,16 @@ groupDomi_regVSreg <- function(reg1,reg2)
 }
 
 ##
- #  reg: List of dec matrix (perNo,criNo) dominance comparison
+ # EVALUATE PROMISING REGIONS (SELCRI) FROM PROLIST
  ####################################################################
-evaluate <- function(uneList,evalMeth,simNo)
+ # !!!
+ # UNSIFFICIANT FOR MULTICRITERIA COMPARISON
+ # you have to update comparison with the pending regions in penList
+ # see evaluate_penPLUSproList and evaluate_penMINUSproList
+ ####################################################################
+evaluate_proList <- function(uneList,evalMeth)
 {
+	# either do not exist or has to be reevaluated here
 	for (reg in 1:uneList$itemNo){
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
 	}
@@ -344,3 +350,145 @@ evaluate <- function(uneList,evalMeth,simNo)
 
 return(uneList);
 }
+
+##
+ # UPDATE EVALUATION COMPARISON OF PROLIST REGIONS AND PENLIST REGIONS
+ ####################################################################
+ # > proList regions have been created and evaluate before (evalute_proList)
+ # > original proList has to be removed before (evaluate_penMINUSproList)
+ # > new proList (offspring) regions can now be evaluated in front of penList
+ ####################################################################
+evaluate_penPLUSproList <- function(proList,penList,evalMeth)
+{	##### remember selCri selection
+	#  -------------
+	# | min1 | min2 |
+	# |------|------|
+	# | max3 | max4 |
+	#  -------------
+	# min1 : def worstThan + acc worstThan
+	# min2 : def worstThan
+	# max3 : undecidable no
+	# max4 : def betterThan + acc betterThan
+	#####
+	for (reg in 1:proList$itemNo){
+		switch(	evalMeth,
+			# mean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			},
+			# minMean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			},
+			# maxMean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			},
+			{},
+			## multicriteria evaluation
+			{	for (r in 1:penList$itemNo){
+					switch(	regVSreg <- groupDomi_regVSreg(proList$regEva[[reg]],penList$regEva[[r]]),
+						# reg definitively dominates r
+						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] +1;
+							penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,2] +1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] +1;
+						},
+						# r definitively dominates reg
+						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] +1;
+							proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,2] +1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] +1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# reg acceptably dominates r
+						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] +1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] +1;
+						},
+						# r acceptably dominates reg
+						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] +1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] +1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# undecidable: might be good to cut it down before maximizing the no of dominated ones
+						{	proList$regEva[[reg]]$selCri[2,1] <- proList$regEva[[reg]]$selCri[2,1] +1;
+							penList$regEva[[r]]$selCri[2,1] <- penList$regEva[[r]]$selCri[2,1] +1;
+						}
+					);
+				}
+			}
+		);
+	}
+
+return(list("pro"=proList,"pen"=penList));
+}
+
+##
+ # UPDATE EVALUATION COMPARISON OF PROLIST REGIONS MINUS PENLIST REGIONS
+ ####################################################################
+ # > proList regions have been created and evaluate before (evalute_proList)
+ # > original proList has to be removed 
+ # > later new proList (offspring) regions would be evaluated (evaluate_penPLUSproList)
+ ####################################################################
+evaluate_penMINUSproList <- function(proList,penList,evalMeth)
+{	##### remember selCri selection
+	#  -------------
+	# | min1 | min2 |
+	# |------|------|
+	# | max3 | max4 |
+	#  -------------
+	# min1 : def worstThan + acc worstThan
+	# min2 : def worstThan
+	# max3 : undecidable no
+	# max4 : def betterThan + acc betterThan
+	#####
+	for (reg in 1:proList$itemNo){
+		switch(	evalMeth,
+			# mean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			},
+			# minMean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			},
+			# maxMean evaluation
+			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			},
+			{},
+			## multicriteria evaluation
+			{	for (r in 1:penList$itemNo){
+					#
+					#	REMOVING PROLISTS REGION (reg) COMPARISON FROM PENLIST REGIONS (r) EVALUATIONS
+					#
+					switch(	regVSreg <- groupDomi_regVSreg(proList$regEva[[reg]],penList$regEva[[r]]),
+						# reg definitively dominates r
+						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] -1;
+							penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,2] -1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] -1;
+						},
+						# r definitively dominates reg
+						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] -1;
+							proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,2] -1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] -1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# reg acceptably dominates r
+						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] -1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] -1;
+						},
+						# r acceptably dominates reg
+						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] -1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] -1;
+						},
+						{}, # any interests to optimize that?
+						{},
+						# undecidable: might be good to cut it down before maximizing the no of dominated ones
+						{	proList$regEva[[reg]]$selCri[2,1] <- proList$regEva[[reg]]$selCri[2,1] -1;
+							penList$regEva[[r]]$selCri[2,1] <- penList$regEva[[r]]$selCri[2,1] -1;
+						}
+					);
+				}
+			}
+		);
+	}
+
+return(list("pro"=proList,"pen"=penList));
+}
+

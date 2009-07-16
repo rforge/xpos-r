@@ -95,10 +95,10 @@ repeat{
 	##### divide every of the promising regions (i.e. proList)
 	proList <- divide_List(proList);
 
-	##### sample
+	##### sample every of the promising regions (i.e. proList)
 	proList <- sample_List(proList,decNo,varNo,perNo,criNo);
 
-	##### simulate	
+	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
 		simTime <- Sys.time();
 		black <- simulateMathModel(mod,proList$regEva[[reg]],perNo,criNo);
@@ -107,16 +107,22 @@ repeat{
 		simNo <- simNo + black$simNo;
 	}
 
+	##### evaluate every of the promising regions (i.e. proList)
+	# should be able to do it smootherly by removing one region and adding two,
+	# instead of re-computing everything?
+	proList <- evaluate_proList(proList,evalMeth);
+
 	##### update lists
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;
 	proList <- list("itemNo"=0,"regEva"=NULL);
 
-	##### evaluate
-	# should be able to do it smootherly by removing one region and adding two,
-	# instead of re-computing everything?
-	penList <- evaluate(penList,evalMeth,simNo);
+#	
+#	FOR MULTIRCRITERIA EVALUATION
+#	REMOVING COMPARISON OF ORIGINAL PROMISNING
+#	ADDING COMPARISON OF OFFSPRING
+#
 
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
