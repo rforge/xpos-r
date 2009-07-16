@@ -181,6 +181,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 
 		## decision space
 		dev.set(decDev);
+		plotRectangle(criS,1,2,"white","white","criteria space evaluation");
 		if(proList$itemNo>0){
 			par(mfg=proScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
@@ -237,6 +238,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 
 		## criteria space
 		dev.set(criDev);
+		plotRectangle(criS,1,2,"white","white","criteria space evaluation");
 		if(unbList$item>0){watchCriSpace(unbList,".","red");}
 		if(penList$item>0){watchCriSpace(penList,".","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
