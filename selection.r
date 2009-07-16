@@ -94,6 +94,14 @@ update_bestList <- function(proList,besList,evalMeth,criterion)
 	if(proList$itemNo==0){
 		return(besList);
 	}
+##
+# BEST LEAF ONLY OTHERWISE YOU'LL NEVER GET BETTER THAN THE FIRST BEST
+# TEST IF OFFSPRING ARE INCLUDED WITHIN THE CURRENT BEST
+##
+	# remove from besList the parent region of any region in proList
+#	if(){
+#
+#	}
 
 	for (reg in 1:proList$itemNo){
 		besList$itemNo <- besList$itemNo +1;
@@ -113,8 +121,11 @@ update_bestList <- function(proList,besList,evalMeth,criterion)
 		## select a region as best regarding to reg$selCri[1,1] only
 		# countdown useless here, but not necessary to change
 		indices <- array(besList$itemNo,dim=1);
+print(paste("avant.. ",indices,sep=""));
+print(besList$regEva[[besList$itemNo]]$selCri[1,1]);
 		for (r in seq(besList$itemNo-1,1,-1)){
 			index <- indices[1];
+print(besList$regEva[[r]]$selCri[1,1]);
 			if(besList$regEva[[r]]$selCri[1,1] < besList$regEva[[index]]$selCri[1,1]){
 				indices <- array(r,dim=1);
 			}else{
@@ -123,6 +134,7 @@ update_bestList <- function(proList,besList,evalMeth,criterion)
 				}
 			}
 		}
+print(paste("after.. ",indices,sep=""));
 		
 		## keep only the best in the list
 		for (r in seq(besList$itemNo,1,-1)){
