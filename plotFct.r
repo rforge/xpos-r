@@ -76,11 +76,11 @@ watchDecSpace <- function(uneList,bgCol)
 ##
  # PLOTTING TO 'SEE' THE CRITERIA SPACE TROUGH THE PROCESS
  ####################################################################
-watchCriSpace <- function(uneList,pCol)
+watchCriSpace <- function(uneList,pch,pCol)
 {
 	## decision space figure
 	for (r in 1:uneList$itemNo){
-		plotDecEva(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decEva,1,2,".",pCol);
+		plotDecEva(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decEva,1,2,pch,pCol);
 	}
 }
 
@@ -202,16 +202,16 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(proList$itemNo>0){
 			par(mfg=proScreen);
 			plotRectangle(criS,1,2,"white","white","promising region evaluations");
-			watchCriSpace(proList,"black");
+			watchCriSpace(proList,"+","black");
 		}
 		if(penList$itemNo>0){
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
-			watchCriSpace(penList,"blue");
+			watchCriSpace(penList,".","blue");
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
-			watchCriSpace(unbList,"red");
+			watchCriSpace(unbList,".","red");
 		}
 	}
 
@@ -273,16 +273,16 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(proList$itemNo>0){
 			par(mfg=proScreen);
 			plotRectangle(criS,1,2,"white","white","promising region evaluations");
-			watchCriSpace(proList,"black");
+			watchCriSpace(proList,"+","black");
 		}
 		if(penList$itemNo>0){
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
-			watchCriSpace(penList,"blue");
+			watchCriSpace(penList,".","blue");
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
-			watchCriSpace(unbList,"red");
+			watchCriSpace(unbList,".","red");
 		}
 	}
 
