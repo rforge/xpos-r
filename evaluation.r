@@ -384,13 +384,13 @@ evaluate_penPLUSproList <- function(proList,penList,evalMeth)
 	for (reg in 1:proList$itemNo){
 		switch(	evalMeth,
 			# mean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penPLUSproList!");
 			},
 			# minMean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penPLUSproList!");
 			},
 			# maxMean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penPLUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penPLUSproList!");
 			},
 			{},
 			## multicriteria evaluation
@@ -459,13 +459,13 @@ evaluate_penMINUSproList <- function(proList,penList,evalMeth)
 	for (reg in 1:proList$itemNo){
 		switch(	evalMeth,
 			# mean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penMINUSproList!");
 			},
 			# minMean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penMINUSproList!");
 			},
 			# maxMean evaluation
-			{	print("should not come through here, look at ""evaluation.r"" function evaluate_penMINUSproList!");
+			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penMINUSproList!");
 			},
 			{},
 			## multicriteria evaluation

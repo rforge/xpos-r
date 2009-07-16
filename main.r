@@ -112,17 +112,18 @@ repeat{
 	# instead of re-computing everything?
 	proList <- evaluate_proList(proList,evalMeth);
 
+	##### MULTICRITERIA remove proList regions comparisons from penList regions
+	if(evalMeth==5){
+		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
+		proList <- temp$pro;
+		penList <- temp$pen;
+	} # has to be after evaluation and before updatelists
+
 	##### update lists
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;
 	proList <- list("itemNo"=0,"regEva"=NULL);
-
-#	
-#	FOR MULTIRCRITERIA EVALUATION
-#	REMOVING COMPARISON OF ORIGINAL PROMISNING
-#	ADDING COMPARISON OF OFFSPRING
-#
 
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
@@ -134,6 +135,13 @@ repeat{
 	temp <- select(proList,penList);
 	proList <- temp$pro;
 	penList <- temp$pen;
+
+	##### MULTICRITERIA remove proList regions comparisons from penList regions
+	if(evalMeth==5){
+		temp <- evaluate_penMINUSproList(proList,penList,evalMeth);
+		proList <- temp$pro;
+		penList <- temp$pen;
+	} # has to be after selection and before division, if at the loop top, then initial case would fuck up
 
 	## watch it run
 	if (!is.null(seeItThrough)){
