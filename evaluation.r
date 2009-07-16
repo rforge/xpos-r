@@ -281,6 +281,11 @@ groupDomi_regVSreg <- function(reg1,reg2)
  ####################################################################
 evaluate_proList <- function(uneList,evalMeth)
 {
+	# probably useless... but
+	if(uneList$itemNo==0){
+		return(uneList);
+	}
+
 	# either do not exist or has to be reevaluated here
 	for (reg in 1:uneList$itemNo){
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
@@ -359,7 +364,13 @@ return(uneList);
  # > new proList (offspring) regions can now be evaluated in front of penList
  ####################################################################
 evaluate_penPLUSproList <- function(proList,penList,evalMeth)
-{	##### remember selCri selection
+{
+	# probably useless... but
+	if(proList$itemNo==0 || penList$itemNo==0){
+		return(list("pro"=proList,"pen"=penList));
+	}
+
+	##### remember selCri selection
 	#  -------------
 	# | min1 | min2 |
 	# |------|------|
@@ -428,7 +439,13 @@ return(list("pro"=proList,"pen"=penList));
  # > later new proList (offspring) regions would be evaluated (evaluate_penPLUSproList)
  ####################################################################
 evaluate_penMINUSproList <- function(proList,penList,evalMeth)
-{	##### remember selCri selection
+{
+	# probably useless... but
+	if(proList$itemNo==0 || penList$itemNo==0){
+		return(list("pro"=proList,"pen"=penList));
+	}
+
+	##### remember selCri selection
 	#  -------------
 	# | min1 | min2 |
 	# |------|------|
