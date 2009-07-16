@@ -116,6 +116,7 @@ init_visualisation <- function(seeItThrough,decS,criS)
 		penScreen <- c(1,1);
 		unbScreen <- c(2,1);
 		proScreen <- c(1,2);
+		besScreen <- c(2,2);
 
 		##### decision space
 		windows(title=" *** xPos-a : decision space visulalisation ***");
@@ -126,6 +127,8 @@ init_visualisation <- function(seeItThrough,decS,criS)
 			plotRectangle(decS,1,2,"white","white","pending regions");
 		par(mfg=proScreen);
 			plotRectangle(decS,1,2,"white","white","promising region(s)");
+		par(mfg=besScreen);
+			plotRectangle(decS,1,2,"white","white","current best region(s)");
 		par(mfg=unbScreen);
 			plotAxes(decS,1,2,"decision 1","decision 2");
 			plotRectangle(decS,1,2,"white","white","unbreakable regions");
@@ -136,20 +139,22 @@ init_visualisation <- function(seeItThrough,decS,criS)
 			par(mfcol=mfcol);
 		par(mfg=unbScreen);
 			plotAxes(criS,1,2,"criterion 1","criterion 2");
-			plotRectangle(criS,1,2,"white","white","unbreakable regions evaluations");
+			plotRectangle(criS,1,2,"white","white","unbreakable region evaluations");
 		par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
 		par(mfg=proScreen);
 			plotRectangle(criS,1,2,"white","white","promising region evaluations");
+		par(mfg=besScreen);
+			plotRectangle(criS,1,2,"white","white","current best region evaluations");
 
-		return(list("pro"=proScreen,"pen"=penScreen,"unb"=unbScreen,"dDev"=decDev,"cDev"=criDev,"criS"=criS));
+		return(list("pro"=proScreen,"pen"=penScreen,"unb"=unbScreen,"bes"=besScreen,"dDev"=decDev,"cDev"=criDev,"criS"=criS));
 	}
 }
 
 ##
  # UPDATE GRAPHIC DISPLAY WITHIN A LOOP
  ####################################################################
-update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
+update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besList)
 {
 	
 	if (seeItThrough=="g"){
@@ -162,6 +167,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(unbList$item>0){watchDecSpace(unbList,"red");}
 		if(penList$item>0){watchDecSpace(penList,"blue");}
 		if(proList$item>0){watchDecSpace(proList,"gold");}
+		if(besList$item>0){watchDecSpace(besList,"green");}
 
 		## criteria space
 		dev.set(criDev);
@@ -169,19 +175,20 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(unbList$item>0){watchCriSpace(unbList,".","red");}
 		if(penList$item>0){watchCriSpace(penList,".","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
+		if(besList$item>0){watchCriSpace(besList,"o","red");}
 	}
 
 	if (seeItThrough=="d"){
 		proScreen <- scrList$pro;
 		penScreen <- scrList$pen;
 		unbScreen <- scrList$unb;
+		besScreen <- scrList$bes;
 		decDev <- scrList$dDev;
 		criDev <- scrList$cDev;
 		criS <- scrList$criS;
 
 		## decision space
 		dev.set(decDev);
-		plotRectangle(criS,1,2,"white","white","criteria space evaluation");
 		if(proList$itemNo>0){
 			par(mfg=proScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
@@ -193,6 +200,13 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
 			if(proList$item>0){watchDecSpace(proList,"white");}
 			watchDecSpace(penList,"blue");
+		}	
+		if(besList$itemNo>0){
+			par(mfg=besScreen);
+			if(unbList$item>0){watchDecSpace(unbList,"white");}
+			if(proList$item>0){watchDecSpace(proList,"white");}
+			if(penList$item>0){watchDecSpace(penList,"white");}
+			watchDecSpace(besList,"green");
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
@@ -210,6 +224,11 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
 			watchCriSpace(penList,".","blue");
+		}	
+		if(besList$itemNo>0){
+			par(mfg=besScreen);
+			plotRectangle(criS,1,2,"white","white","current best region evaluations");
+			watchCriSpace(besList,"o","green");
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
@@ -223,7 +242,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 ##
  # LAST GRAPHIC DISPLAY WITHIN A LOOP
  ####################################################################
-last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
+last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besList)
 {
 	if (seeItThrough=="g"){
 		decDev <- scrList$dDev;
@@ -235,6 +254,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(unbList$item>0){watchDecSpace(unbList,"red");}
 		if(penList$item>0){watchDecSpace(penList,"blue");}
 		if(proList$item>0){watchDecSpace(proList,"gold");}
+		if(besList$item>0){watchDecSpace(besList,"green");}
 
 		## criteria space
 		dev.set(criDev);
@@ -242,12 +262,14 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 		if(unbList$item>0){watchCriSpace(unbList,".","red");}
 		if(penList$item>0){watchCriSpace(penList,".","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
+		if(besList$item>0){watchCriSpace(besList,"o","red");}
 	}
 
 	if (seeItThrough=="d"){
 		proScreen <- scrList$pro;
 		penScreen <- scrList$pen;
 		unbScreen <- scrList$unb;
+		besScreen <- scrList$bes;
 		decDev <- scrList$dDev;
 		criDev <- scrList$cDev;
 		criS <- scrList$criS;
@@ -266,6 +288,13 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			if(proList$item>0){watchDecSpace(proList,"white");}
 			watchDecSpace(penList,"blue");
 		}	
+		if(besList$itemNo>0){
+			par(mfg=besScreen);
+			if(unbList$item>0){watchDecSpace(unbList,"white");}
+			if(proList$item>0){watchDecSpace(proList,"white");}
+			if(penList$item>0){watchDecSpace(penList,"white");}
+			watchDecSpace(besList,"green");
+		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
 			watchDecSpace(unbList,"red");
@@ -282,6 +311,11 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
 			watchCriSpace(penList,".","blue");
+		}	
+		if(besList$itemNo>0){
+			par(mfg=besScreen);
+			plotRectangle(criS,1,2,"white","white","current best region evaluations");
+			watchCriSpace(besList,"o","green");
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);

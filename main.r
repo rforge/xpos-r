@@ -30,7 +30,7 @@ xPos <- function(	mod,		## model to be simulated for evaluation
 ## to add as inputs
 criS <- matrix(c(0,1,0,10),2);
 evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
-
+criterion <- 2; # for monocriterion evaluation
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
 checkInputs(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
@@ -88,6 +88,7 @@ simulationTime <- 0;
 proList <- decSpaceAsOnlyRegInList(decS,varNo,decNo,perNo,criNo);
 unbList <- list("itemNo"=0,"regEva"=NULL);
 penList <- list("itemNo"=0,"regEva"=NULL);
+besList <- list("itemNo"=0,"regEva"=NULL);
 if (!is.null(seeItThrough)){
 	scrList <- init_visualisation(seeItThrough,decS,criS);
 }
@@ -110,9 +111,13 @@ repeat{
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
-	proList <- evaluate_proList(proList,evalMeth);
+	proList <- evaluate_proList(proList,evalMeth,criterion);
 
-	##### MULTICRITERIA remove proList regions comparisons from penList regions
+	##### current best (selection.r)
+	# !! check that prolist$selCri before and after does not change
+	besList <- update_bestList(proList,besList,evalMeth,criterion);
+
+	##### MULTICRITERIA add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
@@ -156,7 +161,7 @@ repeat{
 			memory.size(),
 		sep=""),quote=FALSE);
 
-		update_visualisation(seeItThrough,scrList,proList,penList,unbList);
+		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 }
 # update unbreakable list evaluations
@@ -182,7 +187,7 @@ if (!is.null(seeItThrough)){
 		memory.size(),
 	sep=""),quote=FALSE);
 
-	last_visualisation(seeItThrough,scrList,proList,penList,unbList);
+	last_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 }
 
 print("",quote=FALSE);

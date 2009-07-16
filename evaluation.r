@@ -279,7 +279,7 @@ groupDomi_regVSreg <- function(reg1,reg2)
  # you have to update comparison with the pending regions in penList
  # see evaluate_penPLUSproList and evaluate_penMINUSproList
  ####################################################################
-evaluate_proList <- function(uneList,evalMeth)
+evaluate_proList <- function(uneList,evalMeth,criterion)
 {
 	# probably useless... but
 	if(uneList$itemNo==0){
@@ -305,16 +305,16 @@ evaluate_proList <- function(uneList,evalMeth)
 	for (reg in 1:uneList$itemNo){
 		switch(	evalMeth,
 			# mean evaluation
-			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_mean(uneList$regEva[[reg]],1);
-				uneList$regEva[[reg]]$selCri[1,2] <- eval_minMean(uneList$regEva[[reg]],1);	# why not!
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_mean(uneList$regEva[[reg]],criterion);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_minMean(uneList$regEva[[reg]],criterion);	# why not!
 			},
 			# minMean evaluation
-			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_minMean(uneList$regEva[[reg]],1);
-				uneList$regEva[[reg]]$selCri[1,2] <- eval_maxMean(uneList$regEva[[reg]],1);	# why not!
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_minMean(uneList$regEva[[reg]],criterion);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_maxMean(uneList$regEva[[reg]],criterion);	# why not!
 			},
 			# maxMean evaluation
-			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_maxMean(uneList$regEva[[reg]],1);
-				uneList$regEva[[reg]]$selCri[1,2] <- eval_mean(uneList$regEva[[reg]],1);	# why not!
+			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_maxMean(uneList$regEva[[reg]],criterion);
+				uneList$regEva[[reg]]$selCri[1,2] <- eval_mean(uneList$regEva[[reg]],criterion);	# why not!
 			},
 			{},
 			## multicriteria evaluation
@@ -508,4 +508,3 @@ evaluate_penMINUSproList <- function(proList,penList,evalMeth)
 
 return(list("pro"=proList,"pen"=penList));
 }
-

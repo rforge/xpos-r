@@ -8,7 +8,7 @@
 source('main.r');
 
 # decision space
-decS <- matrix(c(0,1,0.2,0,1,0.1),3);
+decS <- matrix(c(0,1,0.1,0,1,0.1),3);
 
 
 ## CALL EXAMPLE
