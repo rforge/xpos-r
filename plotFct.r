@@ -165,9 +165,9 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 
 		## criteria space
 		dev.set(criDev);
-		if(unbList$item>0){watchCriSpace(unbList,"red");}
-		if(penList$item>0){watchCriSpace(penList,"blue");}
-		if(proList$item>0){watchCriSpace(proList,"black");}
+		if(unbList$item>0){watchCriSpace(unbList,".","red");}
+		if(penList$item>0){watchCriSpace(penList,".","blue");}
+		if(proList$item>0){watchCriSpace(proList,"+","black");}
 	}
 
 	if (seeItThrough=="d"){
@@ -236,9 +236,9 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList)
 
 		## criteria space
 		dev.set(criDev);
-		if(unbList$item>0){watchCriSpace(unbList,"red");}
-		if(penList$item>0){watchCriSpace(penList,"blue");}
-		if(proList$item>0){watchCriSpace(proList,"black");}
+		if(unbList$item>0){watchCriSpace(unbList,".","red");}
+		if(penList$item>0){watchCriSpace(penList,".","blue");}
+		if(proList$item>0){watchCriSpace(proList,"+","black");}
 	}
 
 	if (seeItThrough=="d"){
