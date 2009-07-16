@@ -6,7 +6,7 @@
  ####################################################################
 
 ##
- # SELECTION BASED ON 2x2 selCri
+ # SELECTION PROCESS BASED ON 2x2 selCri
  ####################################################################
  # selCri[1,]: minimize col1, if two even minimize col2
  # if two even candidates
@@ -54,14 +54,13 @@ return(indices);
 }
 
 ##
- # SELECTION
+ # UPDATE LISTS ACCORDINGLY TO SELECTED REGIONS
  ####################################################################
  # selection implies that the promising regions will be removed from the pending regions
  ####################################################################
 select <- function(proList,penList)
 {
 	##### select promising regions
-	# for now
 	if (penList$itemNo<2){
 		selectedReg <- array(1,dim=1);
 	}else{
@@ -70,17 +69,70 @@ select <- function(proList,penList)
 
 	##### add them to proList
 	for (r in 1:dim(selectedReg)[1]){
-		proList$itemNo <- proList$itemNo+1;
+		proList$itemNo <- proList$itemNo +1;
 		proList$regEva <- c(proList$regEva,list(penList$regEva[[selectedReg[r]]]));
 	}
 
 	##### remove them from penList
 	# should be sorted decreasing... if not
 	# selectedReg <- sort(selectedReg,decreasing=TRUE);
-	for (r in 1:1:dim(selectedReg)[1]){
+	for (r in 1:dim(selectedReg)[1]){
 		penList$regEva <- penList$regEva[-selectedReg[r]];
-		penList$itemNo <- penList$itemNo-1;
+		penList$itemNo <- penList$itemNo -1;
 	}
 
 return(list("pro"=proList,"pen"=penList));
+}
+
+
+##
+ # UPDATE THE LIST OF CURRENT BEST REGIONS
+ ####################################################################
+update_bestList <- function(proList,besList,evalMeth,criterion)
+{
+	# probably useless... but
+	if(proList$itemNo==0){
+		return(besList);
+	}
+
+	for (reg in 1:proList$itemNo){
+		besList$itemNo <- besList$itemNo +1;
+		besList$regEva <- c(besList$regEva,list(proList$regEva[[reg]]));
+	}
+	
+	if (besList$itemNo<2){
+	}else{
+		## update multicriteria evaluation of besList
+		#
+		#	MAKE SURE PROLIST IS NOT DISTURBED IN MAIN.r !!!
+		#
+		if (evalMeth==5){	# otherwise it is still up to date
+			besList <- evaluate_proList(besList,evalMeth,criterion);
+		}
+		
+		## select a region as best regarding to reg$selCri[1,1] only
+		# countdown useless here, but not necessary to change
+		indices <- array(besList$itemNo,dim=1);
+		for (r in seq(besList$itemNo-1,1,-1)){
+			index <- indices[1];
+			if(besList$regEva[[r]]$selCri[1,1] < besList$regEva[[index]]$selCri[1,1]){
+				indices <- array(r,dim=1);
+			}else{
+				if(besList$regEva[[r]]$selCri[1,1] == besList$regEva[[index]]$selCri[1,1]){
+					indices <- rbind(indices,r);
+				}
+			}
+		}
+		
+		## keep only the best in the list
+		for (r in seq(besList$itemNo,1,-1)){
+			if(length(indices[indices==r])>0){
+			}else{
+				besList$regEva <- besList$regEva[-r];
+				besList$itemNo <- besList$itemNo -1;
+			}
+		}
+	}
+
+return(besList);
 }
