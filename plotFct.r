@@ -200,7 +200,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
 			if(proList$item>0){watchDecSpace(proList,"white");}
 			watchDecSpace(penList,"blue");
-		}	
+		}
 		if(besList$itemNo>0){
 			par(mfg=besScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
@@ -287,7 +287,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
 			if(proList$item>0){watchDecSpace(proList,"white");}
 			watchDecSpace(penList,"blue");
-		}	
+		}
 		if(besList$itemNo>0){
 			par(mfg=besScreen);
 			if(unbList$item>0){watchDecSpace(unbList,"white");}
@@ -311,7 +311,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
 			watchCriSpace(penList,".","blue");
-		}	
+		}
 		if(besList$itemNo>0){
 			par(mfg=besScreen);
 			plotRectangle(criS,1,2,"white","white","current best region evaluations");
