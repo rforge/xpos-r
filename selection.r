@@ -1,8 +1,7 @@
 ##
  # FILE selection.r
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 9
- # promising region selection functions
+ # VERSION https://r-forge.r-project.org/projects/xpos-r/
  ####################################################################
 
 ##
@@ -16,27 +15,27 @@ select_fct <- function(penList)
 {
 	#this fct is not called if penList == 1
 	# countdown to avoid to sort it when removing the promising region from the pending List
-	indices <- array(penList$itemNo,dim=1);
+	indices <- array(penList$itemNo,dim=c(1,1));
 
 	for (r in seq(penList$itemNo-1,1,-1)){
-		index <- indices[1];
+		index <- indices[1,1];
 		if(penList$regEva[[r]]$selCri[1,1] < penList$regEva[[index]]$selCri[1,1]){
-			indices <- array(r,dim=1);
+			indices <- array(r,dim=c(1,1));
 		}else{
 			if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
 			&& penList$regEva[[r]]$selCri[1,2] < penList$regEva[[index]]$selCri[1,2]){
-				indices <- array(r,dim=1);
+				indices <- array(r,dim=c(1,1));
 			}else{
 				if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
 				&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
 				&& penList$regEva[[r]]$selCri[2,1] > penList$regEva[[index]]$selCri[2,1]){
-					indices <- array(r,dim=1);
+					indices <- array(r,dim=c(1,1));
 				}else{
 					if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
 					&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
 					&& penList$regEva[[r]]$selCri[2,1] == penList$regEva[[index]]$selCri[2,1]
 					&& penList$regEva[[r]]$selCri[2,2] > penList$regEva[[index]]$selCri[2,2]){
-						indices <- array(r,dim=1);
+						indices <- array(r,dim=c(1,1));
 					}else{
 						if(penList$regEva[[r]]$selCri[1,1] == penList$regEva[[index]]$selCri[1,1]
 						&& penList$regEva[[r]]$selCri[1,2] == penList$regEva[[index]]$selCri[1,2]
@@ -54,7 +53,7 @@ return(indices);
 }
 
 ##
- # UPDATE LISTS ACCORDINGLY TO SELECTED REGIONS
+ # SELECT THE PROMISING REGION(S) FROM PENDING REGIONS
  ####################################################################
  # selection implies that the promising regions will be removed from the pending regions
  ####################################################################
@@ -62,9 +61,23 @@ select <- function(proList,penList)
 {
 	##### select promising regions
 	if (penList$itemNo<2){
-		selectedReg <- array(1,dim=1);
+		selectedReg <- array(1,dim=c(1,1));
 	}else{
 		selectedReg <- select_fct(penList);
+	}
+
+	##### my choice
+	if( dim(selectedReg)[1] < penList$itemNo){
+		## choose one pending region randomly within the non chosen
+		ranReg <- round(runif(1,min=1,max=penList$itemNo))
+		while(length(selectedReg[selectedReg==ranReg]) > 0){
+			ranReg <- round(runif(1,min=1,max=penList$itemNo))
+		}
+		# insert ranReg at the right place
+		selectedReg <- array(
+			c(selectedReg[selectedReg>ranReg],ranReg,selectedReg[selectedReg<ranReg]),
+			dim=c(dim(selectedReg)[1]+1,1)
+			);
 	}
 
 	##### add them to proList
@@ -74,8 +87,7 @@ select <- function(proList,penList)
 	}
 
 	##### remove them from penList
-	# should be sorted decreasing... if not
-	# selectedReg <- sort(selectedReg,decreasing=TRUE);
+	# should be sorted decreasing...
 	for (r in 1:dim(selectedReg)[1]){
 		penList$regEva <- penList$regEva[-selectedReg[r]];
 		penList$itemNo <- penList$itemNo -1;

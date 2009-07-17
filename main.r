@@ -102,10 +102,10 @@ repeat{
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
 		simTime <- Sys.time();
-		black <- simulateMathModel(mod,proList$regEva[[reg]],perNo,criNo);
+		temp <- simulateMathModel(mod,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
-		proList$regEva[[reg]] <- black$eva;
-		simNo <- simNo + black$simNo;
+		proList$regEva[[reg]] <- temp$eva;
+		simNo <- simNo + temp$simNo;
 	}
 
 	##### evaluate every of the promising regions (i.e. proList)
@@ -115,9 +115,9 @@ repeat{
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
-	if (seeItThrough=="g" || seeItThrough=="d"){
+	if (!is.null(seeItThrough)){	if (seeItThrough=="g" || seeItThrough=="d"){
 		besList <- update_bestList(proList,besList,evalMeth,criterion);
-	}
+	}}
 
 	##### MULTICRITERIA add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
