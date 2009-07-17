@@ -115,7 +115,9 @@ repeat{
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
-	besList <- update_bestList(proList,besList,evalMeth,criterion);
+	if (seeItThrough=="g" || seeItThrough=="d"){
+		besList <- update_bestList(proList,besList,evalMeth,criterion);
+	}
 
 	##### MULTICRITERIA add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
