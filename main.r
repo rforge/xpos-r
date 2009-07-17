@@ -16,6 +16,7 @@
 # > check ?file.path for windows path
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
+# > update multicriteria evaluation of unbList at the end
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
