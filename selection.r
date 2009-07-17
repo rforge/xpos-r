@@ -66,18 +66,26 @@ select <- function(proList,penList)
 		selectedReg <- select_fct(penList);
 	}
 
-	##### my choice
+	##### I want some randomness
+	# I started by randomely chosing the regEva number,
+	# but because they actually are piled FILO, using a uniform law does not mean picking uniformely
+	# I actually want to give more probability to pick a top region which has not been explored for a long long time
+	# for a try i actually pick (no randmness in here) the top one
+	## choose one pending region randomly within the non chosen
 	if( dim(selectedReg)[1] < penList$itemNo){
-		## choose one pending region randomly within the non chosen
-		ranReg <- round(runif(1,min=1,max=penList$itemNo))
+		ranReg <- 1;
 		while(length(selectedReg[selectedReg==ranReg]) > 0){
-			ranReg <- round(runif(1,min=1,max=penList$itemNo))
+			ranReg <- ranReg+1;
 		}
+#		ranReg <- round(runif(1,min=1,max=penList$itemNo));
+#		while(length(selectedReg[selectedReg==ranReg]) > 0){
+#			ranReg <- round(runif(1,min=1,max=penList$itemNo));
+#		}
 		# insert ranReg at the right place
 		selectedReg <- array(
 			c(selectedReg[selectedReg>ranReg],ranReg,selectedReg[selectedReg<ranReg]),
 			dim=c(dim(selectedReg)[1]+1,1)
-			);
+		);
 	}
 
 	##### add them to proList
