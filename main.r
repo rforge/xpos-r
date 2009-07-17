@@ -17,6 +17,8 @@
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
 # > update multicriteria evaluation of unbList at the end
+# > work on selCri
+# > randomely chosen promising region to sort out
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
@@ -28,20 +30,19 @@ xPos <- function(	mod,		## model to be simulated for evaluation
 			seed=NULL)	## if needed (integer)
 {
 
-## to add as inputs
-criS <- matrix(c(0,1,0,10),2);
-evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
-criterion <- 2; # for monocriterion evaluation
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
 checkInputs(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
 
+## to add as inputs
+evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
+criterion <- 2; # for monocriterion evaluation
 varNo <- dim(decS)[2];
 switch(mod,
-	criNo <- 2,
-	criNo <- 2,
-	criNo <- 2,
-	criNo <- 2
+	{criNo <- 2;criS <- matrix(c(0,1,0,10),2);},
+	{criNo <- 2;criS <- matrix(c(0,1,-0.5,2),2);},
+	{criNo <- 2;criS <- matrix(c(0,4,0,4),2);},
+	{criNo <- 2;criS <- matrix(c(0,4,0,4),2);}
 );
 
 ##### INTIALISATION #################################################
