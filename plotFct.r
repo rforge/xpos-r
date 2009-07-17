@@ -167,7 +167,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		if(unbList$item>0){watchDecSpace(unbList,"red");}
 		if(penList$item>0){watchDecSpace(penList,"blue");}
 		if(proList$item>0){watchDecSpace(proList,"gold");}
-		if(besList$item>0){watchDecSpace(besList,"green");}
+		#if(besList$item>0){watchDecSpace(besList,"green");}
 
 		## criteria space
 		dev.set(criDev);
