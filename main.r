@@ -168,7 +168,12 @@ repeat{
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 }
-# update unbreakable list evaluations
+# update unbreakable + last pending list evaluations
+if (penList$itemNo >0){
+	evaluate_penPLUSproList <- function(unbList,penList,evalMeth);
+}else{
+	evaluate_proList <- function(unbList,evalMeth,criterion);
+}
 
 ##### DEBUGGING OBSERVATIONS ########################################
 
