@@ -20,6 +20,7 @@
 # > work on selCri, worst than but also the best decision as secondary ?
 # > randomely chosen promising region to sort out
 # > show, store the last best regions
+# > select only half of the promising?
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
