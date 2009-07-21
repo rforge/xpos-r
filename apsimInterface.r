@@ -1,33 +1,53 @@
 ##
  # FILE apsimInterface.r
  # AUTHOR olivier crespo
- # DATE june 2009 - july 2009
+ # DATE june 2009 - july 2009, 21
  # read, extract, replace, create sim files
  # according to APSIM
  ####################################################################
 
 ##
- # newFile with newVar instead of oldVar in oldFile
+ # decision initialisation
  ####################################################################
-changeVar <- function(oldVar,newVar,oldFile,newFile)
-{	
-	tempFile <- readLines(oldFile,n=-1,warn=FALSE);
-	tempFile <- sub(oldVar, newVar, tempFile);
-	writeLines(tempFile,newFile,sep="\n");
-}
-
-##
- # list variable names to look for
- ####################################################################
-init_variables <- function(varNo)
+apsim_initDecisions <- function()
 {
-	variableList <- array("empty",dim=c(varNo,3));
+	decisionList <- list("itemNo"=0,"var_title"=NULL,"var_startDate"=NULL,"var_endDate"=NULL,"var_path2metFile"=NULL);
 
-	# var_id, name in .sim, component name="xxx" in .sim
-	variableList[1,1] <- "var_title";		variableList[1,2] <- "title";		variableList[1,3] <- "";
-	variableList[2,1] <- "var_startDate";	variableList[2,2] <- "start_date"; 	variableList[2,3] <- "clock";
-	variableList[3,1] <- "var_endDate";		variableList[3,2] <- "end_date"; 	variableList[3,3] <- "clock";
-	variableList[4,1] <- "var_path2metFile";	variableList[4,2] <- "filename"; 	variableList[4,3] <- "met";
+	## decision 1
+	title <- "decisionTest1";
+	startDate <- "1/1/1940";
+	endDate <- "1/1/1945";
+	path2metFile <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Simu\\\\Tindal.met";
 
-	return(variableList);
+	decisionList$itemNo <- decisionList$itemNo +1;
+	decisionList$var_title <- c(decisionList$var_title,title);
+	decisionList$var_startDate <- c(decisionList$var_startDate,startDate);
+	decisionList$var_endDate <- c(decisionList$var_endDate,endDate);
+	decisionList$var_path2metFile <- c(decisionList$var_path2metFile,path2metFile);
+
+	## decision 2	
+	title <- "decisionTest2";
+	startDate <- "1/1/1950";
+	endDate <- "1/1/1955";
+	path2metFile <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Simu\\\\KatherineAERO.met";
+
+	decisionList$itemNo <- decisionList$itemNo +1;
+	decisionList$var_title <- c(decisionList$var_title,title);
+	decisionList$var_startDate <- c(decisionList$var_startDate,startDate);
+	decisionList$var_endDate <- c(decisionList$var_endDate,endDate);
+	decisionList$var_path2metFile <- c(decisionList$var_path2metFile,path2metFile);
+
+	## decision 3
+	title <- "decisionTest3";
+	startDate <- "1/1/1960";
+	endDate <- "1/1/1965";
+	path2metFile <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Simu\\\\Berrimah.met";
+
+	decisionList$itemNo <- decisionList$itemNo +1;
+	decisionList$var_title <- c(decisionList$var_title,title);
+	decisionList$var_startDate <- c(decisionList$var_startDate,startDate);
+	decisionList$var_endDate <- c(decisionList$var_endDate,endDate);
+	decisionList$var_path2metFile <- c(decisionList$var_path2metFile,path2metFile);
+
+return(decisionList);
 }
