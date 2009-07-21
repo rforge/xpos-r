@@ -17,8 +17,9 @@
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
 # > update multicriteria evaluation of unbList at the end
-# > work on selCri
+# > work on selCri, worst than but also the best decision as secondary ?
 # > randomely chosen promising region to sort out
+# > show, store the last best regions
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
@@ -168,16 +169,22 @@ repeat{
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 }
-# update unbreakable + last pending list evaluations
-if (penList$itemNo >0){
-	evaluate_penPLUSproList <- function(unbList,penList,evalMeth);
-}else{
-	evaluate_proList <- function(unbList,evalMeth,criterion);
-}
-
 ##### DEBUGGING OBSERVATIONS ########################################
 
 ##### EXIT ##########################################################
+print("optimisation is done - final update in process");
+
+##### update unbreakable, then unb + last pending list evaluations
+evaluate_proList(unbList,evalMeth,criterion);
+if (penList$itemNo >0){	evaluate_penPLUSproList(unbList,penList,evalMeth);}
+
+##### current best (selection.r)
+# !! check that prolist$selCri before and after does not change
+if (!is.null(seeItThrough)){	if (seeItThrough=="g" || seeItThrough=="d"){
+	if (unbList$itemNo >0){ besList <- update_bestList(unbList,besList,evalMeth,criterion);}
+	if (penList$itemNo >0){	besList <- update_bestList(penList,besList,evalMeth,criterion);}
+}}
+
 resolutionTime <- difftime(Sys.time(),startingTime);
 stoppedBecauseOf <- "empty pending list";
 if(Sys.time()>=endingTime){stoppedBecauseOf <- "time over";}
