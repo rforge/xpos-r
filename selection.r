@@ -73,14 +73,15 @@ select <- function(proList,penList)
 	# for a try i actually pick (no randmness in here) the top one
 	## choose one pending region randomly within the non chosen
 	if( dim(selectedReg)[1] < penList$itemNo){
-		ranReg <- 1;
-		while(length(selectedReg[selectedReg==ranReg]) > 0){
-			ranReg <- ranReg+1;
-		}
-#		ranReg <- round(runif(1,min=1,max=penList$itemNo));
+#		ranReg <- 1;
 #		while(length(selectedReg[selectedReg==ranReg]) > 0){
-#			ranReg <- round(runif(1,min=1,max=penList$itemNo));
+#			ranReg <- ranReg+1;
 #		}
+		ranReg <- ceiling(rexp(1,(5/penList$itemNo)));
+		while(length(selectedReg[selectedReg==ranReg]) > 0){
+			ranReg <- ceiling(rexp(1,(5/penList$itemNo)));
+		}
+print(paste(ranReg," / ",penList$itemNo,sep=""));
 		# insert ranReg at the right place
 		selectedReg <- array(
 			c(selectedReg[selectedReg>ranReg],ranReg,selectedReg[selectedReg<ranReg]),
