@@ -77,11 +77,10 @@ select <- function(proList,penList)
 #		while(length(selectedReg[selectedReg==ranReg]) > 0){
 #			ranReg <- ranReg+1;
 #		}
-		ranReg <- ceiling(rexp(1,(5/penList$itemNo)));
-		while(length(selectedReg[selectedReg==ranReg]) > 0){
-			ranReg <- ceiling(rexp(1,(5/penList$itemNo)));
+		repeat{
+				ranReg <- ceiling(rexp(1,(10/penList$itemNo)));
+				if(ranReg <= penList$itemNo && length(selectedReg[selectedReg==ranReg]) == 0)	break;
 		}
-print(paste(ranReg," / ",penList$itemNo,sep=""));
 		# insert ranReg at the right place
 		selectedReg <- array(
 			c(selectedReg[selectedReg>ranReg],ranReg,selectedReg[selectedReg<ranReg]),
