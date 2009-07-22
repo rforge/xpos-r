@@ -11,9 +11,9 @@
  # if two even candidates
  # selCri[2,]: maximize col1, if two even maximize col2
  ####################################################################
-select_fct <- function(penList)
+select_minminmaxmax <- function(penList)
 {
-	#this fct is not called if penList == 1
+	# this fct is not called if penList == 1
 	# countdown to avoid to sort it when removing the promising region from the pending List
 	indices <- array(penList$itemNo,dim=c(1,1));
 
@@ -63,7 +63,7 @@ select <- function(proList,penList)
 	if (penList$itemNo<2){
 		selectedReg <- array(1,dim=c(1,1));
 	}else{
-		selectedReg <- select_fct(penList);
+		selectedReg <- select_minminmaxmax(penList);
 	}
 
 	##### I want some randomness
