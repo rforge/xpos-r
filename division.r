@@ -51,7 +51,7 @@ return(twinRegDef);
 }
 
 ##
- # SELECTION BASED ON 2x2 mulDom
+ # DIVISION INTO 2 PARTS
  ####################################################################
 divide_List <- function(proList)
 {
