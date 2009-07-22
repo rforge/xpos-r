@@ -21,6 +21,7 @@
 # > randomely chosen promising region to sort out
 # > show, store the last best regions
 # > select only half of the promising?
+# > cut into 3...
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
