@@ -22,6 +22,7 @@
 # > show, store the last best regions
 # > select only half of the promising?
 # > cut into 3...
+# > sel with worstTha and the best decision, actually select a region with the less rank 1
 
 xPos <- function(	mod,		## model to be simulated for evaluation
 			decS,		## decision space definition		
