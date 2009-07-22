@@ -70,13 +70,14 @@ select <- function(proList,penList)
 	# I started by randomely chosing the regEva number,
 	# but because they actually are piled FILO, using a uniform law does not mean picking uniformely
 	# I actually want to give more probability to pick a top region which has not been explored for a long long time
-	# for a try i actually pick (no randmness in here) the top one
 	## choose one pending region randomly within the non chosen
 	if( dim(selectedReg)[1] < penList$itemNo){
+# pick the pile top one
 #		ranReg <- 1;
 #		while(length(selectedReg[selectedReg==ranReg]) > 0){
 #			ranReg <- ranReg+1;
 #		}
+# pick exp randomely (high proba on the top of the pile)
 		repeat{
 				ranReg <- ceiling(rexp(1,(10/penList$itemNo)));
 				if(ranReg <= penList$itemNo && length(selectedReg[selectedReg==ranReg]) == 0)	break;
