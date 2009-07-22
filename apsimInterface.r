@@ -80,3 +80,31 @@ apsim_simulate <- function(decisionList)
 	}
 	setwd(path2Origin);
 }
+
+##
+ # read outputs from .out file
+ ####################################################################
+apsim_readOutputs <- function(fileName)
+{
+	col_year <- 4;
+	col_munYield <- 5;
+	col_sorYield <- 6;
+
+	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",")[,1:col_sorYield];
+	
+	lin_temp <- 1; lin_res <- 1;
+	response <- array(c(temp[lin_temp,col_year],0,temp[lin_temp,col_sorYield]),dim=c(1,3));
+	lin_temp <- lin_temp +1;
+	response[lin_res,2] <- temp[lin_temp,col_munYield];
+	repeat{
+		lin_temp <- lin_temp +1;
+		lin_res <- lin_res +1;
+		if (lin_temp>dim(temp)[1]) break;
+
+		response <- rbind(response,array(c(temp[lin_temp,col_year],0,temp[lin_temp,col_sorYield]),dim=c(1,3)));
+		lin_temp <- lin_temp +1;
+		response[lin_res,2] <- temp[lin_temp,col_munYield];
+	}
+	
+return(response);	
+}

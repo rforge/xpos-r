@@ -21,15 +21,15 @@ source("rwfileOp.r");
 path2Origin <- getwd();
 
 ## set decisions manually in apsim_init.r
-#decisionList <- apsim_initDecisions();
+decisionList <- apsim_initDecisions();
 
-## change varaibles in .sim
+## change variables in .sim
 #apsim_changeVar(decisionList)
 
 ## run simulation for all .sim files
 #apsim_simulate(decisionList)
 
-##
- # read outputs
- ####################################################################
-
+## read outputs from .out files
+for (dec in 1:decisionList$itemNo){
+	print(apsim_readOutputs(decisionList$var_title[dec]));
+}
