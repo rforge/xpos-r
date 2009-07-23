@@ -152,19 +152,15 @@ select <- function(proList,penList,selMeth)
 		selectedReg <- select_min(penList,1,1);
 		switch(selMeth,
 			## min selCri[1,1]
-			{	# nothing more
-			},
-			## 1 out of 2
-			{	selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
-			},
-			## no more than 10 no of the selectedReg list
-			{
-				if(length(selectedReg)>10){
-					selectedReg <- array(selectedReg[(length(selectedReg)-9):length(selectedReg),1],dim=c(10,1));
-				}
-			},
+			{},
 			## min selCri[1,1] + min selCri[2,1]
-			{	selectedReg2 <- select_minPos(penList,2,1);
+			{	#if(length(selectedReg)>9){
+				#	selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
+				#}
+				selectedReg2 <- select_minPos(penList,2,1);
+				#if(length(selectedReg2)>9){
+				#	selectedReg2 <- array(selectedReg2[row(selectedReg2)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg2)/2),1));
+				#}
 				for (r in 1:length(selectedReg2)){
 					if(length(selectedReg[selectedReg==selectedReg2[r]])==0){
 						selectedReg <- array(
@@ -173,7 +169,19 @@ select <- function(proList,penList,selMeth)
 						);
 					}
 				}
-			}
+			},
+			## 1 out of 2
+			{	if(length(selectedReg)>9){
+					selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
+				}
+			},
+			## no more than 10 no of the selectedReg list
+			{
+				if(length(selectedReg)>10){
+					selectedReg <- array(selectedReg[(length(selectedReg)-9):length(selectedReg),1],dim=c(10,1));
+				}
+			},
+			{}
 		);			
 	}
 
