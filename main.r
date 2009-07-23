@@ -145,7 +145,7 @@ repeat{
 	) {break;}
 
 	##### select equally potentially optimal regions (proList)
-	temp <- select(proList,penList);
+	temp <- select(proList,penList,2);
 	proList <- temp$pro;
 	penList <- temp$pen;
 
