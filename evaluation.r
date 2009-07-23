@@ -345,6 +345,15 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 		return(uneList);
 	}
 
+###############
+# SELCRI format
+#  -----------
+# | min |     |
+# |-----------|
+# | max |     |
+#  -----------
+###############
+
 	# either do not exist or has to be reevaluated here
 	for (reg in 1:uneList$itemNo){
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
@@ -388,7 +397,6 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 				}}
 				## inter region
 				uneList$regEva[[reg]]$selCri[2,1] <- groupDomi_regIntern(uneList$regEva[[reg]]);
-print(uneList$regEva[[reg]]$selCri[2,1]);
 			}
 		);
 	}
