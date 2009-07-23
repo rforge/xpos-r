@@ -154,6 +154,15 @@ select <- function(proList,penList,selMeth)
 			## min selCri[1,1]
 			{	# nothing more
 			},
+			## 1 out of 2
+			{	selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
+			},
+			## no more than 10 no of the selectedReg list
+			{
+				if(length(selectedReg)>10){
+					selectedReg <- array(selectedReg[(length(selectedReg)-9):length(selectedReg),1],dim=c(10,1));
+				}
+			},
 			## min selCri[1,1] + min selCri[2,1]
 			{	selectedReg2 <- select_minPos(penList,2,1);
 				for (r in 1:length(selectedReg2)){
