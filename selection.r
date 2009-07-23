@@ -11,7 +11,7 @@
  # if two even candidates
  # selCri[2,]: maximize col1, if two even maximize col2
  ####################################################################
-select_minminmaxmax <- function(penList)
+select_minTHminTHmaxTHmax <- function(penList)
 {
 	# this fct is not called if penList == 1
 	# countdown to avoid to sort it when removing the promising region from the pending List
@@ -53,17 +53,119 @@ return(indices);
 }
 
 ##
+ # SELECTION PROCESS BASED ON 2x2 selCri
+ ####################################################################
+ # min of selCri[lin,col]
+ ####################################################################
+select_min <- function(penList,lin,col)
+{
+	# this fct is not called if penList == 1
+	# countdown to avoid to sort it when removing the promising region from the pending List
+	indices <- array(penList$itemNo,dim=c(1,1));
+
+	for (r in seq(penList$itemNo-1,1,-1)){
+		index <- indices[1,1];
+		if(penList$regEva[[r]]$selCri[lin,col] < penList$regEva[[index]]$selCri[lin,col]){
+			indices <- array(r,dim=c(1,1));
+		}else{
+			if(penList$regEva[[r]]$selCri[lin,col] == penList$regEva[[index]]$selCri[lin,col]){
+				indices <- rbind(indices,r);
+			}
+		}
+	}
+
+return(indices);
+}
+
+##
+ # SELECTION PROCESS BASED ON 2x2 selCri
+ ####################################################################
+ # min strict positif (>0) of selCri[lin,col]
+ ####################################################################
+select_minPos <- function(penList,lin,col)
+{
+	# this fct is not called if penList == 1
+	# countdown to avoid to sort it when removing the promising region from the pending List
+
+	# find a non zero initialisation
+	rank <- penList$itemNo;
+	repeat{
+		indices <- array(rank,dim=c(1,1));
+		
+		rank <- rank -1;
+		if(indices[1,1]>0 || rank<1)	break;
+	}
+	
+	if(rank>1){
+	for (r in seq(rank,1,-1)){
+		index <- indices[1,1];
+		if(penList$regEva[[r]]$selCri[lin,col] > 0
+		&& penList$regEva[[r]]$selCri[lin,col] < penList$regEva[[index]]$selCri[lin,col]){
+			indices <- array(r,dim=c(1,1));
+		}else{
+			if(penList$regEva[[r]]$selCri[lin,col] > 0
+			&& penList$regEva[[r]]$selCri[lin,col] == penList$regEva[[index]]$selCri[lin,col]){
+				indices <- rbind(indices,r);
+			}
+		}
+	}}
+
+return(indices);
+}
+
+##
+ # SELECTION PROCESS BASED ON 2x2 selCri
+ ####################################################################
+ # max of selCri[lin,col]
+ ####################################################################
+select_max <- function(penList,lin,col)
+{
+	# this fct is not called if penList == 1
+	# countdown to avoid to sort it when removing the promising region from the pending List
+	indices <- array(penList$itemNo,dim=c(1,1));
+
+	for (r in seq(penList$itemNo-1,1,-1)){
+		index <- indices[1,1];
+		if(penList$regEva[[r]]$selCri[lin,col] > penList$regEva[[index]]$selCri[lin,col]){
+			indices <- array(r,dim=c(1,1));
+		}else{
+			if(penList$regEva[[r]]$selCri[lin,col] == penList$regEva[[index]]$selCri[lin,col]){
+				indices <- rbind(indices,r);
+			}
+		}
+	}
+
+return(indices);
+}
+
+##
  # SELECT THE PROMISING REGION(S) FROM PENDING REGIONS
  ####################################################################
  # selection implies that the promising regions will be removed from the pending regions
  ####################################################################
-select <- function(proList,penList)
+select <- function(proList,penList,selMeth)
 {
 	##### select promising regions
 	if (penList$itemNo<2){
 		selectedReg <- array(1,dim=c(1,1));
 	}else{
-		selectedReg <- select_minminmaxmax(penList);
+		selectedReg <- select_min(penList,1,1);
+		switch(selMeth,
+			## min selCri[1,1]
+			{	# nothing more
+			},
+			## min selCri[1,1] + min selCri[2,1]
+			{	selectedReg2 <- select_minPos(penList,2,1);
+				for (r in 1:length(selectedReg2)){
+					if(length(selectedReg[selectedReg==selectedReg2[r]])==0){
+						selectedReg <- array(
+							c(selectedReg[selectedReg>selectedReg2[r]],selectedReg2[r],selectedReg[selectedReg<selectedReg2[r]]),
+							dim=c(dim(selectedReg)[1]+1,1)
+						);
+					}
+				}
+			}
+		);			
 	}
 
 	##### I want some randomness
@@ -72,7 +174,7 @@ select <- function(proList,penList)
 	# I actually want to give more probability to pick a top region which has not been explored for a long long time
 	## choose one pending region randomly within the non chosen
 	if( dim(selectedReg)[1] < penList$itemNo){
-# pick the pile top one
+# pick the top one
 #		ranReg <- 1;
 #		while(length(selectedReg[selectedReg==ranReg]) > 0){
 #			ranReg <- ranReg+1;
