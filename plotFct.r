@@ -262,7 +262,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		if(unbList$item>0){watchCriSpace(unbList,".","red");}
 		if(penList$item>0){watchCriSpace(penList,".","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
-		if(besList$item>0){watchCriSpace(besList,"o","red");}
+		if(besList$item>0){watchCriSpace(besList,"o","green");}
 	}
 
 	if (seeItThrough=="d"){
