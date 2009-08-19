@@ -25,6 +25,7 @@
 # > sel with worstTha and the best decision, actually select a region with the less rank 1
 
 xPos <- function(	mod,		## model to be simulated for evaluation
+			partNo,	## No of divided parts per region {2,3}
 			decS,		## decision space definition		
 			decNo,	## decision number per region
 			perNo,	## perturbation param number
@@ -36,7 +37,7 @@ xPos <- function(	mod,		## model to be simulated for evaluation
 
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
-checkInputs(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
+checkInputs(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
 
 ## to add as inputs
 evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
@@ -100,7 +101,7 @@ if (!is.null(seeItThrough)){
 }
 repeat{
 	##### divide every of the promising regions (i.e. proList)
-	proList <- divide_List(proList);
+	proList <- divide_List(proList,partNo);
 
 	##### sample every of the promising regions (i.e. proList)
 	proList <- sample_List(proList,decNo,varNo,perNo,criNo);

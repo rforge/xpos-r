@@ -25,6 +25,21 @@ return(valid);
 }
 
 ##
+ # partNo validation
+ ####################################################################
+is.partNoValid <- function(partNo)
+{
+	valid <- FALSE;
+	switch(partNo,
+		{},			# 1: no use
+		valid <- TRUE,	# into 2
+		valid <- TRUE,	# into 3
+		{}			# nothing else exists yet
+	);
+return(valid);
+}
+
+##
  # DECISION SPACE BASICS VALIDITY
  ####################################################################
  # decision space is expected to be a 2 dimensional matrix
@@ -53,7 +68,7 @@ return(valid);
 ##
  # CHECK INPUT PARAMETERS VALIDITY
  ####################################################################
-checkInputs <- function(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL)
+checkInputs <- function(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL)
 {
 	stopProcess <- FALSE;
 
@@ -61,6 +76,9 @@ checkInputs <- function(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",
 
 	# model used for simulation
 	if (!is.modelValid(mod)) {stopProcess <- 1;}
+
+	# partNo used for division
+	if (!is.partNoValid(partNo)) {stopProcess <- 7;}
 
 	# decision speca definition
 	if (!is.decSpaceValid(decS)) {stopProcess <- 2;}
@@ -95,6 +113,7 @@ checkInputs <- function(mod,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",
 			print("perNo (perturbation parameter number): integer > 0"),
 			print("simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)"),
 			print("timLimit (time limit in sec): interger > 0"),
+			print("division partNo is either 2 or 3")
 		);
 		print(	"##########################################",quote=FALSE);
 		stop();	

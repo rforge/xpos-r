@@ -30,7 +30,7 @@ return(largest);
  ####################################################################
  # cut following a normal distribution in between min and max of parameter 'var'
  ####################################################################
-cutDecSpace  <- function(regDef,var)
+cutDecSpaceInto2  <- function(regDef,var)
 {
 	twinRegDef=list("left"=regDef,"right"=regDef);
 	
@@ -51,9 +51,28 @@ return(twinRegDef);
 }
 
 ##
- # DIVISION INTO 2 PARTS
+ # CUT ONE DECISION SPACE INTO 3 PARTS ALONG PARAMETER 'VAR'
  ####################################################################
-divide_List <- function(proList)
+ # cut by thirds
+ ####################################################################
+cutDecSpaceInto3  <- function(regDef,var)
+{
+	twinRegDef=list("left"=regDef,"right"=regDef,"center"=regDef);
+	
+	oneThird <- regDef[1,var]+(regDef[2,var]-regDef[1,var])*1/3;
+	twoThird <- regDef[1,var]+(regDef[2,var]-regDef[1,var])*2/3;
+	twinRegDef$left[2,var] <- oneThird;
+	twinRegDef$right[1,var] <- twoThird;
+	twinRegDef$center[1,var] <- oneThird;
+	twinRegDef$center[2,var] <- twoThird;
+
+return(twinRegDef);
+}
+
+##
+ # DIVISION INTO partNo PARTS
+ ####################################################################
+divide_List <- function(proList,partNo)
 {
 	offList <- list("itemNo"=0,"regEva"=NULL);
 
@@ -61,34 +80,66 @@ divide_List <- function(proList)
 		# select the largest side
 		var <- largestDecVar(proList$regEva[[reg]]$regDef);
 	
-		# cut region definition into 2 parts
-		twinRegDef <- cutDecSpace(proList$regEva[[reg]]$regDef,var);
+		# cut region definition
+		switch(partNo,
+			# 1
+			{},
+			# into 2 parts
+			{twinRegDef <- cutDecSpaceInto2(proList$regEva[[reg]]$regDef,var);},
+			# into 3 parts
+			{twinRegDef <- cutDecSpaceInto3(proList$regEva[[reg]]$regDef,var);}
+		);
 
-		# create the 2 new empty regions
+		# create the new empty regions
 		regLeft <- create_emptyRegEva();
 		regLeft$regDef <- twinRegDef$left;
 		regRight <- create_emptyRegEva();
 		regRight$regDef <- twinRegDef$right;
+		if (partNo==3){
+			regCenter <- create_emptyRegEva();
+			regCenter$regDef <- twinRegDef$center;
+		}
 
 		# allocate previous decision samples
-		# if one right on the frontier, it belongs to none of them (others will be simulated during evaluation)
+		# if one is right on the frontier, it belongs to none of them (others will be simulated during evaluation)
 		if (proList$regEva[[reg]]$itemNo > 0){
-		for (d in 1:proList$regEva[[reg]]$itemNo){
-			if(proList$regEva[[reg]]$decDef[[d]][var] < regLeft$regDef[2,var]){
-				regLeft$decDef <- c(regLeft$decDef,list(proList$regEva[[reg]]$decDef[[d]]));
-				regLeft$decEva <- c(regLeft$decEva,list(proList$regEva[[reg]]$decEva[[d]]));
-				regLeft$itemNo <- regLeft$itemNo +1;
+			for (d in 1:proList$regEva[[reg]]$itemNo){
+				if(proList$regEva[[reg]]$decDef[[d]][var] < regLeft$regDef[2,var]){
+					regLeft$decDef <- c(regLeft$decDef,list(proList$regEva[[reg]]$decDef[[d]]));
+					regLeft$decEva <- c(regLeft$decEva,list(proList$regEva[[reg]]$decEva[[d]]));
+					regLeft$itemNo <- regLeft$itemNo +1;
+				}
+				if(proList$regEva[[reg]]$decDef[[d]][var] > regRight$regDef[1,var]){
+					regRight$decDef <- c(regRight$decDef,list(proList$regEva[[reg]]$decDef[[d]]));
+					regRight$decEva <- c(regRight$decEva,list(proList$regEva[[reg]]$decEva[[d]]));
+					regRight$itemNo <- regRight$itemNo +1;
+				}
 			}
-			if(proList$regEva[[reg]]$decDef[[d]][var] > regRight$regDef[1,var]){
-				regRight$decDef <- c(regRight$decDef,list(proList$regEva[[reg]]$decDef[[d]]));
-				regRight$decEva <- c(regRight$decEva,list(proList$regEva[[reg]]$decEva[[d]]));
-				regRight$itemNo <- regRight$itemNo +1;
+			if (partNo==3){
+				for (d in 1:proList$regEva[[reg]]$itemNo){
+					if(proList$regEva[[reg]]$decDef[[d]][var] < regCenter$regDef[2,var]
+					&& proList$regEva[[reg]]$decDef[[d]][var] > regCenter$regDef[1,var]){
+						regCenter$decDef <- c(regCenter$decDef,list(proList$regEva[[reg]]$decDef[[d]]));
+						regCenter$decEva <- c(regCenter$decEva,list(proList$regEva[[reg]]$decEva[[d]]));
+						regCenter$itemNo <- regCenter$itemNo +1;
+					}
+				}
 			}
-		}}
+		}
 		
 		# add them to offList (breakable test will caome after evaluation)
-		offList$itemNo <- offList$itemNo +2;
-		offList$regEva <- c(offList$regEva,list(regLeft,regRight));
+		switch(partNo,
+			# 1
+			{},
+			# into 2 parts
+			{	offList$itemNo <- offList$itemNo +2;
+				offList$regEva <- c(offList$regEva,list(regLeft,regRight));
+			},
+			# into 3 parts
+			{	offList$itemNo <- offList$itemNo +3;
+				offList$regEva <- c(offList$regEva,list(regLeft,regCenter,regRight));
+			}
+		);
 	}
 
 rm(proList);
