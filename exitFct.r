@@ -68,7 +68,7 @@ return(valid);
 ##
  # CHECK INPUT PARAMETERS VALIDITY
  ####################################################################
-checkInputs <- function(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL)
+checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL)
 {
 	stopProcess <- FALSE;
 
@@ -78,10 +78,7 @@ checkInputs <- function(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrou
 	if (!is.modelValid(mod)) {stopProcess <- 1;}
 
 	# partNo used for division
-	if (!is.partNoValid(partNo)) {stopProcess <- 7;}
-
-	# decision speca definition
-	if (!is.decSpaceValid(decS)) {stopProcess <- 2;}
+	if (!is.partNoValid(partNo)) {stopProcess <- 2;}
 
 	# decision number per region
 	if (decNo<1) {stopProcess <- 3;}
@@ -108,12 +105,11 @@ checkInputs <- function(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrou
 		print(args(xPos),quote=FALSE);
 		switch(stopProcess,
 			print("mod (simulation model): interger from 1 to 4"),
-			print("decS (decisions space definition): matrix collecting min, max, step (lin) for each decisions (col)"),
+			print("division partNo is either 2 or 3"),
 			print("decNo (decision number per evaluated region): integer > 0"),
 			print("perNo (perturbation parameter number): integer > 0"),
 			print("simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)"),
-			print("timLimit (time limit in sec): interger > 0"),
-			print("division partNo is either 2 or 3")
+			print("timLimit (time limit in sec): interger > 0")
 		);
 		print(	"##########################################",quote=FALSE);
 		stop();	
