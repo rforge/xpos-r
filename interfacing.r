@@ -5,31 +5,33 @@
  ####################################################################
 
 ##
- # hand set
- ####################################################################
-path2Templates <- "../Templates/";
-path2Outputs <- "../Outputs/";
-simTemplate <- "jody-SorgMungCLAY-template.sim"
-varNo <- 4; decNo <- 3;
-
-##
  # initializations
  ####################################################################
-print("initialisation");
 source("apsimInterface.r");
 source("rwfileOp.r");
-path2Origin <- getwd();
+decNo <- 2;
 
-## set decisions manually in apsim_init.r
-decisionList <- apsim_initDecisions();
+## set decisions manually in apsim_interface.r
+decSpe <- apsim_init(decNo);
+decS <- decSpe$decS;
+decNam <- decSpe$decNam;
+path2Outputs <- decSpe$path2out;
 
-## change variables in .sim
-#apsim_changeVar(decisionList)
+## change decision variables in .sim
+file.copy(paste(path2Outputs,"initFile.sim",sep=""),paste(path2Outputs,"noYearFile.sim",sep=""),overwrite=TRUE);
+changeVar(	decNam[1,1],	decS[2,1],	paste(path2Outputs,"noYearFile.sim",sep=""),paste(path2Outputs,"noYearFile.sim",sep=""));
+changeVar(	decNam[1,2],	decS[2,2],	paste(path2Outputs,"noYearFile.sim",sep=""),paste(path2Outputs,"noYearFile.sim",sep=""));
+
+## change pertubation variables in .sim
+# startYear and endYear define the length of the time period simulated (has to be included in the met file)
+file.copy(paste(path2Outputs,"noYearFile.sim",sep=""),paste(path2Outputs,"fileToSimulate.sim",sep=""),overwrite=TRUE);
+changeVar(	"var_startYear",		"1998",	paste(path2Outputs,"fileToSimulate.sim",sep=""),paste(path2Outputs,"fileToSimulate.sim",sep=""));
+changeVar(	"var_endYear",		"2003",	paste(path2Outputs,"fileToSimulate.sim",sep=""),paste(path2Outputs,"fileToSimulate.sim",sep=""));
 
 ## run simulation for all .sim files
-#apsim_simulate(decisionList)
+apsim_simulate(path2Outputs,"fileToSimulate");
 
 ## read outputs from .out files
-for (dec in 1:decisionList$itemNo){
-	print(apsim_readOutputs(decisionList$var_title[dec]));
-}
+# take out only the last year results
+temp <- apsim_readOutputs(path2Outputs,"simulation");
+out <- temp[dim(temp)[1],];
