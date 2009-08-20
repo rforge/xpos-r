@@ -9,10 +9,9 @@
  ####################################################################
 source("apsimInterface.r");
 source("rwfileOp.r");
-decNo <- 2;
 
 ## set decisions manually in apsim_interface.r
-decSpe <- apsim_init(decNo);
+decSpe <- apsim_init();
 decS <- decSpe$decS;
 decNam <- decSpe$decNam;
 path2Outputs <- decSpe$path2out;
