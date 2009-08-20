@@ -30,13 +30,13 @@ return(largest);
  ####################################################################
  # cut following a normal distribution in between min and max of parameter 'var'
  ####################################################################
-cutDecSpaceInto2  <- function(regDef,var)
+cutDecSpaceInto2  <- function(regDef,var,meth)
 {
 	twinRegDef=list("left"=regDef,"right"=regDef);
+
+	pivot <- 0.5;	# cut in the middle
 	
-	if( (regDef[2,var]-regDef[1,var])<= 2*regDef[3,var] ){
-			pivot <- 0.5;	# if width is not greater than twice the minimal step, cut in the middle
-	}else{
+	if( (regDef[2,var]-regDef[1,var])> 2*regDef[3,var] && meth==2){
 		pivot <- rnorm(1,mean=0.5,sd=0.1);
 		# check borders
 		if(pivot < regDef[3,var]/(regDef[2,var]-regDef[1,var])){	pivot <- regDef[3,var]/(regDef[2,var]-regDef[1,var]);}
@@ -85,7 +85,8 @@ divide_List <- function(proList,partNo)
 			# 1
 			{},
 			# into 2 parts
-			{twinRegDef <- cutDecSpaceInto2(proList$regEva[[reg]]$regDef,var);},
+			# meth = 1 to cut in the middle, 2 to cut following  a normal distribution
+			{twinRegDef <- cutDecSpaceInto2(proList$regEva[[reg]]$regDef,var,1);},
 			# into 3 parts
 			{twinRegDef <- cutDecSpaceInto3(proList$regEva[[reg]]$regDef,var);}
 		);
