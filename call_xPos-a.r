@@ -7,9 +7,5 @@
 
 source('main.r');
 
-# decision space
-decS <- matrix(c(0,1,0.1,0,1,0.1),3);
-
-
 ## CALL EXAMPLE
-## xPos(1,decS,50,10,10000,10,"y")
+xPos(1,2,2,1,10000,10,"d")
