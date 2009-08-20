@@ -24,9 +24,8 @@
 # > cut into 3...
 # > sel with worstTha and the best decision, actually select a region with the less rank 1
 
-xPos <- function(	mod,		## model to be simulated for evaluation
+xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
 			partNo,	## No of divided parts per region {2,3}
-			decS,		## decision space definition		
 			decNo,	## decision number per region
 			perNo,	## perturbation param number
 			simLimit,	## simulation number limit
@@ -37,11 +36,11 @@ xPos <- function(	mod,		## model to be simulated for evaluation
 
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
-checkInputs(mod,partNo,decS,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
+checkInputs(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
 
 ## to add as inputs
 evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
-criterion <- 2; # for monocriterion evaluation
+criterion <- 1; # for monocriterion evaluation
 varNo <- dim(decS)[2];
 switch(mod,
 	{criNo <- 2;criS <- matrix(c(0,1,0,10),2);},
@@ -60,12 +59,38 @@ source("division.r");
 source("plotFct.r");
 source("sample.r");
 source("evaluation.r");
-# for model simulation
-source("apsimInterface.r");
 
 ##### random seed
 if(is.null(seed)){	runif(1);
 }else{			set.seed(seed);
+}
+
+##### initialize models
+switch(mod,
+	{	# Deb functions 1
+		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	},{	# Deb functions 2
+		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	},{	# Deb functions 3
+		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	},{	# Deb functions 4
+		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	},{},{},{},{},{},
+	{	# apsim
+		source("apsimInterface.r");source("rwfileOp.r");
+		decSpe <- apsim_init();
+		decS <- decSpe$decS;
+		decNam <- decSpe$decNam;
+		path2apsimOutputs <- decSpe$path2out;
+	}
+);
+
+# decision space vlidity check
+if (!is.decSpaceValid(decS)) {
+	print(	"##########################################",quote=FALSE);
+	print("decS (decisions space definition): matrix collecting min, max, step (lin) for each decisions (col)");
+	print(	"##########################################",quote=FALSE);
+	stop();
 }
 
 ##### MAIN LOOP #####################################################
