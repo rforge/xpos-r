@@ -15,8 +15,9 @@
  # INITIALISING APSIM CROP MODEL
  # this could be done by reading an input file or asking the user
  ####################################################################
-apsim_init <- function(decNo)
+apsim_init <- function()
 {
+	varNo <- 2;
 	path2Templates <- "../Templates/";
 	path2Outputs <- "../Outputs/";
 	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
@@ -52,7 +53,7 @@ apsim_init <- function(decNo)
 	# irrigation module
 	decNam <- array(c(	"var_frASW",	
 					"var_irrEff"
-		),dim=c(1,decNo));
+		),dim=c(1,varNo));
 
 	####### decision space definition
 	decS <- matrix(c(	0.5,	1,	0.1,	# min, max, minimal step of dec 1
@@ -60,7 +61,7 @@ apsim_init <- function(decNo)
 			),3);
 	
 	####### check coherenc
-	if(dim(decS)[2]!=decNo){
+	if(dim(decS)[2]!=varNo){
 		print("",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
 		print(	"# incoherence in between the procedure and APSIM initialisation",quote=FALSE);
