@@ -1,7 +1,7 @@
 ##
- # FILE simulate.r
+ # FILE simulateDebFct.r
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 6
+ # https://r-forge.r-project.org/projects/xpos-r/
  # simulation interface of models
  ####################################################################
  # > REFERENCES
@@ -101,12 +101,12 @@ return(final);
  # do not bring in here stopping criteria or current best known, etc...
  # let us say for now that if you start evaluating, you go through the whole process
  ####################################################################
-simulateMathModel <- function(mod,regEva,perNo,criNo)
+simulateModel <- function(mod,regEva,perNo,criNo)
 {
 	simNo <- 0;
 	
 	## criNo has to be 2
-	if (criNo!=2) {stop("criNo unvalid for mathModel simulation (see simulate.r)");}
+	if ((mod==1 || mod==2 || mod==3 || mod==4) && criNo!=2) {stop("criNo unvalid for mathModel simulation (see simulate.r)");}
 
 	## only to ease comprehension
 	decNo <- regEva$itemNo;
@@ -114,7 +114,7 @@ simulateMathModel <- function(mod,regEva,perNo,criNo)
 
 	staSimAtDec <- 1;
 	if(!is.null(regEva$decEva)){						# first evaluation of the regionwhile(
-		while (!is.na(regEva$decEva[[staSimAtDec]][1,1])){	 	# do not resimulate
+		while (!is.na(regEva$decEva[[staSimAtDec]][1,1])){	# do not resimulate
 			staSimAtDec <- staSimAtDec+1;
 			if(staSimAtDec>decNo){					# break if reach the end
 				break;
@@ -126,7 +126,7 @@ simulateMathModel <- function(mod,regEva,perNo,criNo)
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
 			# new 'per' sequence everytime
-			per <- runif(perNo);
+			per <- array(0,dim=perNo);	# runif(perNo);
 			temp <- create_naDecEva(perNo,criNo);
 		
 			for (p in 1:perNo){
