@@ -38,15 +38,22 @@ xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functi
 source("exitFct.r");
 checkInputs(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
 
-## to add as inputs
+## to add as inputs (and thus to check above !!)
 evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
 criterion <- 1; # for monocriterion evaluation
-varNo <- dim(decS)[2];
 switch(mod,
-	{criNo <- 2;criS <- matrix(c(0,1,0,10),2);},
-	{criNo <- 2;criS <- matrix(c(0,1,-0.5,2),2);},
-	{criNo <- 2;criS <- matrix(c(0,4,0,4),2);},
-	{criNo <- 2;criS <- matrix(c(0,4,0,4),2);}
+	{	# Deb functions 1
+		criNo <- 2;criS <- matrix(c(0,1,0,10),2);
+	},{	# Deb functions 2
+		criNo <- 2;criS <- matrix(c(0,1,-0.5,2),2);
+	},{	# Deb functions 3
+		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
+	},{	# Deb functions 4
+		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
+	},{},{},{},{},{},
+	{	# apsim
+		criNo <- 2;criS <- matrix(c(0,12000,0,12000),2);
+	}
 );
 
 ##### INTIALISATION #################################################
@@ -82,16 +89,20 @@ switch(mod,
 		decS <- decSpe$decS;
 		decNam <- decSpe$decNam;
 		path2apsimOutputs <- decSpe$path2out;
-	}
+print(decNam);
+		}
 );
 
-# decision space vlidity check
+# decision space validity check
 if (!is.decSpaceValid(decS)) {
 	print(	"##########################################",quote=FALSE);
 	print("decS (decisions space definition): matrix collecting min, max, step (lin) for each decisions (col)");
 	print(	"##########################################",quote=FALSE);
 	stop();
 }
+varNo <- dim(decS)[2];
+
+stop("debugging stop");
 
 ##### MAIN LOOP #####################################################
 # > MAIN OBJECTS DATA FORMAT

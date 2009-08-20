@@ -8,4 +8,4 @@
 source('main.r');
 
 ## CALL EXAMPLE
-xPos(1,2,2,1,10000,10,"d")
+xPos(10,2,2,1,10000,10,"d")

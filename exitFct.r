@@ -19,7 +19,9 @@ is.modelValid <- function(model)
 		valid <- TRUE,	# 1: Mathematical model based on Deb multicfrontal test fct
 		valid <- TRUE,	# 2: Mathematical model based on Deb discoutinuity test fct
 		valid <- TRUE,	# 3: Mathematical model based on Deb nonConvexity test fct
-		valid <- TRUE	# 4: Mathematical model based on Deb convexNonConvexity test fct
+		valid <- TRUE,	# 4: Mathematical model based on Deb convexNonConvexity test fct
+		,,,,,
+		valid <- TRUE	# 10: Apsim
 	);
 return(valid);
 }
