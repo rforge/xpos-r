@@ -22,7 +22,8 @@ apsim_userSettings <- function()
 	path2Templates <- "../Templates/";
 	path2Outputs <- "../Outputs/";
 	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
-	simTemplate <- "wet-peanut_dry-maize_rotation-template.sim"
+#1	simTemplate <- "wet-peanut_dry-maize_rotation-template.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template2.sim"
 
 	######
 	# met file are not part of decisions
@@ -44,7 +45,9 @@ apsim_userSettings <- function()
 
 	####### set for all simulations
 	## clock module
-		var_startDate <-	"15/11/var_startYear";
+#1		var_startDate <-	"15/11/var_startYear";
+#1		var_endDate <-	"31/12/var_endYear";
+		var_startDate <-	"1/10/var_startYear";
 		var_endDate <-	"31/12/var_endYear";
 	## irrigation module
 		var_ASWdepth <-	1000;
