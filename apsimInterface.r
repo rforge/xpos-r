@@ -100,6 +100,7 @@ apsim_simulate <- function(path2Outputs,simFileName)
 ##
  # read outputs from .out file
  # NEEDS TO BE UPDATE ACCORDINGLY TO USER NEEDS
+ # !! remember objectives are minimized
  ####################################################################
 apsim_readOutputs <- function(path2Outputs, fileName)
 {
@@ -112,7 +113,10 @@ apsim_readOutputs <- function(path2Outputs, fileName)
 	lin_temp <- 1; lin_res <- 1;
 	response <- array(c(temp[lin_temp,col_year],temp[lin_temp,col_peanutYield],NULL),dim=c(1,3));
 	lin_temp <- lin_temp +1;
-	response[lin_res,3] <- temp[lin_temp,col_maizeYield];
+	ifelse(is.na(temp[lin_temp,col_maizeYield]),
+		response[lin_res,3] <- 0,
+		response[lin_res,3] <- temp[lin_temp,col_maizeYield]
+	);
 	repeat{
 		lin_temp <- lin_temp +1;
 		lin_res <- lin_res +1;
@@ -120,10 +124,13 @@ apsim_readOutputs <- function(path2Outputs, fileName)
 
 		response <- rbind(response,array(c(temp[lin_temp,col_year],temp[lin_temp,col_peanutYield],NULL),dim=c(1,3)));
 		lin_temp <- lin_temp +1;
-		response[lin_res,3] <- temp[lin_temp,col_maizeYield];
+		ifelse(is.na(temp[lin_temp,col_maizeYield]),
+			response[lin_res,3] <- 0,
+			response[lin_res,3] <- temp[lin_temp,col_maizeYield]
+		);
 	}
-	
-return(response);	
+
+return(-response);	# - to fit minimization requirements
 }
 
 ##

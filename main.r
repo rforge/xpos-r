@@ -24,6 +24,7 @@
 # > cut into 3...
 # > sel with worstTha and the best decision, actually select a region with the less rank 1
 # > add some manually set input into function's inputs 
+# > sometimes I feel like not all decision are plotted...
 
 xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
 			partNo,	## No of divided parts per region {2,3}
@@ -53,7 +54,7 @@ switch(mod,
 		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
 	},{},{},{},{},{},
 	{	# apsim
-		criNo <- 2;criS <- matrix(c(0,12000,0,12000),2);
+		criNo <- 2;criS <- matrix(c(0,-12000,0,-12000),2);
 	}
 );
 
