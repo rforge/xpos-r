@@ -241,8 +241,8 @@ if (!is.null(seeItThrough)){
 print("",quote=FALSE);
 print(	"##########################################",quote=FALSE);
 print(paste("# process stopped: ", stoppedBecauseOf,sep=""),quote=FALSE);
-print(paste("# resolution took: ",format(resolutionTime,format="%S"),sep=""),quote=FALSE);
-print(paste("# including ",format(simulationTime,format="%S")," for ",simNo," simu",sep=""),quote=FALSE);
+print(paste("# resolution took: ",format(resolutionTime,format="%H:%M:%S"),sep=""),quote=FALSE);
+print(paste("# including ",format(simulationTime,format="%H:%M:%S")," for ",simNo," simu",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
 
 }

@@ -32,7 +32,7 @@ apsim_userSettings <- function()
 		"Tindal.met",sep="");
 	#	"KatherineAERO.met",sep="");
 	#	"Berrimah.met",sep="");
-	period <- 1;
+	period <- 1; 
 	# at this date we simulate 'period' years (e.g. 1950->1955)
 	# to find out the response of year 1955
 	# min year shall thus be at least min of met file +period+1
@@ -44,8 +44,8 @@ apsim_userSettings <- function()
 
 	####### set for all simulations
 	## clock module
-		var_startDate <-	"1/11/var_startYear";
-		var_endDate <-	"31/10/var_endYear";
+		var_startDate <-	"15/11/var_startYear";
+		var_endDate <-	"31/12/var_endYear";
 	## irrigation module
 		var_ASWdepth <-	1000;
 	# 	var_frASW <- ;
@@ -160,7 +160,7 @@ simulateApsim <- function(apsimSpec,dec,per,newDec)
 	}
 
 	## change pertubation variables in .sim
-	# i.e. add the year (5 years simulated for 1 year output)
+	# i.e. add the year ('period' years simulated for 1 year output)
 	# startYear and endYear define the length of the time period simulated (has to be included in the met file)
 	file.copy(paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),overwrite=TRUE);
 	changeVar(	"var_startYear",	year-period,	paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
@@ -172,6 +172,6 @@ simulateApsim <- function(apsimSpec,dec,per,newDec)
 	## read outputs from .out files
 	# take out only the last year results
 	temp <- apsim_readOutputs(path2apsimOutputs,"simulation");
-	
+
 return(temp[dim(temp)[1],2:dim(temp)[2]]);
 }

@@ -72,7 +72,7 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
 	atLeastAsGood_no <- 0;
 	strictlyDominating_no <- 0;
 
-  	for (i in 1:criNo){
+ 	for (i in 1:criNo){
     		if (decPer1[i] <= decPer2[i]){
 			atLeastAsGood_no <- atLeastAsGood_no + 1;
 		}else{break;}
