@@ -1,7 +1,7 @@
 ##
  # FILE main.r (version alpha)
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 13
+ # https://r-forge.r-project.org/projects/xpos-r/
  ####################################################################
  # > REFERENCES
  # O. Crespo, J.É. Bergez, F. Garcia, P2 hierarchical decomposition procedure: application to irrigation strategies design, Operational Research: An International Journal (accepted on 31-03-2009)
@@ -23,6 +23,7 @@
 # > select only half of the promising?
 # > cut into 3...
 # > sel with worstTha and the best decision, actually select a region with the less rank 1
+# > add some manually set input into function's inputs 
 
 xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
 			partNo,	## No of divided parts per region {2,3}
@@ -58,7 +59,6 @@ switch(mod,
 
 ##### INTIALISATION #################################################
 ##### source needed files
-# for all
 source("simulate.r");
 source("manageLists.r");
 source("selection.r");
@@ -73,25 +73,18 @@ if(is.null(seed)){	runif(1);
 }
 
 ##### initialize models
-switch(mod,
-	{	# Deb functions 1
-		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
-	},{	# Deb functions 2
-		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
-	},{	# Deb functions 3
-		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
-	},{	# Deb functions 4
-		decS <- matrix(c(0,1,0.1,0,1,0.1),3);
-	},{},{},{},{},{},
-	{	# apsim
-		source("apsimInterface.r");source("rwfileOp.r");
-		decSpe <- apsim_init();
-		decS <- decSpe$decS;
-		decNam <- decSpe$decNam;
-		path2apsimOutputs <- decSpe$path2out;
-print(decNam);
-		}
-);
+if(mod==1 || mod==2 || mod==3 || mod==4){
+	# Deb mathematical functions
+	decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	apsimSpec <- NULL;	# no need in mathematical fct
+}
+if(mod==10){
+	# APSIM
+	# GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
+	source("apsimInterface.r");source("rwfileOp.r");
+	apsimSpec <- apsim_userSettings();
+	decS <- apsimSpec$decS;
+}
 
 # decision space validity check
 if (!is.decSpaceValid(decS)) {
@@ -101,8 +94,6 @@ if (!is.decSpaceValid(decS)) {
 	stop();
 }
 varNo <- dim(decS)[2];
-
-stop("debugging stop");
 
 ##### MAIN LOOP #####################################################
 # > MAIN OBJECTS DATA FORMAT
@@ -145,7 +136,7 @@ repeat{
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
 		simTime <- Sys.time();
-		temp <- simulateMathModel(mod,proList$regEva[[reg]],perNo,criNo);
+		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
 		proList$regEva[[reg]] <- temp$eva;
 		simNo <- simNo + temp$simNo;

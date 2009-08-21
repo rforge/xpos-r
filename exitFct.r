@@ -20,7 +20,7 @@ is.modelValid <- function(model)
 		valid <- TRUE,	# 2: Mathematical model based on Deb discoutinuity test fct
 		valid <- TRUE,	# 3: Mathematical model based on Deb nonConvexity test fct
 		valid <- TRUE,	# 4: Mathematical model based on Deb convexNonConvexity test fct
-		,,,,,
+		{},{},{},{},{},
 		valid <- TRUE	# 10: Apsim
 	);
 return(valid);
@@ -51,13 +51,14 @@ return(valid);
 is.decSpaceValid <- function(space)
 {
 	valid <- TRUE;
-	dimNo <- dim(space)[2];
+	decNo <- dim(space)[2];
 	line <- dim(space)[1];
 
 	if (line!=3){
 		valid <- FALSE;
-		return(valid);}
-	for (d in 1:dimNo){
+		return(valid);
+	}
+	for (d in 1:decNo){
 		if (space[1,d]>space[2,d]) valid <- FALSE;			# min > max
 		if (space[3,d]<0) valid <- FALSE;					# step > 0
 		if (space[3,d]>(space[2,d]-space[1,d])) valid <- FALSE; 	# step <= max-min
@@ -106,7 +107,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n
 		print(	"# input list expected is as follow",quote=FALSE);
 		print(args(xPos),quote=FALSE);
 		switch(stopProcess,
-			print("mod (simulation model): interger from 1 to 4"),
+			print("mod (simulation model): interger from 1 to 4 or 10(Apsim)"),
 			print("division partNo is either 2 or 3"),
 			print("decNo (decision number per evaluated region): integer > 0"),
 			print("perNo (perturbation parameter number): integer > 0"),

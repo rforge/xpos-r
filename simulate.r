@@ -101,7 +101,7 @@ return(final);
  # do not bring in here stopping criteria or current best known, etc...
  # let us say for now that if you start evaluating, you go through the whole process
  ####################################################################
-simulateModel <- function(mod,regEva,perNo,criNo)
+simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 {
 	simNo <- 0;
 	
@@ -113,7 +113,7 @@ simulateModel <- function(mod,regEva,perNo,criNo)
 	varNo <- dim(regEva$regDef)[2];
 
 	staSimAtDec <- 1;
-	if(!is.null(regEva$decEva)){						# first evaluation of the regionwhile(
+	if(!is.null(regEva$decEva)){						# if not the first evaluation of the region
 		while (!is.na(regEva$decEva[[staSimAtDec]][1,1])){	# do not resimulate
 			staSimAtDec <- staSimAtDec+1;
 			if(staSimAtDec>decNo){					# break if reach the end
@@ -126,12 +126,20 @@ simulateModel <- function(mod,regEva,perNo,criNo)
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
 			# new 'per' sequence everytime
-			per <- array(0,dim=perNo);	# runif(perNo);
+			per <- runif(perNo);	# array(0.5,dim=perNo);
 			temp <- create_naDecEva(perNo,criNo);
 		
-			for (p in 1:perNo){
-				temp[p,1:2] <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
-			}
+			# Deb test functions
+			if (mod==1 || mod==2 || mod==3 || mod==4){
+				for (p in 1:perNo){
+					temp[p,1:criNo] <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
+			}	}
+			# APSIM
+			if(mod==10){
+				for (p in 1:perNo){
+					temp[p,1:criNo] <- simulateApsim(apsimSpec,regEva$decDef[[d]],per[p],p);
+			}	}
+		
 			simNo <- simNo + perNo;
 			regEva$decEva[[d]] <- temp;
 		}

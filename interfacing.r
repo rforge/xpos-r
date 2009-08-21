@@ -1,7 +1,7 @@
 ##
  # FILE interfacing.r
  # AUTHOR olivier crespo
- # DATE june 2009 - july 2009
+ # https://r-forge.r-project.org/projects/xpos-r/
  ####################################################################
 
 ##

@@ -71,6 +71,7 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
 	## is v1 dominating?
 	atLeastAsGood_no <- 0;
 	strictlyDominating_no <- 0;
+
   	for (i in 1:criNo){
     		if (decPer1[i] <= decPer2[i]){
 			atLeastAsGood_no <- atLeastAsGood_no + 1;
@@ -79,6 +80,7 @@ paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
       		strictlyDominating_no <- strictlyDominating_no+1;
 		}
 	}
+
   	## all at least as good, and at least one better
 	if((atLeastAsGood_no == criNo) && (strictlyDominating_no > 0)){
 		return(1);
@@ -267,6 +269,7 @@ groupDomi_regVSreg <- function(reg1,reg2)
 			}
 		}
 	}
+
 	## otherwise
 	return(9);
 }
