@@ -172,8 +172,8 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		## criteria space
 		dev.set(criDev);
 		plotRectangle(criS,1,2,"white","white","criteria space evaluation");
-		if(unbList$item>0){watchCriSpace(unbList,".","red");}
-		if(penList$item>0){watchCriSpace(penList,".","blue");}
+		if(unbList$item>0){watchCriSpace(unbList,"+","red");}
+		if(penList$item>0){watchCriSpace(penList,"+","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
 		if(besList$item>0){watchCriSpace(besList,"o","green");}
 	}
@@ -223,7 +223,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		if(penList$itemNo>0){
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
-			watchCriSpace(penList,".","blue");
+			watchCriSpace(penList,"+","blue");
 		}	
 		if(besList$itemNo>0){
 			par(mfg=besScreen);
@@ -232,7 +232,7 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
-			watchCriSpace(unbList,".","red");
+			watchCriSpace(unbList,"+","red");
 		}
 	}
 
@@ -259,8 +259,8 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		## criteria space
 		dev.set(criDev);
 		plotRectangle(criS,1,2,"white","white","criteria space evaluation");
-		if(unbList$item>0){watchCriSpace(unbList,".","red");}
-		if(penList$item>0){watchCriSpace(penList,".","blue");}
+		if(unbList$item>0){watchCriSpace(unbList,"+","red");}
+		if(penList$item>0){watchCriSpace(penList,"+","blue");}
 		if(proList$item>0){watchCriSpace(proList,"+","black");}
 		if(besList$item>0){watchCriSpace(besList,"o","green");}
 	}
@@ -310,7 +310,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		if(penList$itemNo>0){
 			par(mfg=penScreen);
 			plotRectangle(criS,1,2,"white","white","pending region evaluations");
-			watchCriSpace(penList,".","blue");
+			watchCriSpace(penList,"+","blue");
 		}
 		if(besList$itemNo>0){
 			par(mfg=besScreen);
@@ -319,7 +319,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		}	
 		if(unbList$item>0){
 			par(mfg=unbScreen);
-			watchCriSpace(unbList,".","red");
+			watchCriSpace(unbList,"+","red");
 		}
 	}
 
