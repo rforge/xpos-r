@@ -54,7 +54,7 @@ switch(mod,
 		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
 	},{},{},{},{},{},
 	{	# apsim
-		criNo <- 2;criS <- matrix(c(-2000,-10000,-5000,-14000),2);
+		criNo <- 2;criS <- matrix(c(-2000,-8000,-4000,-14000),2);
 	}
 );
 
