@@ -69,7 +69,7 @@ watchDecSpace <- function(uneList,bgCol)
 	## decision space figure
 	for (r in 1:uneList$itemNo){
 		plotRectangle(uneList$regEva[[r]]$regDef,1,2,bgCol,"black",NULL);
-		plotDecDef(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decDef,1,2,".","black");
+		plotDecDef(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decDef,1,2,"+","black");
 	}
 }
 
