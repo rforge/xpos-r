@@ -13,8 +13,8 @@
  ###############################################################################
 init_data <- function()
 {
-data <- 	list(	"path2input"=		"../Conversion/Inputs/",
-			"path2output"=		"../Conversion/Outputs/",
+data <- 	list(	"path2input"=		"../../Conversion/Inputs/",
+			"path2output"=		"../../Conversion/Outputs/",
 			"folderNames"=list(	"tmin"=	"ex_tmn/",
 							"tmax"=	"ex_tmx/",
 							"ppt"=	"ex_ppt/"
@@ -116,41 +116,9 @@ return(list("station"=station,"period"=period,"comment"=comm));
 ## meaning: be careful if you change anything below
 ################################################################################
 
-
-
 ################################################################################
-## FUNCTIONS
+## FUNCTIONS THAT YOU MAY WANT TO PLAY WITH
 ################################################################################
-##
- # is that year a leap year?
- ###############################################################################
-is.leapYear <- function(year)
-{
-	## trusting R date classe
-	## otherwise there would be a conflict sooner or later anyway
-	start <- as.Date(paste("01","01",year,sep="-"),"%d-%m-%Y");
-	end <- as.Date(paste("31","12",year,sep="-"),"%d-%m-%Y");
-
-	dayNo <- end-start +1;
-	switch(dayNo-364,
-		leap <- FALSE,
-		leap <- TRUE,
-	);
-	
-return(leap);
-}
-
-##
- # CHECK THAT DIM OF THE TABLE FITS THE REAL No OF DAYS
- ###############################################################################
-check_dayVSdim <- function(sDate,eDate,linNo)
-{
-	dayNo <- eDate-sDate +1;
-	if (dayNo != linNo){
-		stop("*** wrong number of Days: check_dayVSdim (convertD2Afct.r)");
-	}
-}
-
 ##
  # TRANSFORM 365 DAYS A YEAR INTO 366
  ###############################################################################
@@ -237,6 +205,65 @@ return(newYear);
 }
 
 ##
+ # SOLAR RADIATION ESTIMATION
+ ###############################################################################
+ # see
+ # Ball, R.A. and Purcell, L.C. and Carey, S.K.,
+ # Evaluation of Solar Radiation Prediction Models in North America,
+ # Agronomy Journal vol.96(2), pages 391-397, 2004
+ ###############################################################################
+compute_radn <- function(table,station)
+{	# table is made of year,julianDay,tmin,tmax,ppt
+
+	table <- array(as.numeric(table),dim=dim(table));
+	table <- cbind(table,array(NA,dim=dim(table)[1]));
+
+	for (line in 1:dim(table)[1]){
+		a 	<- 0.16;	# a in [0.1,1.2] for example 0.16 inland, 0.19 coastal
+		latr 	<- station$lat * pi /180;
+		delta <- 0.4093*sin((2*pi*table[line,2]/365)-1.39);
+		ws	<- acos(-tan(latr)*tan(delta));
+		Rsolar<- 118.08*(1+0.033*cos(0.0172*table[line,2]))*(ws*sin(latr)*sin(delta)+cos(latr)*cos(delta)*sin(ws))/pi;
+		ks	<- a*(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
+
+		table[line,6] <- ks*Rsolar;
+	}
+return(table);
+}
+
+################################################################################
+## FUNCTIONS THAT YOU DO NOT WANT TO PLAY WITH
+################################################################################
+##
+ # is that year a leap year?
+ ###############################################################################
+is.leapYear <- function(year)
+{
+	## trusting R date classe
+	## otherwise there would be a conflict sooner or later anyway
+	start <- as.Date(paste("01","01",year,sep="-"),"%d-%m-%Y");
+	end <- as.Date(paste("31","12",year,sep="-"),"%d-%m-%Y");
+
+	dayNo <- end-start +1;
+	switch(dayNo-364,
+		leap <- FALSE,
+		leap <- TRUE,
+	);
+return(leap);
+}
+
+##
+ # CHECK THAT DIM OF THE TABLE FITS THE REAL No OF DAYS
+ ###############################################################################
+check_dayVSdim <- function(sDate,eDate,linNo)
+{
+	dayNo <- eDate-sDate +1;
+	if (dayNo != linNo){
+		stop("*** wrong number of Days: check_dayVSdim (convertD2Afct.r)");
+	}
+}
+
+##
  # TRANSFORM DAY No OVER A PERIOD _ type 365 days
  ###############################################################################
 transform_type1 <- function(table,head)
@@ -258,7 +285,6 @@ transform_type1 <- function(table,head)
 			table <- rbind(table,table_aft);
 		}
 	}
-
 return(table);
 }
 
@@ -282,10 +308,38 @@ transform_type2 <- function(table,head)
 		table <- rbind(table,newSection);
 		table <- rbind(table,table_aft);
 	}
-
 return(table);
 }
 
+##
+ # COMPUTE TAV AND AMP APSIM CONSTANTS
+ ###############################################################################
+compute_tavNamp <- function(table)
+{
+	# daily mean
+	table <- cbind(table,array(NA,dim=dim(table)[1]));
+	for (line in 1:dim(table)[1]){
+		table[line,dim(table)[2]] <- mean(table[line,3:4]);
+	}
+	monthlyMean <- array(0,dim=c(12,3));
+	for (line in 1:dim(table)[1]){
+		month <- as.numeric(format(as.Date(table[line,2]-1,origin=paste(table[line,1],"-01-01",sep="")),"%m"));
+		monthlyMean[month,1] <- monthlyMean[month,1]+table[line,dim(table)[2]];
+		monthlyMean[month,2] <- monthlyMean[month,2]+1;
+	}
+	for (m in 1:12){
+		monthlyMean[m,3] <- monthlyMean[m,1]/monthlyMean[m,2];
+	}
+
+	amp <- format(max(monthlyMean[,3])-min(monthlyMean[,3]),digits=4);
+	tav <- format(mean(monthlyMean[,3]),digits=4);
+
+return(list("amp"=amp,"tav"=tav));
+}
+
+################################################################################
+## MAIN(s)
+################################################################################
 ##
  # CONVERT 1 station for 1 time period
  ###############################################################################
@@ -313,8 +367,49 @@ convert_OneStation4OnePeriod <- function(data,stationName)
 	);
 	check_dayVSdim(fileHead$period$start,fileHead$period$end,dim(table)[1]);
 
-# write it into outputs
+# format it to APSIM requirements
+	firstYear <- format(fileHead$period$start,"%Y");
+	lastYear <- format(fileHead$period$end,"%Y");
+	firstDay <- fileHead$period$start-as.Date(paste(firstYear,"01","01",sep="-"),"%Y-%m-%d")+1;
+	lastDay <- fileHead$period$end-as.Date(paste(lastYear,"01","01",sep="-"),"%Y-%m-%d")+1;
+	apsim_table <- array(c(firstYear,firstDay,table[1,1],table[1,2],table[1,3]),dim=c(1,5));
+	li <- 1;
+	for (y in firstYear:lastYear){
+		if (y == firstYear) d <- firstDay;
+		repeat{
+			# boundaries conditions
+			if(y==lastYear && d==lastDay)	break;
+			if(!is.leapYear(y) && d==365)	{d<-0; break;}
+			if(d==366)	{d<-0; break;}
+			d <- d+1;
+			li <- li+1;
+			# apsim table update
+			apsim_line <- array(c(y,d,table[li,1],table[li,2],table[li,3]),dim=c(1,5));
+			apsim_table <- rbind(apsim_table,apsim_line);
+		}
+	}
 
+# compute radiation
+	apsim_table <- compute_radn(apsim_table,fileHead$station);
+# compute radiation
+	tavNamp <- compute_tavNamp(apsim_table);
 
-return(table);
+# format numeric values
+	apsim_table <- format(apsim_table,digits=2);
+	apsim_table[,1:2] <- as.integer(apsim_table[,1:2]);
+
+# write it into a .met file
+	# head
+	station <- strsplit(stationName,"\\.")[[1]][1];
+	file.copy("metFileTemplate.met",paste(data$path2output,station,".met",sep=""),overwrite=TRUE);
+	changeVar(	"station_id",fileHead$station$id,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"station_comm",fileHead$comm,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"stat_lat",fileHead$station$lat,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"stat_lon",fileHead$station$lon,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"stat_alt",fileHead$station$alt,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"period_tav",tavNamp$tav,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	changeVar(	"period_amp",tavNamp$amp,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	# body
+	apsim_table <- format(apsim_table,justify="right",width=6);
+	write.table(apsim_table,paste(data$path2output,station,".met",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
 }

@@ -1,9 +1,10 @@
 [weather.met.weather]
 !station ID = station_id
-!station comm = station_comm
+!comments = station_comm
 
 latitude = stat_lat (DECIMAL DEGREES)
 longitude = stat_lon (DECIMAL DEGREES)
+! altitude = stat_alt (m)
 
 tav = period_tav (oC) ! annual average ambient temperature
 amp = period_amp (oC) ! annual amplitude in mean monthly temperature
@@ -17,5 +18,5 @@ amp = period_amp (oC) ! annual amplitude in mean monthly temperature
 ! freely available here
 ! https://r-forge.r-project.org/projects/xpos-r/
 !
-year  day radn  maxt   mint  rain  pan    vp      code
- ()   () (MJ/m2) (oC)  (oC)  (mm)  (mm)   (hPa)     ()
+   year     day    mint    maxt    rain    radn
+     ()      ()    (oC)    (oC)    (mm) (MJ/m2)
