@@ -5,7 +5,7 @@
  # convert bruce's downscaled format into apsim's met file
  #########################################################################
  # this is not working by itself,
- # but explaining how to use the functions in convertD2A.r
+ # but following is the explanation to make it work
  #########################################################################
 
 ##
@@ -13,7 +13,7 @@
  #########################################################################
  # required sources
  #########################################################################
-source('convertD2A.r');
+source('convertFunctions.r');
 source('rwfileOp.r');
 
 ##
@@ -22,7 +22,7 @@ source('rwfileOp.r');
  # functions are made to convert:
  # - 1 station
  # - during 1 continuous period of time 
- # -> i.e. 3 files: tmin,tmax,ppt at Bruce's dowscaled format
+ # -> i.e. 3 files: tmin,tmax,ppt according to Bruce's dowscaled format
  #########################################################################
 
 ## - II - THIS IS REQUIRED
@@ -50,9 +50,10 @@ stationNo <- dim(stationNames);
  # it produces a list of GCMs, for wich you specify a folder name per period
  #########################################################################
 gcmNames <- init_gcmNames();
+gcmNo <- length(gcmNames);
 
 ## - V - THIS IS REQUIRED
- # produce one station (full file name)
+ # provide one station (full file name)
  #########################################################################
 station <- stationNames[1];
 
