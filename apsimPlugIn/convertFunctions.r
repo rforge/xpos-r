@@ -394,9 +394,14 @@ convert_OneStation4OnePeriod <- function(path,stationName)
 # compute tav and amp
 	tavNamp <- compute_tavNamp(apsim_table);
 
+# waiting for a nicer solution within apsim
+# make year a fake, and realY the actual year
+	fake_year <- array(apsim_table[,1]-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(apsim_table)[1]);
+	apsim_table <- cbind(fake_year,apsim_table);
+
 # format numeric values
 	apsim_table <- format(apsim_table,digits=2);
-	apsim_table[,1:2] <- as.integer(apsim_table[,1:2]);
+	apsim_table[,1:3] <- as.integer(apsim_table[,1:3]);
 
 # write it into a .met file
 	# head

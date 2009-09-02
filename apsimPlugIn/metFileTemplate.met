@@ -18,5 +18,5 @@ amp = period_amp (oC) ! annual amplitude in mean monthly temperature
 ! freely available here
 ! https://r-forge.r-project.org/projects/xpos-r/
 !
-   year     day    mint    maxt    rain    radn
-     ()      ()    (oC)    (oC)    (mm) (MJ/m2)
+   year   realY	  day    mint    maxt    rain    radn
+     ()      ()	   ()    (oC)    (oC)    (mm) (MJ/m2)

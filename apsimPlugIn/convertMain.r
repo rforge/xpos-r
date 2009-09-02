@@ -36,7 +36,7 @@ path <- list("input"=			"../../Conversion/Inputs/",	## 1 ##
 ##
  # MAIN FUNCTION CALL
  #########################################################################
-convert_OneStation4OnePeriod(path,"Masvingo.txt");
+convert_OneStation4OnePeriod(path,"Wedza.txt");
 
 ##########################################################################
 ## FAQ
@@ -47,8 +47,8 @@ convert_OneStation4OnePeriod(path,"Masvingo.txt");
 # 
 # ? can I run the process for more than one station/period ?
 # No current fct run that, but feel free to use available functions
-# to produce your own scripts, you find every kind of loop typing
-# "?Control" in a R terminal, and already some hand made facilitating functions
+# to produce your own scripts, you'll find every kind of loop typing
+# "?Control" in a R terminal, and already some hand-made facilitating functions
 # such as list of station ("init_stationNames"), list of gcm ("init_gcmNames")
 # and others in "convertFunctions"
 #
