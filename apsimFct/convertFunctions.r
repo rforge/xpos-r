@@ -9,7 +9,7 @@
 ## fill in what you need only. I know it sounds obvious, but ...
 ################################################################################
 ## 
- # DATA: where and what
+ # DATA: where and what (REQUIRED)
  ###############################################################################
 init_data <- function()
 {
@@ -24,7 +24,7 @@ return(data);
 }
 
 ## 
- # STATIONS: names
+ # STATIONS: names (NOT REQUIRED)
  ###############################################################################
 init_stationNames <- function()
 {
@@ -46,7 +46,7 @@ return(station);
 }
 
 ## 
- # GC MODELS NAMES (MODEL 1 IS NCEP)
+ # GC MODELS NAMES (MODEL 1 IS NCEP) (NOT REQUIRED)
  ###############################################################################
 init_gcmNames <- function()
 {
@@ -391,7 +391,7 @@ convert_OneStation4OnePeriod <- function(data,stationName)
 
 # compute radiation
 	apsim_table <- compute_radn(apsim_table,fileHead$station);
-# compute radiation
+# compute tav and amp
 	tavNamp <- compute_tavNamp(apsim_table);
 
 # format numeric values
