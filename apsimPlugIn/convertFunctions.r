@@ -11,16 +11,16 @@
 ## 
  # DATA: where and what (REQUIRED)
  ###############################################################################
-init_data <- function()
+init_paths <- function()
 {
-data <- 	list(	"path2input"=		"../../Conversion/Inputs/",
-			"path2output"=		"../../Conversion/Outputs/",
-			"folderNames"=list(	"tmin"=	"ex_tmn/",
-							"tmax"=	"ex_tmx/",
-							"ppt"=	"ex_ppt/"
-					)
-			);
-return(data);
+path <- 	list(	"input"=			"../../Conversion/Inputs/",
+			"output"=			"../../Conversion/Outputs/",
+			"data"=list("tmin"=	"ex_tmn/",
+					"tmax"=	"ex_tmx/",
+					"ppt"=	"ex_ppt/"
+			)
+		);
+return(path);
 }
 
 ## 
@@ -343,17 +343,17 @@ return(list("amp"=amp,"tav"=tav));
 ##
  # CONVERT 1 station for 1 time period
  ###############################################################################
-convert_OneStation4OnePeriod <- function(data,stationName)
+convert_OneStation4OnePeriod <- function(path,stationName)
 {
 # read data files
-	path2file <- paste(data$path2input,data$folderName$tmin,stationName,sep="");
+	path2file <- paste(path$input,path$data$tmin,stationName,sep="");
 	fileHead <- read_bruceHeadFile(path2file);
 
 	# make one table per station-period
 	table <- as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
-	path2file <- paste(data$path2input,data$folderName$tmax,stationName,sep="");
+	path2file <- paste(path$input,path$data$tmax,stationName,sep="");
 	table <- cbind(table,as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE))));
-	path2file <- paste(data$path2input,data$folderName$ppt,stationName,sep="");
+	path2file <- paste(path$input,path$data$ppt,stationName,sep="");
 	table <- cbind(table,as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE))));
 
 # transform it if needed into real
@@ -401,15 +401,15 @@ convert_OneStation4OnePeriod <- function(data,stationName)
 # write it into a .met file
 	# head
 	station <- strsplit(stationName,"\\.")[[1]][1];
-	file.copy("metFileTemplate.met",paste(data$path2output,station,".met",sep=""),overwrite=TRUE);
-	changeVar(	"station_id",fileHead$station$id,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"station_comm",fileHead$comm,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"stat_lat",fileHead$station$lat,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"stat_lon",fileHead$station$lon,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"stat_alt",fileHead$station$alt,	paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"period_tav",tavNamp$tav,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
-	changeVar(	"period_amp",tavNamp$amp,		paste(data$path2output,station,".met",sep=""),paste(data$path2output,station,".met",sep=""));
+	file.copy("metFileTemplate.met",paste(path$output,station,".met",sep=""),overwrite=TRUE);
+	changeVar(	"station_id",fileHead$station$id,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"station_comm",fileHead$comm,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"stat_lat",fileHead$station$lat,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"stat_lon",fileHead$station$lon,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"stat_alt",fileHead$station$alt,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"period_tav",tavNamp$tav,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+	changeVar(	"period_amp",tavNamp$amp,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
 	# body
 	apsim_table <- format(apsim_table,justify="right",width=6);
-	write.table(apsim_table,paste(data$path2output,station,".met",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+	write.table(apsim_table,paste(path$output,station,".met",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
 }

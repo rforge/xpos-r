@@ -4,68 +4,43 @@
  # https://r-forge.r-project.org/projects/xpos-r/
  # convert bruce's downscaled format into apsim's met file
  #########################################################################
- # this is not working by itself,
- # but following is the explanation to make it work
- #########################################################################
-
-##
- # - I - THIS IS REQUIRED
- #########################################################################
- # required sources
- #########################################################################
-source('convertFunctions.r');
-source('rwfileOp.r');
-
-##
- # personal settings
- #########################################################################
  # functions are made to convert:
  # - 1 station
  # - during 1 continuous period of time 
  # -> i.e. 3 files: tmin,tmax,ppt according to Bruce's dowscaled format
  #########################################################################
 
-## - II - THIS IS REQUIRED
+##
+ # REQUIRED SOURCES
  #########################################################################
- # go to convertD2A.r and set "init_data" to your preferences
- # i.e.
- # - path to the downscaled forlders tmin, tmax. ppt
- # - path to where to save the produced .met files
- # - folder names of those includeing tmin, tmax and ppt
- # then you can read this data with
+source('convertFunctions.r');
+source('rwfileOp.r');
+
+## REQUIRED PATH TO DATA
  #########################################################################
-data <- init_data();
-
-## - III - THIS IS NOT REQUIRED
- # but can help
- # "init_stationName" allows to list many stations
- # it produces a vector of dim = station No
+ # set paths to data
+ # - path to the downscaled forlders tmin, tmax, ppt		## 1 ##
+ # - path to where to save the produced .met files		## 2 ##
+ # - folder names of those including tmin, tmax and ppt	## 3 ##
+ # or read it from "convertFunctions.r" with
+ # > path <- init_paths();
  #########################################################################
-stationNames <- init_stationNames();
-stationNo <- dim(stationNames);
+path <- list("input"=			"../../Conversion/Inputs/",	## 1 ##
+		"output"=			"../../Conversion/Outputs/",	## 2 ##
+		"data"=list("tmin"=	"ex_tmn/",				## 3 ##
+				"tmax"=	"ex_tmx/",				## 3 ##
+				"ppt"=	"ex_ppt/"				## 3 ##
+			)
+		);
 
-## - IV - THIS IS NOT REQUIRED
- # but can help
- # "init_gcmNames" allows to various gcm and period or time
- # it produces a list of GCMs, for wich you specify a folder name per period
+##
+ # MAIN FUNCTION CALL
  #########################################################################
-gcmNames <- init_gcmNames();
-gcmNo <- length(gcmNames);
+convert_OneStation4OnePeriod(path,"Masvingo.txt");
 
-## - V - THIS IS REQUIRED
- # provide one station (full file name)
- #########################################################################
-station <- stationNames[1];
-
-################################################################################
-## when you've done everything above,
-## MAIN FUNCTION CALL
-################################################################################
-convert_OneStation4OnePeriod(data,station);
-
-################################################################################
+##########################################################################
 ## FAQ
-################################################################################
+##########################################################################
 #
 # ? where are the produced file ?
 # wherever you set into data$outputs in init_data() (convertD2A.r)
@@ -73,7 +48,17 @@ convert_OneStation4OnePeriod(data,station);
 # ? can I run the process for more than one station/period ?
 # No current fct run that, but feel free to use available functions
 # to produce your own scripts, you find every kind of loop typing
-# "?Control" in a R terminal
+# "?Control" in a R terminal, and already some hand made facilitating functions
+# such as list of station ("init_stationNames"), list of gcm ("init_gcmNames")
+# and others in "convertFunctions"
 #
-# ? 
+# ?
+#
+#
+#
+#
+#
+#
+#
+
 
