@@ -126,7 +126,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
 			# new 'per' sequence everytime
-			per <- 0; # runif(perNo);	# array(0.5,dim=perNo);
+			per <- runif(perNo);	# array(0.5,dim=perNo);
 			temp <- create_naDecEva(perNo,criNo);
 		
 			# Deb test functions
