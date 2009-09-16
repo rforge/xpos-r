@@ -369,6 +369,9 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 			{	## intra region
 				if(reg<uneList$itemNo){
 				for (r in (reg+1):uneList$itemNo){
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 					switch(	regVSreg <- groupDomi_regVSreg(uneList$regEva[[reg]],uneList$regEva[[r]]),
 						# reg definitively dominates r
 						{	uneList$regEva[[r]]$selCri[1,1] <- uneList$regEva[[r]]$selCri[1,1] +1;
@@ -381,17 +384,20 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	uneList$regEva[[r]]$selCri[1,1] <- uneList$regEva[[r]]$selCri[1,1] +1;
-							uneList$regEva[[reg]]$selCri[2,1] <- uneList$regEva[[reg]]$selCri[2,1] +1;
+						{	uneList$regEva[[r]]$selCri[1,2] <- uneList$regEva[[r]]$selCri[1,1] +1;
+							uneList$regEva[[reg]]$selCri[2,2] <- uneList$regEva[[reg]]$selCri[2,1] +1;
 						},
 						# r acceptably dominates reg
-						{	uneList$regEva[[reg]]$selCri[1,1] <- uneList$regEva[[reg]]$selCri[1,1] +1;
-							uneList$regEva[[r]]$selCri[2,1] <- uneList$regEva[[r]]$selCri[2,1] +1;
+						{	uneList$regEva[[reg]]$selCri[1,2] <- uneList$regEva[[reg]]$selCri[1,1] +1;
+							uneList$regEva[[r]]$selCri[2,2] <- uneList$regEva[[r]]$selCri[2,1] +1;
 						},
 						{},
 						{},
 						{}
 					);
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 				}}
 			}
 		);
@@ -428,6 +434,9 @@ evaluate_penPLUSproList <- function(proList,penList,evalMeth)
 			{},
 			## multicriteria evaluation
 			{	for (r in 1:penList$itemNo){
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 					switch(	regVSreg <- groupDomi_regVSreg(proList$regEva[[reg]],penList$regEva[[r]]),
 						# reg definitively dominates r
 						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] +1;
@@ -440,17 +449,20 @@ evaluate_penPLUSproList <- function(proList,penList,evalMeth)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] +1;
-							proList$regEva[[reg]]$selCri[2,1] <- proList$regEva[[reg]]$selCri[2,1] +1;
+						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,1] +1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,1] +1;
 						},
 						# r acceptably dominates reg
-						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] +1;
-							penList$regEva[[r]]$selCri[2,1] <- penList$regEva[[r]]$selCri[2,1] +1;
+						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,1] +1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,1] +1;
 						},
 						{},
 						{},
 						{}
 					);
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 				}
 			}
 		);
@@ -490,6 +502,9 @@ evaluate_penMINUSproList <- function(proList,penList,evalMeth)
 					#
 					#	REMOVING PROLISTS REGION (reg) COMPARISON FROM PENLIST REGIONS (r) EVALUATIONS
 					#
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 					switch(	regVSreg <- groupDomi_regVSreg(proList$regEva[[reg]],penList$regEva[[r]]),
 						# reg definitively dominates r
 						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] -1;
@@ -502,17 +517,20 @@ evaluate_penMINUSproList <- function(proList,penList,evalMeth)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	penList$regEva[[r]]$selCri[1,1] <- penList$regEva[[r]]$selCri[1,1] -1;
-							proList$regEva[[reg]]$selCri[2,1] <- proList$regEva[[reg]]$selCri[2,1] -1;
+						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,1] -1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,1] -1;
 						},
 						# r acceptably dominates reg
-						{	proList$regEva[[reg]]$selCri[1,1] <- proList$regEva[[reg]]$selCri[1,1] -1;
-							penList$regEva[[r]]$selCri[2,1] <- penList$regEva[[r]]$selCri[2,1] -1;
+						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,1] -1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,1] -1;
 						},
 						{},
 						{},
 						{}
 					);
+####################################################################################################################
+###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS
+####################################################################################################################
 				}
 			}
 		);

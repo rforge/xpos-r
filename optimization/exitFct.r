@@ -71,7 +71,7 @@ return(valid);
 ##
  # CHECK INPUT PARAMETERS VALIDITY
  ####################################################################
-checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL)
+checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,seed=NULL)
 {
 	stopProcess <- FALSE;
 
@@ -96,7 +96,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n
 	if (timLimit<1) {stopProcess <- 6;}
 
 	# see it through
-	# to do
+	if (seeItThrough!="g" && seeItThrough!="d" && seeItThrough!="n" ) {stopProcess <- 7;}
 	
 	# seed
 	# do no know yet
@@ -112,10 +112,49 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n
 			print("decNo (decision number per evaluated region): integer > 0"),
 			print("perNo (perturbation parameter number): integer > 0"),
 			print("simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)"),
-			print("timLimit (time limit in sec): interger > 0")
+			print("timLimit (time limit in sec): interger > 0"),
+			print("seeItThrough value invalid: \"n\"(no), \"g\"(graph) or \"d\"(debug)")
 		);
 		print(	"##########################################",quote=FALSE);
 		stop();	
 	}
 
+}
+
+##
+ # LAST ACTION: WRITE THE LIST OF THE BEST REGIONS FOUND
+ ####################################################################
+write.bestList <- function(besList,apsimSpec)
+{
+	if(is.null(apsimSpec)){
+		fileName <- "./bestRegions.fin";
+	}else{
+		fileName <- paste(apsimSpec$path2out,"bestRegions.fin",sep="");
+	}
+	
+	## file head
+	write(paste("## BEST REGIONS ACHIEVED\n",
+			"## created : ",date(),"\n",
+			"## no of regions : ",besList$itemNo,"\n",
+			"## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),"\n",
+			"#########################",
+			sep=""
+		),fileName,append=FALSE
+	);
+
+	for(r in 1:besList$itemNo){
+		write(paste("\n## REGION ",r,sep=""),fileName,append=TRUE);
+
+		write(paste("besList$regEva[[",r,"]]$regDef",sep=""),fileName,append=TRUE);
+		write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+
+		for (d in 1:besList$regEva[[r]]$itemNo){
+			write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=""),fileName,append=TRUE);
+			write.table(t(besList$regEva[[r]]$decDef[[d]]),fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+
+			write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=""),fileName,append=TRUE);
+			write.table(besList$regEva[[r]]$decEva[[d]],fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+		}
+				
+	}
 }

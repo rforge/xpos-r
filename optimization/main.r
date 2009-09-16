@@ -38,25 +38,11 @@ xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functi
 
 ##### CHECK INPUT PARAMETERS ########################################
 source("exitFct.r");
-checkInputs(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough="n",seed=NULL);
+checkInputs(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,seed=NULL);
 
 ## to add as inputs (and thus to check above !!)
 evalMeth <- 5; # 1: reg mean, 2: reg min dec mean, 3: reg max dec mean, 5: multicriteria
-criterion <- 1; # for monocriterion evaluation
-switch(mod,
-	{	# Deb functions 1
-		criNo <- 2;criS <- matrix(c(0,1,0,10),2);
-	},{	# Deb functions 2
-		criNo <- 2;criS <- matrix(c(0,1,-0.5,2),2);
-	},{	# Deb functions 3
-		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
-	},{	# Deb functions 4
-		criNo <- 2;criS <- matrix(c(0,4,0,4),2);
-	},{},{},{},{},{},
-	{	# apsim
-		criNo <- 2;criS <- matrix(c(-3000,-6000,-4000,-14000),2);
-	}
-);
+#criterion <- 1; # for monocriterion evaluation
 
 ##### INTIALISATION #################################################
 ##### source needed files
@@ -76,15 +62,24 @@ if(is.null(seed)){	runif(1);
 ##### initialize models
 if(mod==1 || mod==2 || mod==3 || mod==4){
 	# Deb mathematical functions
-	decS <- matrix(c(0,1,0.1,0,1,0.1),3);
+	decS <- matrix(c(0,1,0.05,0,1,0.05),3);
 	apsimSpec <- NULL;	# no need in mathematical fct
+	criNo <- 2;
+	switch(mod,
+		{	criS <- matrix(c(0,1,0,10),2);	# Deb functions 1
+		},{	criS <- matrix(c(0,1,-0.5,2),2);	# Deb functions 2
+		},{	criS <- matrix(c(0,4,0,4),2);		# Deb functions 3
+		},{	criS <- matrix(c(0,4,0,4),2);		# Deb functions 4
+	});
 }
 if(mod==10){
 	# APSIM
 	# GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
-	source("apsimInterface.r");source("rwfileOp.r");
+	source("../apsimPlugIn/apsimInterface.r");
+	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
 	decS <- apsimSpec$decS;
+	criS <- apsimSpec$criS;
 }
 
 # decision space validity check
@@ -95,6 +90,7 @@ if (!is.decSpaceValid(decS)) {
 	stop();
 }
 varNo <- dim(decS)[2];
+criNo <- dim(criS)[2];
 
 ##### MAIN LOOP #####################################################
 # > MAIN OBJECTS DATA FORMAT
@@ -124,7 +120,7 @@ proList <- decSpaceAsOnlyRegInList(decS,varNo,decNo,perNo,criNo);
 unbList <- list("itemNo"=0,"regEva"=NULL);
 penList <- list("itemNo"=0,"regEva"=NULL);
 besList <- list("itemNo"=0,"regEva"=NULL);
-if (!is.null(seeItThrough)){
+if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 	scrList <- init_visualisation(seeItThrough,decS,criS);
 }
 repeat{
@@ -150,11 +146,12 @@ repeat{
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
-	if (!is.null(seeItThrough)){	if (seeItThrough=="g" || seeItThrough=="d"){
+	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){	if (seeItThrough=="g" || seeItThrough=="d"){
 		besList <- update_bestList(proList,besList,evalMeth,criterion);
 	}}
 
-	##### MULTICRITERIA add proList (offspring) regions comparisons to penList regions
+	##### MULTICRITERIA
+	## add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
@@ -174,11 +171,12 @@ repeat{
 	) {break;}
 
 	##### select equally potentially optimal regions (proList)
-	temp <- select(proList,penList,2);
+	temp <- select(proList,penList,1);
 	proList <- temp$pro;
 	penList <- temp$pen;
 
-	##### MULTICRITERIA remove proList regions comparisons from penList regions
+	##### MULTICRITERIA
+	## remove proList regions comparisons from penList regions
 	if(evalMeth==5){
 		temp <- evaluate_penMINUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
@@ -186,7 +184,7 @@ repeat{
 	} # has to be after selection and before division, if at the loop top, then initial case would fuck up
 
 	## watch it run
-	if (!is.null(seeItThrough)){
+	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 		## messages
 		print(paste("--  ",simNo,
 			#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
@@ -212,18 +210,19 @@ if (penList$itemNo >0){	evaluate_penPLUSproList(unbList,penList,evalMeth);}
 
 ##### current best (selection.r)
 # !! check that prolist$selCri before and after does not change
-if (!is.null(seeItThrough)){	if (seeItThrough=="g" || seeItThrough=="d"){
-	if (unbList$itemNo >0){ besList <- update_bestList(unbList,besList,evalMeth,criterion);}
-	if (penList$itemNo >0){	besList <- update_bestList(penList,besList,evalMeth,criterion);}
-}}
+if (unbList$itemNo >0){ besList <- update_bestList(unbList,besList,evalMeth,criterion);}
+if (penList$itemNo >0){	besList <- update_bestList(penList,besList,evalMeth,criterion);}
+if (proList$itemNo >0){ besList <- update_bestList(proList,besList,evalMeth,criterion);}
 
 resolutionTime <- difftime(Sys.time(),startingTime);
 stoppedBecauseOf <- "empty pending list";
 if(Sys.time()>=endingTime){stoppedBecauseOf <- "time over";}
 if(simNo>=simLimit){stoppedBecauseOf <- "simulation amount over";}
 
+write.bestList(besList,apsimSpec);
+
 ##### VISUAL ########################################################
-if (!is.null(seeItThrough)){
+if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 	## messages
 	print(paste("--  ",simNo,
 		#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
@@ -244,5 +243,4 @@ print(paste("# process stopped: ", stoppedBecauseOf,sep=""),quote=FALSE);
 print(paste("# resolution took: ",format(resolutionTime,format="%H:%M:%S"),sep=""),quote=FALSE);
 print(paste("# including ",format(simulationTime,format="%H:%M:%S")," for ",simNo," simu",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
-
 }

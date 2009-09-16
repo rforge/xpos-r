@@ -80,6 +80,31 @@ return(indices);
 ##
  # SELECTION PROCESS BASED ON 2x2 selCri
  ####################################################################
+ # min of selCri[lin,]
+ ####################################################################
+select_minLin <- function(penList,lin)
+{
+	# this fct is not called if penList == 1
+	# countdown to avoid to sort it when removing the promising region from the pending List
+	indices <- array(penList$itemNo,dim=c(1,1));
+
+	for (r in seq(penList$itemNo-1,1,-1)){
+		index <- indices[1,1];
+		if(sum(penList$regEva[[r]]$selCri[lin,]) < sum(penList$regEva[[index]]$selCri[lin,])){
+			indices <- array(r,dim=c(1,1));
+		}else{
+			if(sum(penList$regEva[[r]]$selCri[lin,]) == sum(penList$regEva[[index]]$selCri[lin,])){
+				indices <- rbind(indices,r);
+			}
+		}
+	}
+
+return(indices);
+}
+
+##
+ # SELECTION PROCESS BASED ON 2x2 selCri
+ ####################################################################
  # min strict positif (>0) of selCri[lin,col]
  ####################################################################
 select_minPos <- function(penList,lin,col)
@@ -149,11 +174,12 @@ select <- function(proList,penList,selMeth)
 	if (penList$itemNo<2){
 		selectedReg <- array(1,dim=c(1,1));
 	}else{
-		selectedReg <- select_min(penList,1,1);
+		# basic initial selection
+		selectedReg <- select_minLin(penList,1);
+		
 		switch(selMeth,
-			## min selCri[1,1]
 			{},
-			## min selCri[1,1] + min selCri[2,1]
+			## initial + min selCri[2,1]
 			{	#if(length(selectedReg)>9){
 				#	selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
 				#}
@@ -170,12 +196,12 @@ select <- function(proList,penList,selMeth)
 					}
 				}
 			},
-			## 1 out of 2
+			## 1 out of 2 of initial
 			{	if(length(selectedReg)>9){
 					selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
 				}
 			},
-			## no more than 10 no of the selectedReg list
+			## no more than 10 no in initial
 			{
 				if(length(selectedReg)>10){
 					selectedReg <- array(selectedReg[(length(selectedReg)-9):length(selectedReg),1],dim=c(10,1));
@@ -188,7 +214,7 @@ select <- function(proList,penList,selMeth)
 	##### I want some randomness
 	# I started by randomely chosing the regEva number,
 	# but because they actually are piled FILO, using a uniform law does not mean picking uniformely
-	# I actually want to give more probability to pick a top region which has not been explored for a long long time
+	# I actually want to give more probability to pick a top region which has not been explored for a while
 	## choose one pending region randomly within the non chosen
 	if( dim(selectedReg)[1] < penList$itemNo){
 # pick the top one

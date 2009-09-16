@@ -105,7 +105,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 {
 	simNo <- 0;
 	
-	## criNo has to be 2
+	## criNo has to be 2 for mathematical models
 	if ((mod==1 || mod==2 || mod==3 || mod==4) && criNo!=2) {stop("criNo unvalid for mathModel simulation (see simulate.r)");}
 
 	## only to ease comprehension
@@ -126,7 +126,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
 			# new 'per' sequence everytime
-			per <- runif(perNo);	# array(0.5,dim=perNo);
+			per <- 0; # runif(perNo);	# array(0.5,dim=perNo);
 			temp <- create_naDecEva(perNo,criNo);
 		
 			# Deb test functions
