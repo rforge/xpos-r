@@ -18,12 +18,10 @@
  ####################################################################
 apsim_userSettings <- function()
 {
-	varNo <- 2;
-	path2Templates <- "../Templates/";
-	path2Outputs <- "../Outputs/";
+	path2Templates <- "../../Templates/";
+	path2Outputs <- "../../Outputs/";
 	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
-#1	simTemplate <- "wet-peanut_dry-maize_rotation-template.sim"
-	simTemplate <- "wet-peanut_dry-maize_rotation-template2.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template140909.sim"
 
 	######
 	# met file are not part of decisions
@@ -34,8 +32,9 @@ apsim_userSettings <- function()
 	#	"KatherineAERO.met",sep="");
 	#	"Berrimah.met",sep="");
 	period <- 1; 
-	# at this date we simulate 'period' years (e.g. 1950->1955)
-	# to find out the response of year 1955
+	# at this date we simulate 'period' years
+	# (e.g. period <- 5 means we simulate 1950->1955)
+	# to find out the response of year final year ONLY
 	# min year shall thus be at least min of met file +period+1
 	perDef <- array(c(
 		1950,		# min perturbation parameter
@@ -45,44 +44,67 @@ apsim_userSettings <- function()
 
 	####### set for all simulations
 	## clock module
-#1		var_startDate <-	"15/11/var_startYear";
-#1		var_endDate <-	"31/12/var_endYear";
-		var_startDate <-	"1/10/var_startYear";
+		var_startDate <-	"15/09/var_startYear";
 		var_endDate <-	"31/12/var_endYear";
-	## irrigation module
-		var_ASWdepth <-	1000;
-	# 	var_frASW <- ;
-	# 	var_irrEff <- ;
 
 	# actually write it
 	file.copy(paste(path2Templates,simTemplate,sep=""),paste(path2Outputs,"initFile",".sim",sep=""),overwrite=TRUE);
-	changeVar(	"var_title",	"simulation",		paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
+	changeVar(	"var_title",	"simulation",	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
 	changeVar(	"var_startDate",	var_startDate,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
 	changeVar(	"var_endDate",	var_endDate,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
-	changeVar(	"var_ASWdepth",	var_ASWdepth,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
 	changeVar(	"var_metFile",	var_metFile,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
 
 	####### decision to optimize
+	varNo <- 8;
 	# irrigation module
-	decNam <- array(c(	"var_frASW",	
-					"var_irrEff"
-		),dim=c(1,varNo));
+	decNam <- array(c(	"var_peanutIrrAmount",	#1
+					"var_maizeIrrAmount",	#2
+	# fertilization module
+					"var_maizeFerAtSow",	#3
+					"var_maizeFerAt21",	#4
+					"var_maizeFerAt35",	#5
+					"var_maizeFerAt49",	#6
+					"var_maizeFerAt63",	#7
+					"var_maizeFerAt77"	#8
+			),dim=c(1,varNo));
 
 	####### decision space definition
-	decS <- matrix(c(	0.5,	1,	0.1,	# min, max, minimal step of dec 1
-				0.5,	1,	0.1	# min, max, minimal step of dec 2
+	decS <- matrix(c(	10,	60,	10,	# min, max, minimal step of dec 1
+				10,	60,	10,	# min, max, minimal step of dec 2
+				15,	35,	5,	# min, max, minimal step of dec 3
+				20,	40,	5,	# min, max, minimal step of dec 4
+				45,	65,	5,	# min, max, minimal step of dec 5
+				65,	85,	5,	# min, max, minimal step of dec 6
+				60,	80,	5,	# min, max, minimal step of dec 7
+				10,	30,	5	# min, max, minimal step of dec 8
 			),3);
 
 	####### check coherenc
 	if(dim(decS)[2]!=varNo){
 		print("",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
-		print(	"# incoherence in between the procedure and APSIM initialisation",quote=FALSE);
+		print(	"# incoherence in between decNo and decS",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
 		stop();	
 	}	
 
-return(list("decNam"=decNam,"decS"=decS,"path2out"=path2Outputs,"perDef"=perDef,"period"=period));
+	####### criteria space definition
+	criNo <- 2;
+	# minimization ...
+	criS <- matrix(c(	-1000,	-6000,	# min, max cri 1
+				-4000,	-14000	# min, max cri 2
+			),2);
+	
+	####### check coherenc
+	if(dim(criS)[2]!=criNo){
+		print("",quote=FALSE);
+		print(	"##########################################",quote=FALSE);
+		print(	"# incoherence in between criNo and criS",quote=FALSE);
+		print(	"##########################################",quote=FALSE);
+		stop();	
+	}
+
+return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2Outputs,"perDef"=perDef,"period"=period));
 }
 
 ##
@@ -107,9 +129,23 @@ apsim_simulate <- function(path2Outputs,simFileName)
  ####################################################################
 apsim_readOutputs <- function(path2Outputs, fileName)
 {
+	##### file column definitions
 	col_year <- 1;
-	col_peanutYield <- 5;
-	col_maizeYield <- 8;
+	col_ddmmyy <- 2;
+	# crop type : maize
+	col_maizeBiomass <- 4;
+	col_maizeYield <- 5;		## crit 2
+	# crop type : peanut
+	col_peanutBiomass <- 7;
+	col_peanutYield <- 8;		## crit 1
+	col_cumDrainage <- 9;
+	col_cumRunoff <- 10;
+	col_cumDenit <- 11;
+	col_cumNLeached <- 12;
+	col_cumNRunoff <- 13;
+	col_irrigTot <- 14;
+	col_fertiliser <- 15;
+	col_rain <- 16;
 
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
 	
@@ -167,7 +203,7 @@ simulateApsim <- function(apsimSpec,dec,per,newDec)
 	# startYear and endYear define the length of the time period simulated (has to be included in the met file)
 	file.copy(paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),overwrite=TRUE);
 	changeVar(	"var_startYear",	year-period,	paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
-	changeVar(	"var_endYear",	year,		paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
+	changeVar(	"var_endYear",	year,			paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
 
 	## run simulation
 	apsim_simulate(path2apsimOutputs,"fileToSimulate");
