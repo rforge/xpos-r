@@ -384,12 +384,12 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	uneList$regEva[[r]]$selCri[1,2] <- uneList$regEva[[r]]$selCri[1,1] +1;
-							uneList$regEva[[reg]]$selCri[2,2] <- uneList$regEva[[reg]]$selCri[2,1] +1;
+						{	uneList$regEva[[r]]$selCri[1,2] <- uneList$regEva[[r]]$selCri[1,2] +1;
+							uneList$regEva[[reg]]$selCri[2,2] <- uneList$regEva[[reg]]$selCri[2,2] +1;
 						},
 						# r acceptably dominates reg
-						{	uneList$regEva[[reg]]$selCri[1,2] <- uneList$regEva[[reg]]$selCri[1,1] +1;
-							uneList$regEva[[r]]$selCri[2,2] <- uneList$regEva[[r]]$selCri[2,1] +1;
+						{	uneList$regEva[[reg]]$selCri[1,2] <- uneList$regEva[[reg]]$selCri[1,2] +1;
+							uneList$regEva[[r]]$selCri[2,2] <- uneList$regEva[[r]]$selCri[2,2] +1;
 						},
 						{},
 						{},
@@ -449,12 +449,12 @@ evaluate_penPLUSproList <- function(proList,penList,evalMeth)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,1] +1;
-							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,1] +1;
+						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,2] +1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] +1;
 						},
 						# r acceptably dominates reg
-						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,1] +1;
-							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,1] +1;
+						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,2] +1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] +1;
 						},
 						{},
 						{},
@@ -517,12 +517,12 @@ evaluate_penMINUSproList <- function(proList,penList,evalMeth)
 						{},
 						{},
 						# reg acceptably dominates r
-						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,1] -1;
-							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,1] -1;
+						{	penList$regEva[[r]]$selCri[1,2] <- penList$regEva[[r]]$selCri[1,2] -1;
+							proList$regEva[[reg]]$selCri[2,2] <- proList$regEva[[reg]]$selCri[2,2] -1;
 						},
 						# r acceptably dominates reg
-						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,1] -1;
-							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,1] -1;
+						{	proList$regEva[[reg]]$selCri[1,2] <- proList$regEva[[reg]]$selCri[1,2] -1;
+							penList$regEva[[r]]$selCri[2,2] <- penList$regEva[[r]]$selCri[2,2] -1;
 						},
 						{},
 						{},
