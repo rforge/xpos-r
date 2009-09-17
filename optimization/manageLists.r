@@ -45,7 +45,7 @@ return(regEva);
 ##
  # PUT THE WHOLE DECISION SPACE AS THE ONLY REG IN A LIST
  ####################################################################
-decSpaceAsOnlyRegInList <- function(decS,varNo,decNo,perNo,criNo)
+decSpaceAsOnlyRegInList <- function(decS,varNo,perNo,criNo)
 {
 	regEva <- create_emptyRegEva();
 	

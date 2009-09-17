@@ -84,7 +84,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 	if (!is.partNoValid(partNo)) {stopProcess <- 2;}
 
 	# decision number per region
-	if (decNo<1) {stopProcess <- 3;}
+	if (decNo<0) {stopProcess <- 3;}
 
 	# perturbation parameter number
 	if (perNo<1) {stopProcess <- 4;}
@@ -109,7 +109,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 		switch(stopProcess,
 			print("mod (simulation model): interger from 1 to 4 or 10(Apsim)"),
 			print("division partNo is either 2 or 3"),
-			print("decNo (decision number per evaluated region): integer > 0"),
+			print("decNo (decision number per evaluated region): integer >= 0 (0 for auto)"),
 			print("perNo (perturbation parameter number): integer > 0"),
 			print("simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)"),
 			print("timLimit (time limit in sec): interger > 0"),

@@ -80,7 +80,7 @@ return(indices);
 ##
  # SELECTION PROCESS BASED ON 2x2 selCri
  ####################################################################
- # min of selCri[lin,]
+ # min of sum(selCri[lin,])
  ####################################################################
 select_minLin <- function(penList,lin)
 {
@@ -168,7 +168,13 @@ return(indices);
  ####################################################################
  # selection implies that the promising regions will be removed from the pending regions
  ####################################################################
-select <- function(proList,penList,selMeth)
+ # selMeth=0: (default) min of selCri line 1
+ # selMeth=1: 0 with restriction to selCri[1,1]==0
+ # selMeth=2: 0 + those that minimize selCri[2,1]
+ # selMeth=3: 1 out of 2 from 0
+ # selMeth=4: 10 oldest in 0
+ ####################################################################
+select <- function(proList,penList,selMeth=0)
 {
 	##### select promising regions
 	if (penList$itemNo<2){
@@ -176,11 +182,17 @@ select <- function(proList,penList,selMeth)
 	}else{
 		# basic initial selection
 		selectedReg <- select_minLin(penList,1);
-		
+
 		switch(selMeth,
-			{},
-			## initial + min selCri[2,1]
-			{	#if(length(selectedReg)>9){
+			   ## 0: nothing more
+			{  ## 1: reduce the selected regions to those with minimal selCri[1,1]
+				for (r in seq(dim(selectedReg)[1],1,-1)){
+					if(penList$regEva[[selectedReg[r]]]$selCri[1,1]>0){ selectedReg <- selectedReg[-r];}
+				}
+				selectedReg <- array(selectedReg,dim=length(selectedReg));
+
+			},{## 2: initial + min selCri[2,1]
+				#if(length(selectedReg)>9){
 				#	selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
 				#}
 				selectedReg2 <- select_minPos(penList,2,1);
@@ -195,19 +207,15 @@ select <- function(proList,penList,selMeth)
 						);
 					}
 				}
-			},
-			## 1 out of 2 of initial
-			{	if(length(selectedReg)>9){
+			},{## 3: 1 out of 2 of initial
+				if(length(selectedReg)>9){
 					selectedReg <- array(selectedReg[row(selectedReg)%%2==round(runif(1))],dim=c(ceiling(length(selectedReg)/2),1));
 				}
-			},
-			## no more than 10 no in initial
-			{
+			},{## 4: no more than 10 in initial
 				if(length(selectedReg)>10){
 					selectedReg <- array(selectedReg[(length(selectedReg)-9):length(selectedReg),1],dim=c(10,1));
 				}
-			},
-			{}
+			}
 		);			
 	}
 
@@ -327,4 +335,25 @@ update_bestList <- function(proList,besList,evalMeth,criterion)
 	}
 
 return(besList);
+}
+
+##
+ # KEEP THE BEST DECISION ONLY
+ ####################################################################
+ # ...
+ ####################################################################
+keepTheBests <- function(proList,evalMeth,criterion)
+{
+	criNo <- dim(proList$regEva[[1]]$decEva[[1]])[2];
+
+browser();
+	for(r in 1:proList$itemNo){
+		for(d in seq(proList$regEva[[r]]$itemNo,round(proList$regEva[[r]]$itemNo),-1)){
+			proList$regEva[[r]]$decDef <- proList$regEva[[r]]$decDef[[-d]];
+			proList$regEva[[r]]$decEva <- proList$regEva[[r]]$decEva[[-d]];
+			proList$regEva[[r]]$itemNo <- proList$regEva[[r]]$itemNo-1;
+		}
+	}
+
+return(proList);
 }

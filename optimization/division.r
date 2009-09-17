@@ -29,14 +29,16 @@ return(largest);
  # CUT ONE DECISION SPACE INTO 2 PARTS ALONG PARAMETER 'VAR'
  ####################################################################
  # cut following a normal distribution in between min and max of parameter 'var'
- ####################################################################
+ # 1: normal law around the middle
+ # 2: in the middle
+ ###################################################################
 cutDecSpaceInto2  <- function(regDef,var,meth)
 {
 	twinRegDef=list("left"=regDef,"right"=regDef);
 
 	pivot <- 0.5;	# cut in the middle
 	
-	if( (regDef[2,var]-regDef[1,var])> 2*regDef[3,var] && meth==2){
+	if( (regDef[2,var]-regDef[1,var])> 2*regDef[3,var] && meth==1){
 		pivot <- rnorm(1,mean=0.5,sd=0.1);
 		# check borders
 		if(pivot < regDef[3,var]/(regDef[2,var]-regDef[1,var])){	pivot <- regDef[3,var]/(regDef[2,var]-regDef[1,var]);}
@@ -72,7 +74,10 @@ return(twinRegDef);
 ##
  # DIVISION INTO partNo PARTS
  ####################################################################
-divide_List <- function(proList,partNo)
+ # divMeth=0: (default) into 2 only -> cut in the middle
+ # divMeth=1: into 2 only -> cut following a normal around the middle
+ ####################################################################
+divide_List <- function(proList,partNo,divMeth=0)
 {
 	offList <- list("itemNo"=0,"regEva"=NULL);
 
@@ -85,8 +90,7 @@ divide_List <- function(proList,partNo)
 			# 1
 			{},
 			# into 2 parts
-			# meth = 1 to cut in the middle, 2 to cut following  a normal distribution
-			{twinRegDef <- cutDecSpaceInto2(proList$regEva[[reg]]$regDef,var,1);},
+			{twinRegDef <- cutDecSpaceInto2(proList$regEva[[reg]]$regDef,var,divMeth);},
 			# into 3 parts
 			{twinRegDef <- cutDecSpaceInto3(proList$regEva[[reg]]$regDef,var);}
 		);

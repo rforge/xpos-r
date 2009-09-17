@@ -128,10 +128,12 @@ groupDomi_regVSreg <- function(reg1,reg2)
 {
 	## as soon as decEva is non NULL it has to be a list
 	## otherwise perNo and criNo are going to be NULL
-	decNo <- reg1$itemNo;
+	decNo_r1 <- reg1$itemNo;
+	decNo_r2 <- reg2$itemNo;
 	perNo <- dim(reg1$decEva[[1]])[1];
 	criNo <- dim(reg1$decEva[[1]])[2];
-	decPerNo <- decNo*perNo;
+	decPerNo_r1 <- decNo_r1*perNo;
+	decPerNo_r2 <- decNo_r2*perNo;
 	
 	#####
 	# I want to avoid computing multicriteria demanding comparisons if i can
@@ -151,16 +153,17 @@ groupDomi_regVSreg <- function(reg1,reg2)
 #	r1_dpBetterThanAllExists <- 0;
 #	r1_dpNonDomExists <- 0;
 
-	decPer <- array(0,dim=c(decNo,perNo));
-	r1 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
-	r2 <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);
+	decPer_r1 <- array(0,dim=c(decNo_r1,perNo));
+	decPer_r2 <- array(0,dim=c(decNo_r2,perNo));
+	r1 <- list("worstTh"=decPer_r1,"betterTh"=decPer_r1,"nonDomi"=decPer_r1);
+	r2 <- list("worstTh"=decPer_r2,"betterTh"=decPer_r2,"nonDomi"=decPer_r2);
 
-	for (d1 in 1:decNo){
+	for (d1 in 1:decNo_r1){
 		for (p1 in 1:perNo){
 #			dp1_worstTh <- 0;
 #			dp1_betterTh <- 0;
 #			dp1_nonDom <- 0;
-			for (d2 in 1:decNo){
+			for (d2 in 1:decNo_r2){
 				for (p2 in 1:perNo){
 					##### MULTICRITERIA DECPER COMPARISON
 					switch(regVSreg <- paretoDomi_decPerVSdecPer(reg1$decEva[[d1]][p1,1:criNo],reg2$decEva[[d2]][p2,1:criNo]),
@@ -214,14 +217,14 @@ groupDomi_regVSreg <- function(reg1,reg2)
 #					}
 				}	
 			}
-#			if( dp1_worstTh == decPerNo){
+#			if( dp1_worstTh == decPerNo_r1){
 #				r1_dpWorstThanAllExists <- 1;
 #			}
-#			if( dp1_betterTh == decPerNo){
+#			if( dp1_betterTh == decPerNo_r1){
 #				r1_dpBetterThanAllExists <- 1;
 #				r1domi$accNonDominated <- 0;
 #			}
-#			if( dp1_nonDom == decPerNo){
+#			if( dp1_nonDom == decPerNo_r1){
 #				r1_dpNonDomExists <- 1;
 #			}
 		}	
@@ -233,15 +236,15 @@ groupDomi_regVSreg <- function(reg1,reg2)
 
 	##### HERE EVERY DECPER PAIR COMPARISON HAS BEEN COMPUTED
 	## definitive non domination
-	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==0])==decPerNo){
+	if (length(r1$worstTh[r1$worstTh==0])==decPerNo_r1 && length(r2$worstTh[r2$worstTh==0])==decPerNo_r2){
 		return(3);										
 	}
 	## r1 definitively dominates r2
-	if (length(r1$worstTh[r1$worstTh==0])==decPerNo && length(r2$worstTh[r2$worstTh==decPerNo])==decPerNo){
+	if (length(r1$worstTh[r1$worstTh==0])==decPerNo_r1 && length(r2$worstTh[r2$worstTh==decPerNo_r2])==decPerNo_r2){
 		return(1);										
 	}
 	## r2 definitively dominates r1
-	if (length(r2$worstTh[r2$worstTh==0])==decPerNo && length(r1$worstTh[r1$worstTh==decPerNo])==decPerNo){
+	if (length(r2$worstTh[r2$worstTh==0])==decPerNo_r2 && length(r1$worstTh[r1$worstTh==decPerNo_r1])==decPerNo_r1){
 		return(2);										
 	}
 	## acceptable non domination
@@ -341,7 +344,7 @@ return(length(r$worstTh[r$worstTh==0]));
  # you have to update comparison with the pending regions in penList
  # see evaluate_penPLUSproList and evaluate_penMINUSproList
  ####################################################################
-evaluate_proList <- function(uneList,evalMeth,criterion)
+evaluate_proList <- function(uneList,evalMeth,criterion=NULL)
 {
 	# probably useless... but
 	if(uneList$itemNo==0){
@@ -356,7 +359,7 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 	for (reg in 1:uneList$itemNo){
 		switch(	evalMeth,
 			# mean evaluation
-			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_mean(uneList$regEva[[reg]],criterion);
+			{	uneList$regEva[[reg]]$selCri[1,3] <- eval_mean(uneList$regEva[[reg]],criterion);
 			},
 			# minMean evaluation
 			{	uneList$regEva[[reg]]$selCri[1,1] <- eval_minMean(uneList$regEva[[reg]],criterion);
@@ -366,8 +369,7 @@ evaluate_proList <- function(uneList,evalMeth,criterion)
 			},
 			{},
 			## multicriteria evaluation
-			{	## intra region
-				if(reg<uneList$itemNo){
+			{	if(reg<uneList$itemNo){
 				for (r in (reg+1):uneList$itemNo){
 ####################################################################################################################
 ###	IF YOU CHANGE ANYTHING IN HERE, DO THE SAME IN ALL 3 evaluate_* FUNCTIONS

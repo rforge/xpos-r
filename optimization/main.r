@@ -116,7 +116,7 @@ simNo <- 0;
 startingTime <- Sys.time();
 endingTime <- startingTime + timLimit;
 simulationTime <- 0;
-proList <- decSpaceAsOnlyRegInList(decS,varNo,decNo,perNo,criNo);
+proList <- decSpaceAsOnlyRegInList(decS,varNo,perNo,criNo);
 unbList <- list("itemNo"=0,"regEva"=NULL);
 penList <- list("itemNo"=0,"regEva"=NULL);
 besList <- list("itemNo"=0,"regEva"=NULL);
@@ -128,7 +128,7 @@ repeat{
 	proList <- divide_List(proList,partNo);
 
 	##### sample every of the promising regions (i.e. proList)
-	proList <- sample_List(proList,decNo,varNo,perNo,criNo);
+	proList <- sample_List(proList,decNo,varNo,perNo,criNo,0);
 
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
@@ -138,6 +138,13 @@ repeat{
 		proList$regEva[[reg]] <- temp$eva;
 		simNo <- simNo + temp$simNo;
 	}
+
+	##### MULTICRITERIA
+	##### keep only the best decisions
+	# probably faster to the target and/but recompute lots of decisions
+	# might be good, but at what cost
+	# in selection.r
+	proList <- keepTheBests(proList,evalMeth,criterion);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
@@ -171,7 +178,7 @@ repeat{
 	) {break;}
 
 	##### select equally potentially optimal regions (proList)
-	temp <- select(proList,penList,1);
+	temp <- select(proList,penList,0);
 	proList <- temp$pro;
 	penList <- temp$pen;
 
