@@ -66,6 +66,7 @@ return(regMaxMean[criterion]);
  ####################################################################
 paretoDomi_decPerVSdecPer <- function(decPer1,decPer2)
 {
+
 	criNo <- length(decPer1);
 
 	## is v1 dominating?
@@ -132,8 +133,8 @@ groupDomi_regVSreg <- function(reg1,reg2)
 	decNo_r2 <- reg2$itemNo;
 	perNo <- dim(reg1$decEva[[1]])[1];
 	criNo <- dim(reg1$decEva[[1]])[2];
-	decPerNo_r1 <- decNo_r1*perNo;
-	decPerNo_r2 <- decNo_r2*perNo;
+	decPerNo_r1 <- (decNo_r1*perNo)-1;	# because in between 10 elements there is 10-1 links
+	decPerNo_r2 <- (decNo_r2*perNo)-1;	# because in between 10 elements there is 10-1 links
 	
 	#####
 	# I want to avoid computing multicriteria demanding comparisons if i can
@@ -282,13 +283,6 @@ groupDomi_regVSreg <- function(reg1,reg2)
  ####################################################################
  # return the no of non dominated (dec,per) combinations
  ####################################################################
- #  MULTICRITERIA GROUP DOMINANCE EVALUATION
- ####################################################################
- # > REFERENCE:
- # O. Crespo, F. Garcia, J.E. Bergez,
- # Multiobjective optimization subject to uncertainty: application to agricultural resources management,
- # to be submitted
- ####################################################################
 groupDomi_regIntern <- function(reg)
 {
 	## as soon as decEva is non NULL it has to be a list
@@ -296,7 +290,7 @@ groupDomi_regIntern <- function(reg)
 	decNo <- reg$itemNo;
 	perNo <- dim(reg$decEva[[1]])[1];
 	criNo <- dim(reg$decEva[[1]])[2];
-	decPerNo <- decNo*perNo;
+	decPerNo <- (decNo*perNo)-1; # because in between 10 elements there is 10-1 links
 	
 	decPer <- array(0,dim=c(decNo,perNo));
 	r <- list("worstTh"=decPer,"betterTh"=decPer,"nonDomi"=decPer);

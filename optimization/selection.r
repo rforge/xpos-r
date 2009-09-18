@@ -340,18 +340,84 @@ return(besList);
 ##
  # KEEP THE BEST DECISION ONLY
  ####################################################################
- # ...
+ # keepMeth=0: (default) nothing change
+ # keepMeth=1: remove the last half of decisions
+ # keepMeth=2: keep only the dec reaching the best [per,cri] per objectives
+ # keepMeth=3: keep only the dec reaching non dominated [per,cri]
  ####################################################################
-keepTheBests <- function(proList,evalMeth,criterion)
+keepTheBests <- function(proList,keepMeth=0)
 {
 	criNo <- dim(proList$regEva[[1]]$decEva[[1]])[2];
 
-browser();
 	for(r in 1:proList$itemNo){
-		for(d in seq(proList$regEva[[r]]$itemNo,round(proList$regEva[[r]]$itemNo),-1)){
-			proList$regEva[[r]]$decDef <- proList$regEva[[r]]$decDef[[-d]];
-			proList$regEva[[r]]$decEva <- proList$regEva[[r]]$decEva[[-d]];
-			proList$regEva[[r]]$itemNo <- proList$regEva[[r]]$itemNo-1;
+		decNo <- proList$regEva[[r]]$itemNo;
+		perNo <- ifelse(is.null(dim(proList$regEva[[r]]$decEva)[2]),1,dim(proList$regEva[[r]]$decEva)[2]);
+
+		if(decNo>1+1){	# I want at least 2 of them
+		switch(keepMeth,
+		{ 	## 1
+			for(d in seq(decNo,round(decNo/2)+1,-1)){
+				proList$regEva[[r]]$decDef <- proList$regEva[[r]]$decDef[-d];
+				proList$regEva[[r]]$decEva <- proList$regEva[[r]]$decEva[-d];
+				proList$regEva[[r]]$itemNo <- proList$regEva[[r]]$itemNo-1;
+			}
+		
+		},{	## 2
+			if(decNo>1){
+				## find the 'criNo' bests
+				bestDec <- array(decNo,dim=criNo);
+				bestVal <- array(NA,dim=criNo);
+				for (c in 1:criNo){
+					bestVal[c] <- min(proList$regEva[[r]]$decEva[[bestDec[c]]][,c]);
+				}
+				for(d in seq(decNo-1,1,-1)){
+					for (c in 1:criNo){
+						if ( min(proList$regEva[[r]]$decEva[[d]][,c]) < bestVal[c] ){
+							bestDec[c] <- d;
+							bestVal[c] <- min(proList$regEva[[r]]$decEva[[d]][,c]);
+						}
+					}
+				}
+				## remove everything else
+				for(d in seq(decNo,1,-1)){
+					if(length(bestDec[bestDec==d])==0){
+						proList$regEva[[r]]$decDef <- proList$regEva[[r]]$decDef[-d];
+						proList$regEva[[r]]$decEva <- proList$regEva[[r]]$decEva[-d];
+						proList$regEva[[r]]$itemNo <- proList$regEva[[r]]$itemNo-1;
+					}
+				}
+			}
+		},{	## 3
+			if(decNo>1){
+				## find out non dominated [dec,per]
+				dominated <- array(0,dim=c(decNo,perNo));
+				for (d1 in 1:(decNo-1)){
+					for (p1 in 1:perNo){
+						for (d2 in (d1+1):decNo){
+							for (p2 in 1:perNo){
+								switch(paretoDomi_decPerVSdecPer(proList$regEva[[r]]$decEva[[d1]][p1,1:criNo],proList$regEva[[r]]$decEva[[d2]][p2,1:criNo]),
+									## [d1,p1] is dominating [d2,p2]
+								{	dominated[d2,p2] <- dominated[d2,p2]+1;
+								},{	## [d2,p2] is dominating [d1,p1]
+									dominated[d1,p1] <- dominated[d1,p1]+1;
+								},{	## I do not care for here
+								}
+								);
+							}
+						}			
+					}
+				}
+				## remove all decision that do not have a non dominated [dec,per]
+				for(d in seq(decNo,1,-1)){
+					if (min(dominated[d,]) > 0){
+						proList$regEva[[r]]$decDef <- proList$regEva[[r]]$decDef[-d];
+						proList$regEva[[r]]$decEva <- proList$regEva[[r]]$decEva[-d];
+						proList$regEva[[r]]$itemNo <- proList$regEva[[r]]$itemNo-1;
+					}
+				}
+			}
+		}
+		);
 		}
 	}
 

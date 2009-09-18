@@ -128,7 +128,7 @@ repeat{
 	proList <- divide_List(proList,partNo);
 
 	##### sample every of the promising regions (i.e. proList)
-	proList <- sample_List(proList,decNo,varNo,perNo,criNo,0);
+	proList <- sample_List(proList,decNo,varNo,perNo,criNo,2);
 
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
@@ -144,7 +144,7 @@ repeat{
 	# probably faster to the target and/but recompute lots of decisions
 	# might be good, but at what cost
 	# in selection.r
-	proList <- keepTheBests(proList,evalMeth,criterion);
+	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
@@ -199,7 +199,7 @@ repeat{
 			proList$itemNo," + ",
 			penList$itemNo," + ",
 			unbList$itemNo,
-			" : ",
+			" : mem ",
 			memory.size(),
 		sep=""),quote=FALSE);
 
@@ -237,7 +237,7 @@ if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 		proList$itemNo," + ",
 		penList$itemNo," + ",
 		unbList$itemNo,
-		" : ",
+		" : mem ",
 		memory.size(),
 	sep=""),quote=FALSE);
 

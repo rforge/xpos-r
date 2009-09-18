@@ -26,8 +26,10 @@ compute_decNo <- function (regDef)
 	
 	#density <- 100;
 	#decNo <- round(rexp(1,density/relSize)+1);	
-	density <- 0.1;
+	density <- 0.5;
 	decNo <- round(relSize^density)+1;
+	#density <- 0.5;
+	#decNo <- round(relSize*density)+1;
 
 return(decNo);
 }
