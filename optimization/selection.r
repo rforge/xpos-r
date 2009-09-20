@@ -182,6 +182,9 @@ select <- function(proList,penList,selMeth=0)
 	}else{
 		# basic initial selection
 		selectedReg <- select_minLin(penList,1);
+		########################################
+		# keep selection rule in here and selection of the best consistent (update_bestList)
+		########################################
 
 		switch(selMeth,
 			   ## 0: nothing more
@@ -312,13 +315,16 @@ update_bestList <- function(proList,besList,evalMeth,criterion)
 		
 		## select a region as best regarding to reg$selCri[1,1] only
 		# countdown useless here, but not necessary to change
+		########################################
+		# keep selection of the best in here and selection rule consistent (select)
+		########################################
 		indices <- array(besList$itemNo,dim=1);
 		for (r in seq(besList$itemNo-1,1,-1)){
 			index <- indices[1];
-			if(besList$regEva[[r]]$selCri[1,1] < besList$regEva[[index]]$selCri[1,1]){
+			if(sum(besList$regEva[[r]]$selCri[1,]) < sum(besList$regEva[[index]]$selCri[1,])){
 				indices <- array(r,dim=1);
 			}else{
-				if(besList$regEva[[r]]$selCri[1,1] == besList$regEva[[index]]$selCri[1,1]){
+				if(sum(besList$regEva[[r]]$selCri[1,]) == sum(besList$regEva[[index]]$selCri[1,])){
 					indices <- rbind(indices,r);
 				}
 			}
