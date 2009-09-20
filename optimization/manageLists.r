@@ -1,7 +1,7 @@
 ##
  # FILE manageLists.r
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 9
+ # https://r-forge.r-project.org/projects/xpos-r/
  # managing list functions
  ####################################################################
 
