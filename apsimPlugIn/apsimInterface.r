@@ -62,21 +62,29 @@ apsim_userSettings <- function()
 	# fertilization module
 					"var_maizeFerAtSow",	#3
 					"var_maizeFerAt21",	#4
-					"var_maizeFerAt35",	#5
-					"var_maizeFerAt49",	#6
-					"var_maizeFerAt63",	#7
-					"var_maizeFerAt77"	#8
+					"var_maizeFerAt28",	#5
+					"var_maizeFerAt35",	#6
+					"var_maizeFerAt42",	#7
+					"var_maizeFerAt49",	#8
+					"var_maizeFerAt56",	#9
+					"var_maizeFerAt63",	#10
+					"var_maizeFerAt70",	#11
+					"var_maizeFerAt77"	#12
 			),dim=c(1,varNo));
 
 	####### decision space definition
 	decS <- matrix(c(	10,	60,	10,	# min, max, minimal step of dec 1
 				10,	60,	10,	# min, max, minimal step of dec 2
-				15,	35,	5,	# min, max, minimal step of dec 3
-				20,	40,	5,	# min, max, minimal step of dec 4
-				45,	65,	5,	# min, max, minimal step of dec 5
-				65,	85,	5,	# min, max, minimal step of dec 6
-				60,	80,	5,	# min, max, minimal step of dec 7
-				10,	30,	5	# min, max, minimal step of dec 8
+				20,	30,	3,	# min, max, minimal step of dec 3
+				10,	20,	3,	# min, max, minimal step of dec 4
+				10,	20,	3,	# min, max, minimal step of dec 5
+				20,	30,	3,	# min, max, minimal step of dec 6
+				20,	30,	3,	# min, max, minimal step of dec 7
+				30,	40,	3,	# min, max, minimal step of dec 8
+				30,	40,	3,	# min, max, minimal step of dec 9
+				30,	40,	3,	# min, max, minimal step of dec 10
+				20,	30,	3,	# min, max, minimal step of dec 11
+				20,	30,	3	# min, max, minimal step of dec 12
 			),3);
 
 	####### check coherenc
