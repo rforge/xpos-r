@@ -31,7 +31,7 @@ apsim_userSettings <- function()
 		"Tindal.met",sep="");
 	#	"KatherineAERO.met",sep="");
 	#	"Berrimah.met",sep="");
-	period <- 3; 
+	period <- 1; 
 	# at this date we simulate 'period' years
 	# (e.g. period <- 5 means we simulate 1950->1955)
 	# to find out the response of year final year ONLY
