@@ -118,6 +118,9 @@ init_visualisation <- function(seeItThrough,decS,criS)
 	}
 
 	if (seeItThrough=="d"){	# one graph per list pro, pen and unb
+	decDev <- NULL;
+	criDev <- NULL;
+
 		mfcol=c(2,2);
 		penScreen <- c(1,1);
 		unbScreen <- c(2,1);
