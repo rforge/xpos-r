@@ -126,35 +126,36 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
  ####################################################################
 write.bestList <- function(besList,apsimSpec)
 {
-	if(is.null(apsimSpec)){
-		fileName <- paste("./bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".fin",sep="");
-	}else{
+	if(!is.null(apsimSpec)){
 		fileName <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".fin",sep="");
-	}
 	
-	## file head
-	write(paste("## BEST REGIONS ACHIEVED\n",
-			"## ",date(),"\n",
-			"## no of regions : ",besList$itemNo,"\n",
-			"## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),"\n",
-			"#########################",
-			sep=""
-		),fileName,append=FALSE
-	);
+		## file head
+		write(paste("## BEST REGIONS ACHIEVED\n",
+				"## ",date(),"\n",
+				"## no of regions : ",besList$itemNo,"\n",
+				"## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),"\n",
+				"#########################",
+				sep=""
+			),fileName,append=FALSE
+		);
 
-	for(r in 1:besList$itemNo){
-		write(paste("\n#>REGION ",r,sep=""),fileName,append=TRUE);
+		for(r in 1:besList$itemNo){
+			write(paste("\n#>REGION ",r,sep=""),fileName,append=TRUE);
 
-		write(paste("besList$regEva[[",r,"]]$regDef",sep=""),fileName,append=TRUE);
-		write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+			write(paste("besList$regEva[[",r,"]]$regDef",sep=""),fileName,append=TRUE);
+			write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
 
-		for (d in 1:besList$regEva[[r]]$itemNo){
-			write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=""),fileName,append=TRUE);
-			write.table(t(besList$regEva[[r]]$decDef[[d]]),fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+			for (d in 1:besList$regEva[[r]]$itemNo){
+				write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=""),fileName,append=TRUE);
+				write.table(t(besList$regEva[[r]]$decDef[[d]]),fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
 
-			write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=""),fileName,append=TRUE);
-			write.table(besList$regEva[[r]]$decEva[[d]],fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
-		}
+				write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=""),fileName,append=TRUE);
+				write.table(besList$regEva[[r]]$decEva[[d]],fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+			}
 				
+		}
 	}
+	#else{
+	#	fileName <- paste("./bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".fin",sep="");
+	#}
 }
