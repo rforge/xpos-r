@@ -137,7 +137,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 			# APSIM
 			if(mod==10){
 				for (p in 1:perNo){
-					temp[p,1:criNo] <- simulateApsim(apsimSpec,regEva$decDef[[d]],per[p],p);
+					temp[p,1:criNo] <- simulateApsim(apsimSpec,regEva$decDef[[d]],per[p],p,criNo);
 			}	}
 		
 			simNo <- simNo + perNo;
