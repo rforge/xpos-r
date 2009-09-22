@@ -15,15 +15,6 @@
 # > check ?file.path for windows path
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
-# > update multicriteria evaluation of unbList at the end
-# > work on selCri, worst than but also the best decision as secondary ?
-# > randomely chosen promising region to sort out
-# > show, store the last best regions
-# > select only half of the promising?
-# > cut into 3...
-# > sel with worstTha and the best decision, actually select a region with the less rank 1
-# > add some manually set input into function's inputs 
-# > sometimes I feel like not all decision are plotted...
 
 xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
 			partNo,	## No of divided parts per region {2,3}
@@ -152,9 +143,9 @@ repeat{
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
-	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){	if (seeItThrough=="g" || seeItThrough=="d"){
+	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 		besList <- update_bestList(proList,besList,evalMeth,criterion);
-	}}
+	}
 
 	##### MULTICRITERIA
 	## add proList (offspring) regions comparisons to penList regions
@@ -174,7 +165,23 @@ repeat{
 	if(	Sys.time()>=endingTime	# time limit
 	 	|| simNo>=simLimit	# simulation number limit
 		|| penList$itemNo<1	# still exits pending regions
-	) {break;}
+	){	## watch it run
+		if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
+			## messages
+			print(paste("--  ",simNo,
+				#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
+				" : ",
+				proList$itemNo," + ",
+				penList$itemNo," + ",
+				unbList$itemNo,
+				" : mem ",
+				memory.size(),
+			sep=""),quote=FALSE);
+	
+			update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
+		}
+		break;
+	}
 
 	##### select equally potentially optimal regions (proList)
 	temp <- select(proList,penList,0);
@@ -206,7 +213,6 @@ repeat{
 	}
 }
 ##### DEBUGGING OBSERVATIONS ########################################
-
 ##### EXIT ##########################################################
 print("optimisation is done - final update in process");
 
@@ -229,24 +235,13 @@ write.bestList(besList,apsimSpec);
 
 ##### VISUAL ########################################################
 if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
-	## messages
-	print(paste("--  ",simNo,
-		#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
-		" : ",
-		proList$itemNo," + ",
-		penList$itemNo," + ",
-		unbList$itemNo,
-		" : mem ",
-		memory.size(),
-	sep=""),quote=FALSE);
-
 	last_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 }
 
 print("",quote=FALSE);
 print(	"##########################################",quote=FALSE);
 print(paste("# process stopped: ", stoppedBecauseOf,sep=""),quote=FALSE);
-print(paste("# resolution took: ",format(resolutionTime,format="%H:%M:%S"),sep=""),quote=FALSE);
-print(paste("# including ",format(simulationTime,format="%H:%M:%S")," for ",simNo," simu",sep=""),quote=FALSE);
+print(paste("# resolution took: ",format(resolutionTime),sep=""),quote=FALSE);
+print(paste("# including ",format(simulationTime)," for ",simNo," simu",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
 }

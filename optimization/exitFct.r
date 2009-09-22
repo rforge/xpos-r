@@ -96,7 +96,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 	if (timLimit<1) {stopProcess <- 6;}
 
 	# see it through
-	if (seeItThrough!="g" && seeItThrough!="d" && seeItThrough!="n" ) {stopProcess <- 7;}
+	if (seeItThrough!="g" && seeItThrough!="d" && !is.null(seeItThrough) ) {stopProcess <- 7;}
 	
 	# seed
 	# do no know yet
@@ -104,16 +104,16 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 	if(stopProcess){
 		print("",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
-		print(	"# input list expected is as follow",quote=FALSE);
-		print(args(xPos),quote=FALSE);
+		#print(	"# input list expected is as follow",quote=FALSE);
+		#print(args(xPos),quote=FALSE);
 		switch(stopProcess,
-			print("mod (simulation model): interger from 1 to 4 or 10(Apsim)"),
-			print("division partNo is either 2 or 3"),
-			print("decNo (decision number per evaluated region): integer >= 0 (0 for auto)"),
-			print("perNo (perturbation parameter number): integer > 0"),
-			print("simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)"),
-			print("timLimit (time limit in sec): interger > 0"),
-			print("seeItThrough value invalid: \"n\"(no), \"g\"(graph) or \"d\"(debug)")
+			print("# mod (simulation model): interger from 1 to 4 or 10(Apsim)",quote=FALSE),
+			print("# division partNo is either 2 or 3",quote=FALSE),
+			print("# decNo (decision number per evaluated region): integer >= 0 (0 for auto)",quote=FALSE),
+			print("# perNo (perturbation parameter number): integer > 0",quote=FALSE),
+			print("# simLimit (simulation number upper limit): interger greater than >= decNo * perNo (i.e. 1 region evaluation)",quote=FALSE),
+			print("# timLimit (time limit in sec): interger > 0",quote=FALSE),
+			print("# seeItThrough value invalid: NULL(no graph) or \"g\"(graph) or \"d\"(debug)",quote=FALSE)
 		);
 		print(	"##########################################",quote=FALSE);
 		stop();	
@@ -127,14 +127,14 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 write.bestList <- function(besList,apsimSpec)
 {
 	if(is.null(apsimSpec)){
-		fileName <- "./bestRegions.fin";
+		fileName <- paste("./bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".fin",sep="");
 	}else{
-		fileName <- paste(apsimSpec$path2out,"bestRegions.fin",sep="");
+		fileName <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".fin",sep="");
 	}
 	
 	## file head
 	write(paste("## BEST REGIONS ACHIEVED\n",
-			"## created : ",date(),"\n",
+			"## ",date(),"\n",
 			"## no of regions : ",besList$itemNo,"\n",
 			"## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),"\n",
 			"#########################",
@@ -143,7 +143,7 @@ write.bestList <- function(besList,apsimSpec)
 	);
 
 	for(r in 1:besList$itemNo){
-		write(paste("\n## REGION ",r,sep=""),fileName,append=TRUE);
+		write(paste("\n#>REGION ",r,sep=""),fileName,append=TRUE);
 
 		write(paste("besList$regEva[[",r,"]]$regDef",sep=""),fileName,append=TRUE);
 		write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);

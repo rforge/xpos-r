@@ -9,4 +9,4 @@ source('main.r');
 
 ## CALL EXAMPLE
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
-xPos(10,2,2,2,1000000,3600,"g",1)
+xPos(1,2,1,5,100,10,1)
