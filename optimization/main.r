@@ -5,7 +5,6 @@
  ####################################################################
  # > REFERENCES
  # O. Crespo, J.É. Bergez, F. Garcia, P2 hierarchical decomposition procedure: application to irrigation strategies design, Operational Research: An International Journal (accepted on 31-03-2009)
- # D.R. Jones, C.D. Perttunen, and B.E. Stuckman, Lipschitzian Optimization Without the Lipschitz Constant, Journal of Optimization Theory and Application, vol. 79(1), pages 157-181, 1993
  ####################################################################
  # > INPUT:
  # > FUNCTION CALLS:
