@@ -21,7 +21,7 @@ apsim_userSettings <- function()
 	path2Templates <- "../../Templates/";
 	path2Outputs <- "../../Outputs/";
 	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
-	simTemplate <- "wet-peanut_dry-maize_rotation-template140909.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 
 	######
 	# met file are not part of decisions
@@ -31,7 +31,7 @@ apsim_userSettings <- function()
 		"Tindal.met",sep="");
 	#	"KatherineAERO.met",sep="");
 	#	"Berrimah.met",sep="");
-	period <- 1; 
+	period <- 3; 
 	# at this date we simulate 'period' years
 	# (e.g. period <- 5 means we simulate 1950->1955)
 	# to find out the response of year final year ONLY
@@ -55,7 +55,7 @@ apsim_userSettings <- function()
 	changeVar(	"var_metFile",	var_metFile,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
 
 	####### decision to optimize
-	varNo <- 8;
+	varNo <- 12;
 	# irrigation module
 	decNam <- array(c(	"var_peanutIrrAmount",	#1
 					"var_maizeIrrAmount",	#2
@@ -73,8 +73,8 @@ apsim_userSettings <- function()
 			),dim=c(1,varNo));
 
 	####### decision space definition
-	decS <- matrix(c(	10,	60,	10,	# min, max, minimal step of dec 1
-				10,	60,	10,	# min, max, minimal step of dec 2
+	decS <- matrix(c(	20,	60,	10,	# min, max, minimal step of dec 1
+				20,	60,	10,	# min, max, minimal step of dec 2
 				20,	30,	3,	# min, max, minimal step of dec 3
 				10,	20,	3,	# min, max, minimal step of dec 4
 				10,	20,	3,	# min, max, minimal step of dec 5
@@ -98,10 +98,13 @@ apsim_userSettings <- function()
 
 	####### criteria space definition
 	criNo <- 2;
-	# minimization ...
-	criS <- matrix(c(	-1000,	-6000,	# min, max cri 1
-				-4000,	-14000	# min, max cri 2
-			),2);
+	## define thus  criteria in "apsim_readOutputs"
+	## minimization ...
+	if (criNo==2){
+		criS <- matrix(c(	-1000,	-10000,	# min, max cri 1
+					-4000,	-20000	# min, max cri 2
+					),2);
+	}else{criS <- NULL;}
 	
 	####### check coherenc
 	if(dim(criS)[2]!=criNo){
@@ -135,17 +138,17 @@ apsim_simulate <- function(path2Outputs,simFileName)
  # NEEDS TO BE UPDATE ACCORDINGLY TO USER NEEDS
  # !! remember objectives are minimized
  ####################################################################
-apsim_readOutputs <- function(path2Outputs, fileName)
+apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 {
 	##### file column definitions
 	col_year <- 1;
 	col_ddmmyy <- 2;
 	# crop type : maize
 	col_maizeBiomass <- 4;
-	col_maizeYield <- 5;		## crit 2
+	col_maizeYield <- 5;
 	# crop type : peanut
 	col_peanutBiomass <- 7;
-	col_peanutYield <- 8;		## crit 1
+	col_peanutYield <- 8;
 	col_cumDrainage <- 9;
 	col_cumRunoff <- 10;
 	col_cumDenit <- 11;
@@ -154,36 +157,76 @@ apsim_readOutputs <- function(path2Outputs, fileName)
 	col_irrigTot <- 14;
 	col_fertiliser <- 15;
 	col_rain <- 16;
+	## which ones are the criteria
+	criteria <- array(c(8,5),dim=criNo);
 
+	## read .out apsim file
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
-	
-	lin_temp <- 1; lin_res <- 1;
-	response <- array(c(temp[lin_temp,col_year],temp[lin_temp,col_peanutYield],NULL),dim=c(1,3));
+	colNo <- dim(temp)[2];
+
+	## make 2 lines (maize + peanut) one
+	lin_temp <- 1;
+	lin_res <- 1;
+
+	res1 <- temp[lin_temp,];
 	lin_temp <- lin_temp +1;
-	ifelse(is.na(temp[lin_temp,col_maizeYield]),
-		response[lin_res,3] <- 0,
-		response[lin_res,3] <- temp[lin_temp,col_maizeYield]
-	);
+	res2 <- temp[lin_temp,];
+	response <- array(NA,dim=c(1,colNo));
+
+	for(col in 1:colNo){
+		if (col==2) next;
+		if(col==1 || col==3 || col==6){
+			if(res1[1,col]!=res2[1,col]){
+				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");
+				stop();
+			}
+			next;
+		}
+		response[1,col] <- res1[1,col]+res2[1,col];
+	}
+
 	repeat{
 		lin_temp <- lin_temp +1;
 		lin_res <- lin_res +1;
 		if (lin_temp>dim(temp)[1]) break;
 
-		response <- rbind(response,array(c(temp[lin_temp,col_year],temp[lin_temp,col_peanutYield],NULL),dim=c(1,3)));
+		res1 <- temp[lin_temp,];
 		lin_temp <- lin_temp +1;
-		ifelse(is.na(temp[lin_temp,col_maizeYield]),
-			response[lin_res,3] <- 0,
-			response[lin_res,3] <- temp[lin_temp,col_maizeYield]
-		);
+		res2 <- temp[lin_temp,];
+		res <- array(NA,dim=c(1,colNo));
+
+		for(col in 1:colNo){
+			if (col==2) next;
+			if(col==1 || col==3 || col==6){
+				if(res1[1,col]!=res2[1,col]){
+					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");
+					stop();
+				}
+				next;
+			}
+			res[1,col] <- res1[1,col]+res2[1,col];
+		}
+		response <- rbind(response,res);
 	}
 
-return(-response);	# - to fit minimization requirements
+	##### signs for optimization
+	# every value is going to be minimize (negate maximization)
+	for (col in c(col_maizeBiomass,col_maizeYield,col_peanutBiomass,col_peanutYield)){
+		response[,col] <- -response[,col];
+	}
+
+	criteria_vect <- array(NA,dim=c(1,criNo));
+	for (c in 1:criNo){
+		criteria_vect[1,c] <- response[dim(response)[1],criteria[c]]
+	}
+
+return(criteria_vect);
 }
 
 ##
  # SIMULATE APSIM FROM REGION LIST
  ####################################################################
-simulateApsim <- function(apsimSpec,dec,per,newDec)
+simulateApsim <- function(apsimSpec,dec,per,newDec,criNo)
 {
 	decNam <- apsimSpec$decNam;
 	path2apsimOutputs <- apsimSpec$path2out;
@@ -218,7 +261,5 @@ simulateApsim <- function(apsimSpec,dec,per,newDec)
 	
 	## read outputs from .out files
 	# take out only the last year results
-	temp <- apsim_readOutputs(path2apsimOutputs,"simulation");
-
-return(temp[dim(temp)[1],2:dim(temp)[2]]);
+return(apsim_readOutputs(path2apsimOutputs,"simulation",criNo));
 }
