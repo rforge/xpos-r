@@ -31,11 +31,12 @@ apsim_userSettings <- function()
 		"Tindal.met",sep="");
 	#	"KatherineAERO.met",sep="");
 	#	"Berrimah.met",sep="");
-	period <- 1; 
+	
+	period <- 2; 
 	# at this date we simulate 'period' years
 	# (e.g. period <- 5 means we simulate 1950->1955)
-	# to find out the response of year final year ONLY
-	# min year shall thus be at least min of met file +period+1
+	# to find out the response of the final year ONLY.
+	# N.B. min year shall thus be at least min of met file +period+1
 	perDef <- array(c(
 		1950,		# min perturbation parameter
 		2005,		# max perturbation parameter
@@ -97,14 +98,15 @@ apsim_userSettings <- function()
 	}	
 
 	####### criteria space definition
-	criNo <- 2;
-	## define thus  criteria in "apsim_readOutputs"
-	## minimization ...
+	criNo <- 7;
+	## define those criteria in "apsim_readOutputs"
+	## criS is required only for criNo == 2 (graphics)
+	criS <- array(NA,dim=c(1,criNo));
 	if (criNo==2){
-		criS <- matrix(c(	-1000,	-10000,	# min, max cri 1
+		criS <- array(c(	-1000,	-10000,	# min, max cri 1
 					-4000,	-20000	# min, max cri 2
-					),2);
-	}else{criS <- NULL;}
+					),dim=c(1,2));
+	}
 	
 	####### check coherenc
 	if(dim(criS)[2]!=criNo){
@@ -157,8 +159,16 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	col_irrigTot <- 14;
 	col_fertiliser <- 15;
 	col_rain <- 16;
+	
 	## which ones are the criteria
-	criteria <- array(c(8,5),dim=criNo);
+	criteria <- array(c(	col_peanutYield,		## crit 1
+					col_maizeYield,		## crit 2
+					col_cumDenit,		## crit 3
+					col_cumNLeached,		## crit 4
+					col_cumNRunoff,		## crit 5
+					col_cumDrainage,		## crit 6
+					col_cumRunoff		## crit 7
+					),dim=criNo);
 
 	## read .out apsim file
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
@@ -211,7 +221,11 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 
 	##### signs for optimization
 	# every value is going to be minimize (negate maximization)
-	for (col in c(col_maizeBiomass,col_maizeYield,col_peanutBiomass,col_peanutYield)){
+	for (col in c(	col_maizeBiomass,		# to maximize
+				col_maizeYield,		# to maximize
+				col_peanutBiomass,	# to maximize
+				col_peanutYield		# to maximize
+			)){
 		response[,col] <- -response[,col];
 	}
 
