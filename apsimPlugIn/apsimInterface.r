@@ -3,14 +3,12 @@
  # AUTHOR olivier crespo
  # https://r-forge.r-project.org/projects/xpos-r/
  ####################################################################
- # read, extract, replace, create sim files
- # according to APSIM
+ # APSIM setings
  ####################################################################
  # user has to update accordingly to his/her wishes
- # - apsim_init
+ # - apsim_userSettings
  # - apsim_readOutputs
  ####################################################################
-
 
 ##
  # USER SPECIFIC CONDITIONS SETTINGS FOR APSIM
@@ -18,77 +16,137 @@
  ####################################################################
 apsim_userSettings <- function()
 {
-	path2Templates <- "../../Templates/";
-	path2Outputs <- "../../Outputs/";
-	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
+	#
+	#	TEMPLATE .SIM FILE
+	#
+
+	####	PATH of the folder that includes the template .sim file
+	# N.B. the folder is also used as writing/readind folder for apsim .sim, .out, .sum working files
+	# WARNING: enable apsim to be launched from this folder (edit your OS PATH variable)
+	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
+	# ex:	path2workDir <- "../../ApsimOptimization/";
+##################################
+	path2workDir <- "../../ApsimOptimization/";
+##################################
+
+
+	####	NAME of the actual template .sim file
+	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
+##################################
 	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
+##################################
 
-	######
-	# met file are not part of decisions
-	# but years of a met file will be the perturbations
-	######
-	var_metFile <- paste(path2MetFiles,
-		"Tindal.met",sep="");
-	#	"KatherineAERO.met",sep="");
-	#	"Berrimah.met",sep="");
+	#
+	#	WEATHER DATA .MET FILE
+	#
+
+	####	PATH of the folder that includes teh .met file
+	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
+	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
+##################################
+	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
+##################################
 	
-	period <- 2; 
-	# at this date we simulate 'period' years
-	# (e.g. period <- 5 means we simulate 1950->1955)
-	# to find out the response of the final year ONLY.
-	# N.B. min year shall thus be at least min of met file +period+1
+	####	NAME of the actual .met file
+	# optimization is performed for one location (related to apsim settings), so that the weather data set is not a variable
+	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
+	# ex:	metFileName <- "Tindal.met";
+##################################
+	metFileName <- "Tindal.met";
+##################################
+	var_metFile <- paste(path2MetFiles,metFileName,sep="");
+
+	####	minimal no of year to simulate to collect the evaluation of one year only
+	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
+	# ex:	period <- 2;
+##################################
+	period <- 2;
+##################################
+
+	####	definition of min and max year that you want to use within the .met file
+	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
-		1950,		# min perturbation parameter
-		2005,		# max perturbation parameter
-		1		# 1: discreet, 0: continuous
-		),dim=3); 
+##################################
+	1950,		# min year that you want to use as randomness
+	2005,		# max year that you want to use as randomness
+##################################
+	1		# 1: discreet for APSIM
+	),dim=3); 
 
-	####### set for all simulations
-	## clock module
-		var_startDate <-	"15/09/var_startYear";
-		var_endDate <-	"31/12/var_endYear";
+	#
+	#	SET VARIABLE FOR THE ALL OPTIMIZATION PROCESS
+	#
+	
+	####	clock module day/month
+	# keep the year as "var_startYear" or "var_endYear" to be replaced automatically
+	# ex:	var_startDate <-	"15/09/var_startYear";
+##################################
+	var_startDate <-	"15/09/var_startYear";
+	var_endDate <-	"31/12/var_endYear";
+##################################
 
-	# actually write it
-	file.copy(paste(path2Templates,simTemplate,sep=""),paste(path2Outputs,"initFile",".sim",sep=""),overwrite=TRUE);
-	changeVar(	"var_title",	"simulation",	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
-	changeVar(	"var_startDate",	var_startDate,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
-	changeVar(	"var_endDate",	var_endDate,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
-	changeVar(	"var_metFile",	var_metFile,	paste(path2Outputs,"initFile",".sim",sep=""),paste(path2Outputs,"initFile",".sim",sep=""));
+	####	write the variables that will last for the whole optimization
+	file.copy(paste(path2workDir,simTemplate,sep=""),paste(path2workDir,"initFile",".sim",sep=""),overwrite=TRUE);
+	changeVar(	"var_title",	"optimization",	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
+	changeVar(	"var_startDate",	var_startDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
+	changeVar(	"var_endDate",	var_endDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
+	changeVar(	"var_metFile",	var_metFile,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
 
-	####### decision to optimize
+	#
+	#	SET VARIABLE DECISIONS TO OPTIMIZE
+	#
+
+	####	how many decisions define the decision space
+	# ex:	varNo <- 6;
+##################################
 	varNo <- 12;
-	# irrigation module
-	decNam <- array(c(	"var_peanutIrrAmount",	#1
-					"var_maizeIrrAmount",	#2
-	# fertilization module
-					"var_maizeFerAtSow",	#3
-					"var_maizeFerAt21",	#4
-					"var_maizeFerAt28",	#5
-					"var_maizeFerAt35",	#6
-					"var_maizeFerAt42",	#7
-					"var_maizeFerAt49",	#8
-					"var_maizeFerAt56",	#9
-					"var_maizeFerAt63",	#10
-					"var_maizeFerAt70",	#11
-					"var_maizeFerAt77"	#12
-			),dim=c(1,varNo));
+##################################
 
-	####### decision space definition
-	decS <- matrix(c(	20,	60,	10,	# min, max, minimal step of dec 1
-				20,	60,	10,	# min, max, minimal step of dec 2
-				20,	30,	3,	# min, max, minimal step of dec 3
-				10,	20,	3,	# min, max, minimal step of dec 4
-				10,	20,	3,	# min, max, minimal step of dec 5
-				20,	30,	3,	# min, max, minimal step of dec 6
-				20,	30,	3,	# min, max, minimal step of dec 7
-				30,	40,	3,	# min, max, minimal step of dec 8
-				30,	40,	3,	# min, max, minimal step of dec 9
-				30,	40,	3,	# min, max, minimal step of dec 10
-				20,	30,	3,	# min, max, minimal step of dec 11
-				20,	30,	3	# min, max, minimal step of dec 12
-			),3);
+	####	set variable names that will appear in the template .sim file in order to be substituted during the process
+	# N.B. according to the varNo above, you have to have as many names as variables
+	# ex: "var_decision1"
+	decNam <- array(c(
+##################################
+	"var_peanutIrrAmount",	#1
+	"var_maizeIrrAmount",	#2
+	"var_maizeFerAtSow",	#3
+	"var_maizeFerAt21",	#4
+	"var_maizeFerAt28",	#5
+	"var_maizeFerAt35",	#6
+	"var_maizeFerAt42",	#7
+	"var_maizeFerAt49",	#8
+	"var_maizeFerAt56",	#9
+	"var_maizeFerAt63",	#10
+	"var_maizeFerAt70",	#11
+	"var_maizeFerAt77"	#12
+##################################
+	),dim=c(1,varNo));
 
-	####### check coherenc
+	####	set decision space, i.e. the exploration boundaries
+	# for each decision (ranked exactely as above), define the min, max, step boundaries to be explored
+	# you gess min, max, step is the smallest range achievable, set the "step" accordingly to applicabililty finess:
+	# can you make a difference between a fertilization amount of 20 and 21 kg? no, the step has to be larger than 1 then.
+	# can you make a difference between a fertilization amount of 20 and 30 kg? yes, the step has to be lower or equal to 10 then.
+	# can you make a difference between a fertilization amount of 20 and 25 kg? ...
+	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
+	decS <- matrix(c(
+##################################
+	20,	60,	10,	# min, max, minimal step of dec 1
+	20,	60,	10,	# min, max, minimal step of dec 2
+	20,	30,	3,	# min, max, minimal step of dec 3
+	10,	20,	3,	# min, max, minimal step of dec 4
+	10,	20,	3,	# min, max, minimal step of dec 5
+	20,	30,	3,	# min, max, minimal step of dec 6
+	20,	30,	3,	# min, max, minimal step of dec 7
+	30,	40,	3,	# min, max, minimal step of dec 8
+	30,	40,	3,	# min, max, minimal step of dec 9
+	30,	40,	3,	# min, max, minimal step of dec 10
+	20,	30,	3,	# min, max, minimal step of dec 11
+	20,	30,	3	# min, max, minimal step of dec 12
+##################################
+	),3);
+
+	####	check decS vs. varNo coherence
 	if(dim(decS)[2]!=varNo){
 		print("",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
@@ -97,18 +155,26 @@ apsim_userSettings <- function()
 		stop();	
 	}	
 
-	####### criteria space definition
+	#
+	#	SET CRITERIA NO
+	#
+
+	####	how many criteria will be optimized
+	# set here only the no of criteria,
+	# the criteria are defined in the "apsim_readOutputs" function
+	# ex:	criNo <- 7;
+##################################
 	criNo <- 7;
-	## define those criteria in "apsim_readOutputs"
-	## criS is required only for criNo == 2 (graphics)
+##################################
 	criS <- array(NA,dim=c(1,criNo));
+	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
 		criS <- array(c(	-1000,	-10000,	# min, max cri 1
 					-4000,	-20000	# min, max cri 2
 					),dim=c(1,2));
 	}
 	
-	####### check coherenc
+	####	check criS vs. criNo coherence
 	if(dim(criS)[2]!=criNo){
 		print("",quote=FALSE);
 		print(	"##########################################",quote=FALSE);
@@ -117,22 +183,7 @@ apsim_userSettings <- function()
 		stop();	
 	}
 
-return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2Outputs,"perDef"=perDef,"period"=period));
-}
-
-##
- # system evaluation given the variables
- ####################################################################
-apsim_simulate <- function(path2Outputs,simFileName)
-{
-	path2Origin <- getwd();
-	setwd(path2Outputs);
-
-#	print("start apsim evaluation");
-	writeLines(shell(paste("Apsim ",simFileName,".sim",sep=""), intern=TRUE, wait=TRUE),paste(simFileName,".sum",sep=""),sep="\n");
-#	print("end apsim evaluation");
-
-	setwd(path2Origin);
+return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workDir,"perDef"=perDef,"period"=period));
 }
 
 ##
@@ -235,6 +286,26 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	}
 
 return(criteria_vect);
+}
+
+######################################################################
+ # MIGHT BE INTERESTING TO KNOW HOW IT WORKS
+ # BUT YOU DO NOT HAVE TO MODIFY BELOW HERE
+ #####################################################################
+
+##
+ # system evaluation given the variables
+ ####################################################################
+apsim_simulate <- function(path2Outputs,simFileName)
+{
+	path2Origin <- getwd();
+	setwd(path2Outputs);
+
+#	print("start apsim evaluation");
+	writeLines(shell(paste("Apsim ",simFileName,".sim",sep=""), intern=TRUE, wait=TRUE),paste(simFileName,".sum",sep=""),sep="\n");
+#	print("end apsim evaluation");
+
+	setwd(path2Origin);
 }
 
 ##
