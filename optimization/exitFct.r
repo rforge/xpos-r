@@ -1,7 +1,7 @@
 ##
  # FILE exitFct.r
  # AUTHOR olivier crespo
- # DATE july 2009 - july 2009, 11
+ # https://r-forge.r-project.org/projects/xpos-r/
  # various check in order to help locate the error
  ####################################################################
 
@@ -134,23 +134,37 @@ write.bestList <- function(besList,apsimSpec)
 				"## ",date(),"\n",
 				"## no of regions : ",besList$itemNo,"\n",
 				"## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),"\n",
-				"#########################",
-				sep=""
+				"##################################################",
+				sep=","
 			),fileName,append=FALSE
 		);
-
+		
+		## format template
+		r = "n"
+		write(paste("\n## REGION ",r,sep=","),fileName,append=TRUE);
+		write(paste("decision space definition",sep=","),fileName,append=TRUE);
+		write(paste("minDec1","minDec2","minDec...\n",
+				"maxDec1","maxDec2","maxDec...\n",
+				"stepDec1","stepDec2","stepDec...\n",
+				sep=","),fileName,append=TRUE);
+		write(paste("for all decision simulated in this region",sep=","),fileName,append=TRUE);
+		write(paste("decision vector",sep=","),fileName,append=TRUE);
+		write(paste("dec1","dec2","dec...",sep=","),fileName,append=TRUE);
+		write(paste("evaluation vector",sep=","),fileName,append=TRUE);
+		write(paste("crit1","crit2","crit...",sep=","),fileName,append=TRUE);
+			
 		for(r in 1:besList$itemNo){
-			write(paste("\n#>REGION ",r,sep=""),fileName,append=TRUE);
+			write(paste("\n## REGION ",r,sep=","),fileName,append=TRUE);
 
-			write(paste("besList$regEva[[",r,"]]$regDef",sep=""),fileName,append=TRUE);
-			write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+			write(paste("besList$regEva[[",r,"]]$regDef",sep=","),fileName,append=TRUE);
+			write.table(besList$regEva[[r]]$regDef,fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
 
 			for (d in 1:besList$regEva[[r]]$itemNo){
-				write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=""),fileName,append=TRUE);
-				write.table(t(besList$regEva[[r]]$decDef[[d]]),fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+				write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=","),fileName,append=TRUE);
+				write.table(t(besList$regEva[[r]]$decDef[[d]]),fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
 
-				write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=""),fileName,append=TRUE);
-				write.table(besList$regEva[[r]]$decEva[[d]],fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=" ",quote=FALSE);
+				write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=","),fileName,append=TRUE);
+				write.table(besList$regEva[[r]]$decEva[[d]],fileName,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
 			}
 				
 		}
