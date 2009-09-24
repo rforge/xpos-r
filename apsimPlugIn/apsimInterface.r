@@ -305,7 +305,7 @@ apsim_simulate <- function(path2Outputs,simFileName)
 	setwd(path2Outputs);
 
 #	print("start apsim evaluation");
-	writeLines(shell(paste("Apsim ",simFileName,".sim",sep=""), intern=TRUE, wait=TRUE),paste(simFileName,".sum",sep=""),sep="\n");
+	writeLines(shell(paste("Apsim ",simFileName,".sim",sep=""), intern=TRUE, wait=TRUE, mustWork=TRUE),paste(simFileName,".sum",sep=""),sep="\n");
 #	print("end apsim evaluation");
 
 	setwd(path2Origin);
