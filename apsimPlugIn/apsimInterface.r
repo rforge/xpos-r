@@ -252,8 +252,8 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 		if(col==1 || col==3 || col==6){
 			if(res1[1,col]!=res2[1,col]){
 				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
-			} next;
-		} response[1,col] <- res1[1,col]+res2[1,col];
+			}; next;
+		}; response[1,col] <- res1[1,col]+res2[1,col];
 	}
 	repeat{
 		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
@@ -265,9 +265,9 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 			if(col==1 || col==3 || col==6){
 				if(res1[1,col]!=res2[1,col]){
 					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
-				} next;
-			} res[1,col] <- res1[1,col]+res2[1,col];
-		} response <- rbind(response,res);
+				}; next;
+			}; res[1,col] <- res1[1,col]+res2[1,col];
+		}; response <- rbind(response,res);
 	}
 
 	####	is optimization a maximization or minimization?
