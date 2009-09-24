@@ -131,7 +131,7 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 		#
 		#	WRITE DECISION SPACE RESULTS
 		#
-browser();		
+
 		#### file name
 		decFile <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".dec",sep="");
 		#### file head
