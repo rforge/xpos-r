@@ -353,3 +353,22 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		}
 	}
 }
+
+## after optimization visualiation tools
+ ####################################################################
+showListInDecisionSpace <- function(uneList,decS,varX,varY,bgCol)
+{
+	if(uneList$itemNo==0){
+		print("##",quote=FALSE);
+		print("## -- empty list",quote=FALSE);
+		print("##",quote=FALSE);
+	}else{
+		windows(title=" *** xPos-a : decision space visulalisation ***");
+		plot.new();
+		plotAxes(decS,varX,varY,"decision X","decision Y");
+		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+
+		watchDecSpace(uneList,bgCol);
+	}
+	stop();
+}

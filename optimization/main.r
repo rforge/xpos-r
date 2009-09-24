@@ -238,7 +238,7 @@ if (penList$itemNo==0){
 
 ##### write/store outputs
 outFile <- paste("./listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
-save(unbList,penList,proList,besList,file=outFile);
+save(decS,unbList,penList,proList,besList,file=outFile);
 if(!is.null(apsimSpec)){
 	write.bestList(besList,apsimSpec,simNo,resolutionTime);
 }

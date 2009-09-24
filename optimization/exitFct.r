@@ -145,13 +145,13 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 
 	## initial input (decS)
 	write("initial decision region definition",decFile,append=TRUE);
-	write.table(apsimSpec$decS,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
+	write.table(apsimSpec$decS,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE);
 	write("\n",decFile,append=TRUE);
 
 	## equally optimal region achieved (besList$regEva[[r]]$regDef)
 	for(r in 1:besList$itemNo){
 		write(paste("besList$regEva[[",r,"]]$regDef",sep=""),decFile,append=TRUE);
-		write.table(besList$regEva[[r]]$regDef,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
+		write.table(besList$regEva[[r]]$regDef,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE);
 		write("\n",decFile,append=TRUE);
 	}
 }		
