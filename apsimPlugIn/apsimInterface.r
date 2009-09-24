@@ -12,7 +12,7 @@
 
 ##
  # USER SPECIFIC CONDITIONS SETTINGS FOR APSIM
- # this could be done by reading an input file or asking the user
+ # inputs data
  ####################################################################
 apsim_userSettings <- function()
 {
@@ -187,13 +187,26 @@ return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workDir,"per
 }
 
 ##
- # read outputs from .out file
- # NEEDS TO BE UPDATE ACCORDINGLY TO USER NEEDS
+ # USER SPECIFIC CONDITIONS SETTINGS FOR APSIM
+ # outputs data
+ ####################################################################
+ # how to read properly outputs from .out file
  # !! remember objectives are minimized
  ####################################################################
 apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 {
-	##### file column definitions
+	#
+	#	THIS FUNCTION HAS TO BE ADAPTED TO YOUR CONFIGURATION
+	#
+	#	current version is made for:
+	#	- rotation of peanut/maize
+	#	- report frequency at harvest
+	#
+
+	####	column definition
+	# mainly in order to ease the reading of the code
+	# tip: take the .sim file and follow the variable list
+##################################
 	col_year <- 1;
 	col_ddmmyy <- 2;
 	# crop type : maize
@@ -210,76 +223,66 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	col_irrigTot <- 14;
 	col_fertiliser <- 15;
 	col_rain <- 16;
+##################################
 	
-	## which ones are the criteria
-	criteria <- array(c(	col_peanutYield,		## crit 1
-					col_maizeYield,		## crit 2
-					col_cumDenit,		## crit 3
-					col_cumNLeached,		## crit 4
-					col_cumNRunoff,		## crit 5
-					col_cumDrainage,		## crit 6
-					col_cumRunoff		## crit 7
-					),dim=criNo);
+	####	which ones are the criteria to optimize (both maximize and minimize)
+	criteria <- array(c(
+##################################
+	col_peanutYield,		## crit 1
+	col_maizeYield,		## crit 2
+	col_cumDenit,		## crit 3
+	col_cumNLeached,		## crit 4
+	col_cumNRunoff,		## crit 5
+	col_cumDrainage,		## crit 6
+	col_cumRunoff		## crit 7
+##################################
+	),dim=criNo);
 
-	## read .out apsim file
+	#### read the .out apsim file
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
 	colNo <- dim(temp)[2];
 
-	## make 2 lines (maize + peanut) one
-	lin_temp <- 1;
-	lin_res <- 1;
-
-	res1 <- temp[lin_temp,];
-	lin_temp <- lin_temp +1;
-	res2 <- temp[lin_temp,];
+	#### make 2 lines (maize + peanut) one
+	# this is required for rotations (of 2 crops)
+	lin_temp <- 1; lin_res <- 1;	res1 <- temp[lin_temp,];
+	lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
 	response <- array(NA,dim=c(1,colNo));
-
 	for(col in 1:colNo){
 		if (col==2) next;
 		if(col==1 || col==3 || col==6){
 			if(res1[1,col]!=res2[1,col]){
-				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");
-				stop();
-			}
-			next;
-		}
-		response[1,col] <- res1[1,col]+res2[1,col];
+				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
+			} next;
+		} response[1,col] <- res1[1,col]+res2[1,col];
 	}
-
 	repeat{
-		lin_temp <- lin_temp +1;
-		lin_res <- lin_res +1;
-		if (lin_temp>dim(temp)[1]) break;
-
-		res1 <- temp[lin_temp,];
-		lin_temp <- lin_temp +1;
-		res2 <- temp[lin_temp,];
+		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
+		lin_res <- lin_res +1;		res1 <- temp[lin_temp,];
+		lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
 		res <- array(NA,dim=c(1,colNo));
-
 		for(col in 1:colNo){
 			if (col==2) next;
 			if(col==1 || col==3 || col==6){
 				if(res1[1,col]!=res2[1,col]){
-					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");
-					stop();
-				}
-				next;
-			}
-			res[1,col] <- res1[1,col]+res2[1,col];
-		}
-		response <- rbind(response,res);
+					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
+				} next;
+			} res[1,col] <- res1[1,col]+res2[1,col];
+		} response <- rbind(response,res);
 	}
 
-	##### signs for optimization
-	# every value is going to be minimize (negate maximization)
-	for (col in c(	col_maizeBiomass,		# to maximize
-				col_maizeYield,		# to maximize
-				col_peanutBiomass,	# to maximize
-				col_peanutYield		# to maximize
-			)){
-		response[,col] <- -response[,col];
+	####	is optimization a maximization or minimization?
+	# every value is going to be minimize, so you need to negate the one you want to maximize
+	for (col in c(
+##################################
+	col_maizeBiomass,		# to maximize
+	col_maizeYield,		# to maximize
+	col_peanutBiomass,	# to maximize
+	col_peanutYield		# to maximize
+##################################
+		)){	response[,col] <- -response[,col];
 	}
 
+	####	only the last year is extracted
 	criteria_vect <- array(NA,dim=c(1,criNo));
 	for (c in 1:criNo){
 		criteria_vect[1,c] <- response[dim(response)[1],criteria[c]]
@@ -289,7 +292,7 @@ return(criteria_vect);
 }
 
 ######################################################################
- # MIGHT BE INTERESTING TO KNOW HOW IT WORKS
+ # IT MIGHT BE INTERESTING TO HAVE A LOOK FURTHER DOWN
  # BUT YOU DO NOT HAVE TO MODIFY BELOW HERE
  #####################################################################
 
