@@ -126,52 +126,29 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
  ####################################################################
 write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 {
-	if(!is.null(apsimSpec)){
-	
-		#
-		#	WRITE DECISION SPACE RESULTS
-		#
+	#
+	#	WRITE DECISION SPACE RESULTS
+	#
 
-		#### file name
-		decFile <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".dec",sep="");
-		#### file head
-		write(paste("## BEST REGIONS ACHIEVED (decision space perspective)",
-				paste("## ",date(),sep=""),
-				paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
-				paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
-				paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
-				"##################################################",
-				sep="\n"
-			),decFile,append=FALSE
-		);
+	#### file name
+	decFile <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".dec",sep="");
+	#### file head
+	write(paste("## BEST REGIONS ACHIEVED (decision space perspective)",
+			paste("## ",date(),sep=""),
+			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
+			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
+			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
+			"##################################################",
+			sep="\n"
+		),decFile,append=FALSE
+	);
 
-		## decision initial input (decS)
-		## equally optimal region achieved (besList$regEva[[r]]$regDef)
+	## initial input (decS)
 
-		## format template
-		r = "n"
-		write(paste("\n## REGION ",r,sep=","),decFile,append=TRUE);
-		write(paste("decision space definition",sep=","),decFile,append=TRUE);
-		write(paste("minDec1","minDec2","minDec...\n",
-				"maxDec1","maxDec2","maxDec...\n",
-				"stepDec1","stepDec2","stepDec...\n",
-				sep=","),decFile,append=TRUE);
-		write(paste("for all decision simulated in this region",sep=","),decFile,append=TRUE);
-		write(paste("decision vector",sep=","),decFile,append=TRUE);
-		write(paste("dec1","dec2","dec...",sep=","),decFile,append=TRUE);
-		write(paste("evaluation vector",sep=","),decFile,append=TRUE);
-		write(paste("crit1","crit2","crit...",sep=","),decFile,append=TRUE);
-			
-		for(r in 1:besList$itemNo){
-			write(paste("\n## REGION ",r,sep=","),decFile,append=TRUE);
-			write(paste("besList$regEva[[",r,"]]$regDef",sep=","),decFile,append=TRUE);
-			write.table(besList$regEva[[r]]$regDef,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
-			for (d in 1:besList$regEva[[r]]$itemNo){
-				write(paste("besList$regEva[[",r,"]]$decDef[[",d,"]]",sep=","),decFile,append=TRUE);
-				write.table(t(besList$regEva[[r]]$decDef[[d]]),decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
-				write(paste("besList$regEva[[",r,"]]$decEva[[",d,"]]",sep=","),decFile,append=TRUE);
-				write.table(besList$regEva[[r]]$decEva[[d]],decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
-			}
-		}
-	}		
-}
+	## equally optimal region achieved (besList$regEva[[r]]$regDef)
+	for(r in 1:besList$itemNo){
+		write(paste("besList$regEva[[",r,"]]$regDef",sep=""),decFile,append=TRUE);
+		write.table(besList$regEva[[r]]$regDef,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
+		write("\n",decFile,append=TRUE);
+	}
+}		

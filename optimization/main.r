@@ -236,7 +236,12 @@ if (penList$itemNo==0){
 		stoppedBecauseOf <- "time over";
 }	}
 
-write.bestList(besList,apsimSpec,simNo,resolutionTime);
+##### write/store outputs
+outFile <- paste("./listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
+save(unbList,penList,proList,besList,file=outFile);
+if(!is.null(apsimSpec)){
+	write.bestList(besList,apsimSpec,simNo,resolutionTime);
+}
 
 ##### VISUAL ########################################################
 if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
