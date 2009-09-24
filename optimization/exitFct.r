@@ -180,7 +180,7 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 	cat(paste("regN:\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
 	write.table(array("dec",dim=varNo),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
 	cat("->\t",file=criFile,append=TRUE,fill=FALSE);
-	write.table(array("cri",dim=c(perNo,criNo)),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+	write.table(array("cri",dim=criNo),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
 
 	for (r in 1:besList$itemNo){
 		write("\n",criFile,append=TRUE);
