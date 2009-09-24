@@ -349,5 +349,5 @@ simulateApsim <- function(apsimSpec,dec,per,newDec,criNo)
 	
 	## read outputs from .out files
 	# take out only the last year results
-return(apsim_readOutputs(path2apsimOutputs,"simulation",criNo));
+return(apsim_readOutputs(path2apsimOutputs,"optimization",criNo));
 }
