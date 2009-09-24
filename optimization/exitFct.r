@@ -174,8 +174,8 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 
 	## initial input (decS)
 	varNo <- dim(apsimSpec$decS)[2];
-	perNo <- dim(besList$regEva[[1]])[1];
-	criNo <- dim(besList$regEva[[1]])[2];
+	perNo <- dim(besList$regEva[[1]]$decEva[[1]])[1];
+	criNo <- dim(besList$regEva[[1]]$decEva[[1]])[2];
 	write("format",criFile,append=TRUE);
 	cat(paste("regN:\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
 	write.table(array("dec",dim=varNo),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
