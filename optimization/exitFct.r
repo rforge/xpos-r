@@ -138,12 +138,15 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
 			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
 			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
-			"##################################################",
+			"##################################################\n",
 			sep="\n"
 		),decFile,append=FALSE
 	);
 
 	## initial input (decS)
+	write("initial decision region definition",decFile,append=TRUE);
+	write.table(apsimSpec$decS,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep=",",quote=FALSE);
+	write("\n",decFile,append=TRUE);
 
 	## equally optimal region achieved (besList$regEva[[r]]$regDef)
 	for(r in 1:besList$itemNo){
