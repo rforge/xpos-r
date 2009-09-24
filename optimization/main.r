@@ -227,11 +227,16 @@ if (penList$itemNo >0){	besList <- update_bestList(penList,besList,evalMeth,crit
 if (proList$itemNo >0){ besList <- update_bestList(proList,besList,evalMeth,criterion);}
 
 resolutionTime <- difftime(Sys.time(),startingTime);
-stoppedBecauseOf <- "empty pending list";
-if(Sys.time()>=endingTime){stoppedBecauseOf <- "time over";}
-if(simNo>=simLimit){stoppedBecauseOf <- "simulation amount over";}
+if (penList$itemNo==0){
+	stoppedBecauseOf <- "empty pending list";
+}else{
+	if(simNo>=simLimit){
+		stoppedBecauseOf <- "simulation amount over";
+	}else{
+		stoppedBecauseOf <- "time over";
+}	}
 
-write.bestList(besList,apsimSpec);
+write.bestList(besList,apsimSpec,simuNo,resolutionTime);
 
 ##### VISUAL ########################################################
 if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
