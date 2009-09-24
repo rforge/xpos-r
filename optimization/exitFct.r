@@ -131,13 +131,14 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 		#
 		#	WRITE DECISION SPACE RESULTS
 		#
-		
+browser();		
 		#### file name
 		decFile <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".dec",sep="");
 		#### file head
 		write(paste("## BEST REGIONS ACHIEVED (decision space perspective)",
 				paste("## ",date(),sep=""),
-				paste("## no of regions : ",besList$itemNo,sep=""),
+				paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
+				paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
 				paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
 				"##################################################",
 				sep="\n"

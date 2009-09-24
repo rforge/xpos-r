@@ -236,7 +236,7 @@ if (penList$itemNo==0){
 		stoppedBecauseOf <- "time over";
 }	}
 
-write.bestList(besList,apsimSpec,simuNo,resolutionTime);
+write.bestList(besList,apsimSpec,simNo,resolutionTime);
 
 ##### VISUAL ########################################################
 if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
