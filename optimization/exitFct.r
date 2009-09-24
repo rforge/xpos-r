@@ -154,4 +154,41 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 		write.table(besList$regEva[[r]]$regDef,decFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE);
 		write("\n",decFile,append=TRUE);
 	}
+
+	#
+	#	WRITE DECISION VECTOR AND EVALUATIONS
+	#
+
+	#### file name
+	criFile <- paste(apsimSpec$path2out,"bestRegions",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".cri",sep="");
+	#### file head
+	write(paste("## CRITERIA ACHIEAVMENT OF BEST REGION'S DECISIONS",
+			paste("## ",date(),sep=""),
+			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
+			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
+			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
+			"##################################################\n",
+			sep="\n"
+		),criFile,append=FALSE
+	);
+
+	## initial input (decS)
+	varNo <- dim(apsimSpec$decS)[2];
+	perNo <- dim(besList$regEva[[1]])[1];
+	criNo <- dim(besList$regEva[[1]])[2];
+	write("format",criFile,append=TRUE);
+	cat(paste("regN:\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
+	write.table(array("dec",dim=varNo),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+	cat("->\t",file=criFile,append=TRUE,fill=FALSE);
+	write.table(array("cri",dim=c(perNo,criNo)),criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+
+	for (r in 1:besList$itemNo){
+		write("\n",criFile,append=TRUE);
+		for (d in 1:besList$regEva[[r]]$itemNo){
+			cat(paste("reg",r,":\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
+			write.table(besList$regEva[[r]]$decDef[d],criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+			cat("->\t",file=criFile,append=TRUE,fill=FALSE);
+			write.table(besList$regEva[[r]]$decEva,criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+		}
+	}
 }		
