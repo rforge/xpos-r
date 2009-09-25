@@ -299,14 +299,15 @@ return(criteria_vect);
 ##
  # system evaluation given the variables
  ####################################################################
-apsim_simulate <- function(path2Outputs,simFileName)
+apsim_simulate <- function(path2Outputs,simFileName,wait)
 {
 	path2Origin <- getwd();
 	setwd(path2Outputs);
 
-#	print("start apsim evaluation");
-	writeLines(shell(paste("Apsim ",simFileName,".sim",sep=""), intern=TRUE, wait=TRUE, mustWork=TRUE),paste(simFileName,".sum",sep=""),sep="\n");
-#	print("end apsim evaluation");
+	print("new apsim evaluation");
+	shell(paste("Apsim ",simFileName,".sim"," > ",simFileName,".sum",sep="")
+				,intern=FALSE, wait=wait, mustWork=TRUE, invisible=FALSE
+			)
 
 	setwd(path2Origin);
 }
@@ -345,7 +346,7 @@ simulateApsim <- function(apsimSpec,dec,per,newDec,criNo)
 	changeVar(	"var_endYear",	year,			paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
 
 	## run simulation
-	apsim_simulate(path2apsimOutputs,"fileToSimulate");
+	apsim_simulate(path2apsimOutputs,"fileToSimulate",TRUE);
 	
 	## read outputs from .out files
 	# take out only the last year results

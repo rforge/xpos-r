@@ -15,6 +15,7 @@
 # > check ?file.path for windows path
 # > pay attention to memory
 # > reduce multicriteria comparison redondancy
+# > make it work with th R GUI
 
 xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
 			partNo,	## No of divided parts per region {2,3}
