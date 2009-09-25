@@ -167,7 +167,7 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
 			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
 			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
-			"##################################################\n",
+			"##################################################",
 			sep="\n"
 		),criFile,append=FALSE
 	);
@@ -185,10 +185,12 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 	for (r in 1:besList$itemNo){
 		write("\n",criFile,append=TRUE);
 		for (d in 1:besList$regEva[[r]]$itemNo){
-			cat(paste("reg",r,":\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
-			write.table(besList$regEva[[r]]$decDef[d],criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
-			cat("->\t",file=criFile,append=TRUE,fill=FALSE);
-			write.table(besList$regEva[[r]]$decEva,criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+			for (p in 1:perNo){
+				cat(paste("\nreg",r,":\t",sep=""),file=criFile,append=TRUE,fill=FALSE);
+				write.table(besList$regEva[[r]]$decDef[d],criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+				cat("->\t",file=criFile,append=TRUE,fill=FALSE);
+				write.table(besList$regEva[[r]]$decEva[[d]][p,],criFile,col.names=FALSE,row.names=FALSE,append=TRUE,sep="\t",quote=FALSE,eol="\t");
+			}
 		}
 	}
 }		
