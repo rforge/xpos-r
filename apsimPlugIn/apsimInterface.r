@@ -17,6 +17,15 @@
 apsim_userSettings <- function()
 {
 	#
+	#	RUNNING MACHINE
+	#
+	####	To make the simulation runs quickest
+	# specify the number of processors
+##################################
+	proNo <- 2;
+##################################
+
+	#
 	#	TEMPLATE .SIM FILE
 	#
 
@@ -60,7 +69,7 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 2;
+	period <- 8;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
@@ -87,7 +96,6 @@ apsim_userSettings <- function()
 
 	####	write the variables that will last for the whole optimization
 	file.copy(paste(path2workDir,simTemplate,sep=""),paste(path2workDir,"initFile",".sim",sep=""),overwrite=TRUE);
-	changeVar(	"var_title",	"optimization",	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
 	changeVar(	"var_startDate",	var_startDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
 	changeVar(	"var_endDate",	var_endDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
 	changeVar(	"var_metFile",	var_metFile,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
@@ -183,7 +191,7 @@ apsim_userSettings <- function()
 		stop();	
 	}
 
-return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workDir,"perDef"=perDef,"period"=period));
+return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workDir,"perDef"=perDef,"period"=period,"proNo"=proNo));
 }
 
 ##
@@ -315,40 +323,72 @@ apsim_simulate <- function(path2Outputs,simFileName,wait)
 ##
  # SIMULATE APSIM FROM REGION LIST
  ####################################################################
-simulateApsim <- function(apsimSpec,dec,per,newDec,criNo)
+simulateApsim <- function(apsimSpec,dec,per,criNo)
 {
 	decNam <- apsimSpec$decNam;
 	path2apsimOutputs <- apsimSpec$path2out;
 	perDef <- apsimSpec$perDef;
 	period <- apsimSpec$period;
+	proNo <- apsimSpec$proNo;
 	varNo <- dim(dec);
+	perNo <- length(per);
+	temp <- create_naDecEva(perNo,criNo);
+	year <- array(NA,dim=perNo);
 
-	# per in [0,1] has to be translate into a year
-	year <- perDef[1]+per*(perDef[2]-perDef[1]);
-	if (perDef[3]==1){
-		year <- round(year);
+	if(file.exists(paste(path2apsimOutputs,"optimization_","1",".out",sep=""))){
+#print("remove file");
+		unlink(paste(path2apsimOutputs,"optimization_*",sep=""));
+		unlink(paste(path2apsimOutputs,"fileToSimulate_*",sep=""));
 	}
-
-	# to reduce rw operations
-	## change decision variables in .sim
-	if(newDec==1){
-		file.copy(paste(path2apsimOutputs,"initFile.sim",sep=""),paste(path2apsimOutputs,"noYearFile.sim",sep=""),overwrite=TRUE);
-		for (v in 1:varNo){
-			changeVar(decNam[1,v],dec[v],paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"noYearFile.sim",sep=""));
+	for (p in 1:perNo){
+#print("create file");
+		# per in [0,1] has to be translate into a year
+		year[p] <- perDef[1]+per[p]*(perDef[2]-perDef[1]);
+		if (perDef[3]==1){
+			year[p] <- round(year[p]);
 		}
+	
+		# to reduce rw operations
+		## change decision variables in .sim
+		if(p==1){
+			file.copy(paste(path2apsimOutputs,"initFile.sim",sep=""),paste(path2apsimOutputs,"noYearFile.sim",sep=""),overwrite=TRUE);
+			for (v in 1:varNo){
+				changeVar(decNam[1,v],dec[v],paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"noYearFile.sim",sep=""));
+			}
+		}
+
+		## change pertubation variables in .sim
+		# i.e. add the year ('period' years simulated for 1 year output)
+		# startYear and endYear define the length of the time period simulated (has to be included in the met file)
+		file.copy(paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),overwrite=TRUE);
+		changeVar(	"var_startYear",	year[p]-period,				paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+		changeVar(	"var_endYear",	year[p],						paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+		changeVar(	"var_title",	paste("optimization_",p,sep=""),	paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+	}
+	for (p in 1:perNo){
+#print("run file");
+		## run simulation
+		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
+		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
+	}
+	repeat{
+		simCompleted <-  array(FALSE,dim=perNo);
+#print("wait");
+		for (p in 1:perNo){
+			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
+			if( dim(lastYear)[1]==(2*period)){# lastYear[dim(lastYear)[1],1]==year[p] ){
+				simCompleted[p] <- TRUE;
+			}
+		}
+		if(sum(simCompleted)==perNo) break;
 	}
 
-	## change pertubation variables in .sim
-	# i.e. add the year ('period' years simulated for 1 year output)
-	# startYear and endYear define the length of the time period simulated (has to be included in the met file)
-	file.copy(paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),overwrite=TRUE);
-	changeVar(	"var_startYear",	year-period,	paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
-	changeVar(	"var_endYear",	year,			paste(path2apsimOutputs,"fileToSimulate.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate.sim",sep=""));
+	for (p in 1:perNo){
+#print("read file");
+		## read outputs from .out files
+		# take out only the last year results
+		temp[p,1:criNo] <- apsim_readOutputs(path2apsimOutputs,paste("optimization_",p,sep=""),criNo);
+	}
 
-	## run simulation
-	apsim_simulate(path2apsimOutputs,"fileToSimulate",TRUE);
-	
-	## read outputs from .out files
-	# take out only the last year results
-return(apsim_readOutputs(path2apsimOutputs,"optimization",criNo));
+return(temp);
 }
