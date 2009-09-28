@@ -20,9 +20,9 @@ apsim_userSettings <- function()
 	#	RUNNING MACHINE
 	#
 	####	To make the simulation runs quickest
-	# specify the number of processors
+	# specify the number of processors you allow to use
 ##################################
-	proNo <- 2;
+	proNo <- 7;
 ##################################
 
 	#
@@ -35,14 +35,14 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2workDir <- "../../ApsimOptimization/";
+	path2workDir <- "../WorkingDirectory/Template-280909/";
 ##################################
 
 
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template280909.sim"
 ##################################
 
 	#
@@ -53,7 +53,7 @@ apsim_userSettings <- function()
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "C:\\\\Documents and Settings\\\\CRE256\\\\Desktop\\\\Katherine\\\\Met\\\\";
+	path2MetFiles <- "C:\\\\User_Data\\\\ApsimOptimiser\\\\WorkingDirectory\\\\MetFiles\\\\";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -69,7 +69,7 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 8;
+	period <- 2;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
@@ -139,18 +139,18 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	20,	60,	10,	# min, max, minimal step of dec 1
-	20,	60,	10,	# min, max, minimal step of dec 2
-	20,	30,	3,	# min, max, minimal step of dec 3
-	10,	20,	3,	# min, max, minimal step of dec 4
-	10,	20,	3,	# min, max, minimal step of dec 5
-	20,	30,	3,	# min, max, minimal step of dec 6
-	20,	30,	3,	# min, max, minimal step of dec 7
-	30,	40,	3,	# min, max, minimal step of dec 8
-	30,	40,	3,	# min, max, minimal step of dec 9
-	30,	40,	3,	# min, max, minimal step of dec 10
-	20,	30,	3,	# min, max, minimal step of dec 11
-	20,	30,	3	# min, max, minimal step of dec 12
+	0,	50,	10,	# min, max, minimal step of dec 1
+	0,	50,	10,	# min, max, minimal step of dec 2
+	0,	40,	10,	# min, max, minimal step of dec 3
+	0,	40,	10,	# min, max, minimal step of dec 4
+	0,	40,	10,	# min, max, minimal step of dec 5
+	0,	40,	10,	# min, max, minimal step of dec 6
+	0,	40,	10,	# min, max, minimal step of dec 7
+	0,	40,	10,	# min, max, minimal step of dec 8
+	0,	40,	10,	# min, max, minimal step of dec 9
+	0,	40,	10,	# min, max, minimal step of dec 10
+	0,	40,	10,	# min, max, minimal step of dec 11
+	0,	40,	10	# min, max, minimal step of dec 12
 ##################################
 	),3);
 
