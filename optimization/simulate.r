@@ -88,18 +88,7 @@ return(final);
 }
 
 ##
- # SIMULATE MATH MODEL FOR ONE REGION
- # for a group of decisions (1 decision is a group)
- ####################################################################
- # > INPUT:
- # mod: 	integer (1:multifrontal; 2:discontinuous; 3:nonConvex; 4:convexNonConvex)
- # regEva: one region according to main format
- # > OUTPUT:
- # list(decEva), decEva being an array(,dim=c(perNo,criNo))
- ####################################################################
- # > WARNING:
- # do not bring in here stopping criteria or current best known, etc...
- # let us say for now that if you start evaluating, you go through the whole process
+ # Simulate Model
  ####################################################################
 simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 {
@@ -127,18 +116,18 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 		for (d in staSimAtDec:decNo){
 			# new 'per' sequence everytime
 			per <- runif(perNo);	#array(0,dim=perNo);
-			temp <- create_naDecEva(perNo,criNo);
 		
 			# Deb test functions
 			if (mod==1 || mod==2 || mod==3 || mod==4){
 				for (p in 1:perNo){
+					# no paralelism
 					temp[p,1:criNo] <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
 			}	}
 			# APSIM
 			if(mod==10){
-				for (p in 1:perNo){
-					temp[p,1:criNo] <- simulateApsim(apsimSpec,regEva$decDef[[d]],per[p],p,criNo);
-			}	}
+				# trying to paralelise
+				temp <- simulateApsim(apsimSpec,regEva$decDef[[d]],per,criNo);
+			}	
 		
 			simNo <- simNo + perNo;
 			regEva$decEva[[d]] <- temp;
