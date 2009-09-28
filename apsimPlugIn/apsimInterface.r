@@ -69,7 +69,7 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 2;
+	period <- 3;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
@@ -368,23 +368,45 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 	for (p in 1:perNo){
 #print("run file");
 		## run simulation
-		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
+#		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
+		sequencial<-FALSE;
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
+	
+print("wait files creation");
 	repeat{
-		simCompleted <-  array(FALSE,dim=perNo);
-#print("wait");
+		fileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
-			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
-			if( dim(lastYear)[1]==(2*period)){# lastYear[dim(lastYear)[1],1]==year[p] ){
-				simCompleted[p] <- TRUE;
+			if(file.exists(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))){
+				fileCreated[p] <- TRUE;
 			}
 		}
-		if(sum(simCompleted)==perNo) break;
+		if(sum(fileCreated)==perNo) break;
+	}
+print("wait files are not empty");
+	repeat{
+		fileEmpty <-  array(TRUE,dim=perNo);
+		for (p in 1:perNo){
+			if(file.info(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))[,"size"]>0){
+				fileCreated[p] <- FALSE;
+			}
+		}
+		if(sum(fileCreated)==0) break;
+	}
+print("wait files completion");
+	repeat{
+		fileCompleted <-  array(FALSE,dim=perNo);
+		for (p in 1:perNo){
+			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
+			if( dim(lastYear)[1]==(2*period)){
+				fileCompleted[p] <- TRUE;
+			}
+		}
+		if(sum(fileCompleted)==perNo) break;
 	}
 
+print("read files");
 	for (p in 1:perNo){
-#print("read file");
 		## read outputs from .out files
 		# take out only the last year results
 		temp[p,1:criNo] <- apsim_readOutputs(path2apsimOutputs,paste("optimization_",p,sep=""),criNo);
