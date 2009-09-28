@@ -197,6 +197,9 @@ repeat{
 		penList <- temp$pen;
 	} # has to be after selection and before division, if at the loop top, then initial case would fuck up
 
+	## partial storage
+	save(decS,unbList,penList,proList,file=paste("./partialLists",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep=""));
+
 	## watch it run
 	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 		## messages
