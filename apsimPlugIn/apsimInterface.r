@@ -77,7 +77,7 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 3;
+	period <- 2;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
@@ -102,9 +102,9 @@ apsim_userSettings <- function()
 	var_endDate <-	"31/12/var_endYear";
 ##################################
 
-	####	remove previously created files
+	####	remove everything in the working directory
 	while(file.exists(paste(path2workingDir,"initFile.sim",sep=""))){
-		file.remove(paste(path2workingDir,"initFile.sim",sep=""));
+		try(file.remove(paste(path2workingDir,"initFile.sim",sep="")),silent=TRUE);
 	}
 
 	####	write the variables that will last for the whole optimization
@@ -356,13 +356,13 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 # 
 	for (p in 1:perNo){
 		while(file.exists(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))){
-			file.remove(paste(path2apsimOutputs,"optimization_",p,".out",sep=""));
+			try(file.remove(paste(path2apsimOutputs,"optimization_",p,".out",sep="")),silent=TRUE);
 		}
 		while(file.exists(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""))){
-			file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+			try(file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep="")),silent=TRUE);
 		}
 		while(file.exists(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep=""))){
-			file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep=""));
+			try(file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep="")),silent=TRUE);
 		}
 	}
 
@@ -394,12 +394,12 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 	for (p in 1:perNo){
 #print("run file");
 		## run simulation
-#		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
-		sequencial<-FALSE;
+		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
+#		sequencial<-FALSE;
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
 	
-print("wait files creation");	# potential infinite loop
+print("   :     wait files creation");	# potential infinite loop
 	repeat{
 		fileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
@@ -409,7 +409,7 @@ print("wait files creation");	# potential infinite loop
 		}
 		if(sum(fileCreated)==perNo) break;
 	}
-print("wait files are not empty");	# potential infinite loop
+print("   :     wait files are not empty");	# potential infinite loop
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
 		for (p in 1:perNo){
@@ -419,7 +419,7 @@ print("wait files are not empty");	# potential infinite loop
 		}
 		if(sum(fileCreated)==0) break;
 	}
-print("wait files completion");	# potential infinite loop
+print("   :     wait files completion");	# potential infinite loop
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
