@@ -123,6 +123,7 @@ repeat{
 
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
+#print(paste("   ###############   region ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
 		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
@@ -198,12 +199,10 @@ repeat{
 	} # has to be after selection and before division, if at the loop top, then initial case would fuck up
 
 	## partial storage
-	save(decS,unbList,penList,proList,file=paste("./partialLists",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep=""));
+	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
 
-	## watch it run
-	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
-		## messages
-		print(paste("--  ",simNo,
+	## messages
+	print(paste("--  ",simNo,
 			#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
 			" : ",
 			proList$itemNo," + ",
@@ -211,8 +210,11 @@ repeat{
 			unbList$itemNo,
 			" : mem ",
 			memory.size(),
-		sep=""),quote=FALSE);
+		sep=""),quote=FALSE
+	);
 
+	## watch it run
+	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 }

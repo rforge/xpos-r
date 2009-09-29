@@ -114,6 +114,12 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 	## main loop
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
+#print(paste("   ##########   decision ",d," in ",decNo,sep=""));
+			####	remove previously created files
+			while(file.exists(paste(apsimSpec$path2out,"noYearFile.sim",sep=""))){
+				file.remove(paste(apsimSpec$path2out,"noYearFile.sim",sep=""));
+			}
+
 			# new 'per' sequence everytime
 			per <- runif(perNo);	#array(0,dim=perNo);
 		
