@@ -123,7 +123,7 @@ repeat{
 
 	##### simulate every of the promising regions (i.e. proList)
 	for (reg in 1:proList$itemNo){
-#print(paste("   ###############   region ",reg," in ",proList$itemNo,sep=""));
+print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
 		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
