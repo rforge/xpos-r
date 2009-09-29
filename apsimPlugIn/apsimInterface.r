@@ -25,6 +25,14 @@ apsim_userSettings <- function()
 	proNo <- 7;
 ##################################
 
+	####	PATH of the folder used as writing/readind folder for apsim .sim, .out, .sum working files
+	# WARNING: enable apsim to be launched from this folder (edit your OS PATH variable)
+	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
+	# ex:	path2workDir <- "../../ApsimOptimization/";
+##################################
+	path2workingDir <- "../Data/WorkingDirectory/";
+##################################
+
 	#
 	#	TEMPLATE .SIM FILE
 	#
@@ -35,7 +43,7 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2workDir <- "../WorkingDirectory/Template-280909/";
+	path2template <- "../Data/Templates/";
 ##################################
 
 
@@ -53,7 +61,7 @@ apsim_userSettings <- function()
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "C:\\\\User_Data\\\\ApsimOptimiser\\\\WorkingDirectory\\\\MetFiles\\\\";
+	path2MetFiles <- "C:\\\\User_Data\\\\ApsimOptimiser\\\\Data\\\\MetFiles\\\\";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -94,11 +102,16 @@ apsim_userSettings <- function()
 	var_endDate <-	"31/12/var_endYear";
 ##################################
 
+	####	remove previously created files
+	while(file.exists(paste(path2workingDir,"initFile.sim",sep=""))){
+		file.remove(paste(path2workingDir,"initFile.sim",sep=""));
+	}
+
 	####	write the variables that will last for the whole optimization
-	file.copy(paste(path2workDir,simTemplate,sep=""),paste(path2workDir,"initFile",".sim",sep=""),overwrite=TRUE);
-	changeVar(	"var_startDate",	var_startDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
-	changeVar(	"var_endDate",	var_endDate,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
-	changeVar(	"var_metFile",	var_metFile,	paste(path2workDir,"initFile",".sim",sep=""),paste(path2workDir,"initFile",".sim",sep=""));
+	file.copy(paste(path2template,simTemplate,sep=""),paste(path2workingDir,"initFile",".sim",sep=""),overwrite=TRUE);
+	changeVar(	"var_startDate",	var_startDate,	paste(path2workingDir,"initFile",".sim",sep=""),paste(path2workingDir,"initFile",".sim",sep=""));
+	changeVar(	"var_endDate",	var_endDate,	paste(path2workingDir,"initFile",".sim",sep=""),paste(path2workingDir,"initFile",".sim",sep=""));
+	changeVar(	"var_metFile",	var_metFile,	paste(path2workingDir,"initFile",".sim",sep=""),paste(path2workingDir,"initFile",".sim",sep=""));
 
 	#
 	#	SET VARIABLE DECISIONS TO OPTIMIZE
@@ -191,7 +204,7 @@ apsim_userSettings <- function()
 		stop();	
 	}
 
-return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workDir,"perDef"=perDef,"period"=period,"proNo"=proNo));
+return(list("decNam"=decNam,"decS"=decS,"criS"=criS,"path2out"=path2workingDir,"perDef"=perDef,"period"=period,"proNo"=proNo));
 }
 
 ##
@@ -312,7 +325,7 @@ apsim_simulate <- function(path2Outputs,simFileName,wait)
 	path2Origin <- getwd();
 	setwd(path2Outputs);
 
-	print("new apsim evaluation");
+#print("new apsim evaluation");
 	shell(paste("Apsim ",simFileName,".sim"," > ",simFileName,".sum",sep="")
 				,intern=FALSE, wait=wait, mustWork=TRUE, invisible=FALSE
 			)
@@ -335,13 +348,26 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 	temp <- create_naDecEva(perNo,criNo);
 	year <- array(NA,dim=perNo);
 
-	if(file.exists(paste(path2apsimOutputs,"optimization_","1",".out",sep=""))){
 #print("remove file");
-		unlink(paste(path2apsimOutputs,"optimization_*",sep=""));
-		unlink(paste(path2apsimOutputs,"fileToSimulate_*",sep=""));
-	}
+#
+# I know: it should work without the 'while', even with an 'unlink' ..
+# but it does not !!
+# so here I am
+# 
 	for (p in 1:perNo){
+		while(file.exists(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))){
+			file.remove(paste(path2apsimOutputs,"optimization_",p,".out",sep=""));
+		}
+		while(file.exists(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""))){
+			file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+		}
+		while(file.exists(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep=""))){
+			file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep=""));
+		}
+	}
+
 #print("create file");
+	for (p in 1:perNo){
 		# per in [0,1] has to be translate into a year
 		year[p] <- perDef[1]+per[p]*(perDef[2]-perDef[1]);
 		if (perDef[3]==1){
@@ -373,7 +399,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
 	
-print("wait files creation");
+print("wait files creation");	# potential infinite loop
 	repeat{
 		fileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
@@ -383,7 +409,7 @@ print("wait files creation");
 		}
 		if(sum(fileCreated)==perNo) break;
 	}
-print("wait files are not empty");
+print("wait files are not empty");	# potential infinite loop
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
 		for (p in 1:perNo){
@@ -393,7 +419,7 @@ print("wait files are not empty");
 		}
 		if(sum(fileCreated)==0) break;
 	}
-print("wait files completion");
+print("wait files completion");	# potential infinite loop
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
@@ -405,7 +431,7 @@ print("wait files completion");
 		if(sum(fileCompleted)==perNo) break;
 	}
 
-print("read files");
+#print("read files");
 	for (p in 1:perNo){
 		## read outputs from .out files
 		# take out only the last year results
