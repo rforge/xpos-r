@@ -50,7 +50,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template280909.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template300909.sim"
 ##################################
 
 	#
@@ -98,8 +98,8 @@ apsim_userSettings <- function()
 	# keep the year as "var_startYear" or "var_endYear" to be replaced automatically
 	# ex:	var_startDate <-	"15/09/var_startYear";
 ##################################
-	var_startDate <-	"15/09/var_startYear";
-	var_endDate <-	"31/12/var_endYear";
+	var_startDate <-	"1/12/var_startYear";
+	var_endDate <-	"30/11/var_endYear";
 ##################################
 
 	####	remove everything in the working directory
@@ -120,7 +120,7 @@ apsim_userSettings <- function()
 	####	how many decisions define the decision space
 	# ex:	varNo <- 6;
 ##################################
-	varNo <- 12;
+	varNo <- 2;
 ##################################
 
 	####	set variable names that will appear in the template .sim file in order to be substituted during the process
@@ -128,18 +128,8 @@ apsim_userSettings <- function()
 	# ex: "var_decision1"
 	decNam <- array(c(
 ##################################
-	"var_peanutIrrAmount",	#1
-	"var_maizeIrrAmount",	#2
-	"var_maizeFerAtSow",	#3
-	"var_maizeFerAt21",	#4
-	"var_maizeFerAt28",	#5
-	"var_maizeFerAt35",	#6
-	"var_maizeFerAt42",	#7
-	"var_maizeFerAt49",	#8
-	"var_maizeFerAt56",	#9
-	"var_maizeFerAt63",	#10
-	"var_maizeFerAt70",	#11
-	"var_maizeFerAt77"	#12
+	"var_IrrAmount",		#1
+	"var_MaizeFertAmount",	#2
 ##################################
 	),dim=c(1,varNo));
 
@@ -152,18 +142,8 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	0,	50,	10,	# min, max, minimal step of dec 1
-	0,	50,	10,	# min, max, minimal step of dec 2
-	0,	40,	10,	# min, max, minimal step of dec 3
-	0,	40,	10,	# min, max, minimal step of dec 4
-	0,	40,	10,	# min, max, minimal step of dec 5
-	0,	40,	10,	# min, max, minimal step of dec 6
-	0,	40,	10,	# min, max, minimal step of dec 7
-	0,	40,	10,	# min, max, minimal step of dec 8
-	0,	40,	10,	# min, max, minimal step of dec 9
-	0,	40,	10,	# min, max, minimal step of dec 10
-	0,	40,	10,	# min, max, minimal step of dec 11
-	0,	40,	10	# min, max, minimal step of dec 12
+	0,	50,	5,	# min, max, minimal step of dec 1
+	200,	300,	10,	# min, max, minimal step of dec 2
 ##################################
 	),3);
 
@@ -185,14 +165,14 @@ apsim_userSettings <- function()
 	# the criteria are defined in the "apsim_readOutputs" function
 	# ex:	criNo <- 7;
 ##################################
-	criNo <- 7;
+	criNo <- 2;
 ##################################
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
-		criS <- array(c(	-1000,	-10000,	# min, max cri 1
-					-4000,	-20000	# min, max cri 2
-					),dim=c(1,2));
+		criS <- array(c(	-2000,	-8000,	# min, max cri 1
+					0,		400		# min, max cri 2
+					),dim=c(2,2));
 	}
 	
 	####	check criS vs. criNo coherence
@@ -245,30 +225,26 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	col_fertiliser <- 15;
 	col_rain <- 16;
 ##################################
+	col_sumNlosses <- 17; # sum of 11,12,13
 	
 	####	which ones are the criteria to optimize (both maximize and minimize)
 	criteria <- array(c(
 ##################################
 	col_peanutYield,		## crit 1
-	col_maizeYield,		## crit 2
-	col_cumDenit,		## crit 3
-	col_cumNLeached,		## crit 4
-	col_cumNRunoff,		## crit 5
-	col_cumDrainage,		## crit 6
-	col_cumRunoff		## crit 7
+	col_sumNlosses		## crit 2
 ##################################
 	),dim=criNo);
 
 	#### read the .out apsim file
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
-	colNo <- dim(temp)[2];
+	colNo <- dim(temp)[2]+1;
 
 	#### make 2 lines (maize + peanut) one
 	# this is required for rotations (of 2 crops)
 	lin_temp <- 1; lin_res <- 1;	res1 <- temp[lin_temp,];
 	lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
 	response <- array(NA,dim=c(1,colNo));
-	for(col in 1:colNo){
+	for(col in 1:(colNo-1)){
 		if (col==2) next;
 		if(col==1 || col==3 || col==6){
 			if(res1[1,col]!=res2[1,col]){
@@ -276,19 +252,22 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 			}; next;
 		}; response[1,col] <- res1[1,col]+res2[1,col];
 	}
+	response[1,colNo] <- sum(response[1,11:13]);
 	repeat{
 		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
 		lin_res <- lin_res +1;		res1 <- temp[lin_temp,];
 		lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
 		res <- array(NA,dim=c(1,colNo));
-		for(col in 1:colNo){
+		for(col in 1:(colNo-1)){
 			if (col==2) next;
 			if(col==1 || col==3 || col==6){
 				if(res1[1,col]!=res2[1,col]){
 					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
 				}; next;
 			}; res[1,col] <- res1[1,col]+res2[1,col];
-		}; response <- rbind(response,res);
+		};
+		res[1,colNo] <- sum(res[1,11:13]);
+		response <- rbind(response,res);
 	}
 
 	####	is optimization a maximization or minimization?
@@ -399,7 +378,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
 	
-print("   :     wait files creation");	# potential infinite loop
+#print("   :     wait files creation");	# potential infinite loop
 	repeat{
 		fileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
@@ -409,7 +388,7 @@ print("   :     wait files creation");	# potential infinite loop
 		}
 		if(sum(fileCreated)==perNo) break;
 	}
-print("   :     wait files are not empty");	# potential infinite loop
+#print("   :     wait files are not empty");	# potential infinite loop
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
 		for (p in 1:perNo){
@@ -419,7 +398,7 @@ print("   :     wait files are not empty");	# potential infinite loop
 		}
 		if(sum(fileCreated)==0) break;
 	}
-print("   :     wait files completion");	# potential infinite loop
+#print("   :     wait files completion");	# potential infinite loop
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
