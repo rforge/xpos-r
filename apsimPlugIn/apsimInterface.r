@@ -50,7 +50,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template300909.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template011009.sim"
 ##################################
 
 	#
@@ -129,7 +129,7 @@ apsim_userSettings <- function()
 	decNam <- array(c(
 ##################################
 	"var_IrrAmount",		#1
-	"var_MaizeFertAmount",	#2
+	"var_MaizeFertAmount"	#2
 ##################################
 	),dim=c(1,varNo));
 
@@ -143,7 +143,7 @@ apsim_userSettings <- function()
 	decS <- matrix(c(
 ##################################
 	0,	50,	5,	# min, max, minimal step of dec 1
-	200,	300,	10,	# min, max, minimal step of dec 2
+	200,	300,	10	# min, max, minimal step of dec 2
 ##################################
 	),3);
 
@@ -170,8 +170,8 @@ apsim_userSettings <- function()
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
-		criS <- array(c(	-2000,	-8000,	# min, max cri 1
-					0,		400		# min, max cri 2
+		criS <- array(c(	-2000,	-6500,	# min, max cri 1
+					0,		600		# min, max cri 2
 					),dim=c(2,2));
 	}
 	
@@ -378,7 +378,8 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
 	
-#print("   :     wait files creation");	# potential infinite loop
+#print("   :     wait files creation");# potential infinite loop
+	enterLoop <- Sys.time();
 	repeat{
 		fileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
@@ -386,9 +387,18 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 				fileCreated[p] <- TRUE;
 			}
 		}
-		if(sum(fileCreated)==perNo) break;
+		if(sum(fileCreated)==perNo){
+			break;
+		}else{
+			# because crop might fail to germinate and never creat harvest report
+			if(difftime(Sys.time(),enterLoop,units="mins") > period){
+				print("failing to create output files");
+				browser();
+			}
+		}
 	}
 #print("   :     wait files are not empty");	# potential infinite loop
+	enterLoop <- Sys.time();
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
 		for (p in 1:perNo){
@@ -396,15 +406,30 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 				fileCreated[p] <- FALSE;
 			}
 		}
-		if(sum(fileCreated)==0) break;
+		if(sum(fileCreated)==0){
+			break;
+		}else{
+			# because crop might fail to germinate and never creat harvest report
+			if(difftime(Sys.time(),enterLoop,units="mins") > period){
+				print("failing to create write output files");
+				browser();
+			}
+		}
 	}
 #print("   :     wait files completion");	# potential infinite loop
+	enterLoop <- Sys.time();
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
 			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
 			if( dim(lastYear)[1]==(2*period)){
 				fileCompleted[p] <- TRUE;
+			}else{
+				# because crop might fail to germinate and never creat harvest report
+				if(difftime(Sys.time(),enterLoop,units="mins") > period){
+					print("failing to fill in output files");
+					browser();
+				}
 			}
 		}
 		if(sum(fileCompleted)==perNo) break;
