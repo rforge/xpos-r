@@ -6,10 +6,6 @@
  # > REFERENCES
  # O. Crespo, J.É. Bergez, F. Garcia, P2 hierarchical decomposition procedure: application to irrigation strategies design, Operational Research: An International Journal (accepted on 31-03-2009)
  ####################################################################
- # > INPUT:
- # > FUNCTION CALLS:
- # > OUTPUT:
- ####################################################################
 
 ## TO DO:
 # > check ?file.path for windows path
@@ -116,12 +112,32 @@ if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 }
 repeat{
 	##### divide every of the promising regions (i.e. proList)
+print("   divide");
 	proList <- divide_List(proList,partNo);
 
 	##### sample every of the promising regions (i.e. proList)
+print("   sample");
 	proList <- sample_List(proList,decNo,varNo,perNo,criNo,2);
 
+	## messages
+	print(paste("--  ",simNo,
+			#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
+			" : ",
+			proList$itemNo," + ",
+			penList$itemNo," + ",
+			unbList$itemNo,
+			" : mem ",
+			memory.size(),
+		sep=""),quote=FALSE
+	);
+
+	## watch it run
+	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
+		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
+	}
+
 	##### simulate every of the promising regions (i.e. proList)
+print("   simulate");
 	for (reg in 1:proList$itemNo){
 print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
@@ -136,28 +152,33 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	# probably faster to the target and/but recompute lots of decisions
 	# might be good, but at what cost
 	# in selection.r
+print("   keepTheBest");
 	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
+print("   evaluate");
 	proList <- evaluate_proList(proList,evalMeth,criterion);
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
 	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
+print("   compute the best");
 		besList <- update_bestList(proList,besList,evalMeth,criterion);
 	}
 
 	##### MULTICRITERIA
 	## add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
+print("   evaluate proPLUSpen");
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
 	##### update lists
+print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;
@@ -186,6 +207,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	}
 
 	##### select equally potentially optimal regions (proList)
+print("   select");
 	temp <- select(proList,penList,0);
 	proList <- temp$pro;
 	penList <- temp$pen;
@@ -193,6 +215,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	##### MULTICRITERIA
 	## remove proList regions comparisons from penList regions
 	if(evalMeth==5){
+print("   evaluate proMINUSpen");
 		temp <- evaluate_penMINUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
@@ -200,27 +223,10 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 
 	## partial storage
 	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
-
-	## messages
-	print(paste("--  ",simNo,
-			#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
-			" : ",
-			proList$itemNo," + ",
-			penList$itemNo," + ",
-			unbList$itemNo,
-			" : mem ",
-			memory.size(),
-		sep=""),quote=FALSE
-	);
-
-	## watch it run
-	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
-		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
-	}
 }
 ##### DEBUGGING OBSERVATIONS ########################################
 ##### EXIT ##########################################################
-print("optimisation is done - final update in process");
+print("   optimisation is done - final update in process");
 
 ##### update unbreakable, then unb + last pending list evaluations
 evaluate_proList(unbList,evalMeth,criterion);
