@@ -142,8 +142,8 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	0,	50,	5,	# min, max, minimal step of dec 1
-	200,	300,	10	# min, max, minimal step of dec 2
+	0,	60,	5,	# min, max, minimal step of dec 1
+	0,	300,	10	# min, max, minimal step of dec 2
 ##################################
 	),3);
 
@@ -170,7 +170,7 @@ apsim_userSettings <- function()
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
-		criS <- array(c(	-2000,	-6500,	# min, max cri 1
+		criS <- array(c(	0,		-6500,	# min, max cri 1
 					0,		600		# min, max cri 2
 					),dim=c(2,2));
 	}
