@@ -124,7 +124,7 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 ##
  # LAST ACTION: WRITE THE LIST OF THE BEST REGIONS FOUND
  ####################################################################
-write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
+write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime,totalNoOfSimu)
 {
 	#
 	#	WRITE DECISION SPACE RESULTS
@@ -136,7 +136,7 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 	write(paste("## BEST REGIONS ACHIEVED (decision space perspective)",
 			paste("## ",date(),sep=""),
 			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
-			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
+			paste("## no of equally optimal regions : ",besList$itemNo," out of ",totalNoOfSimu," explored",sep=""),
 			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
 			"##################################################\n",
 			sep="\n"
@@ -165,7 +165,7 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime)
 	write(paste("## CRITERIA ACHIEAVMENT OF BEST REGION'S DECISIONS",
 			paste("## ",date(),sep=""),
 			paste("## resolution took : ",format(fullTime)," (",fullSimNo," simulations)",sep=""),
-			paste("## no of equally optimal regions : ",besList$itemNo,sep=""),
+			paste("## no of equally optimal regions : ",besList$itemNo," out of ",totalNoOfSimu," explored",sep=""),
 			paste("## multicriteria rank : ",sum(besList$regEva[[1]]$selCri[1,]),sep=""),
 			"##################################################",
 			sep="\n"

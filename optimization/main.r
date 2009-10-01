@@ -183,6 +183,9 @@ print("   update");
 	unbList <- temp$unb;
 	proList <- list("itemNo"=0,"regEva"=NULL);
 
+	## partial storage
+	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
+
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
 	 	|| simNo>=simLimit	# simulation number limit
@@ -219,9 +222,6 @@ print("   evaluate proMINUSpen");
 		proList <- temp$pro;
 		penList <- temp$pen;
 	} # has to be after selection and before division, if at the loop top, then initial case would fuck up
-
-	## partial storage
-	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
 }
 ##### DEBUGGING OBSERVATIONS ########################################
 ##### EXIT ##########################################################
@@ -250,8 +250,10 @@ if (penList$itemNo==0){
 ##### write/store outputs
 outFile <- paste("./listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
 save(decS,unbList,penList,proList,besList,file=outFile);
+file.remove(paste("./partialLists.rData",sep=""));
 if(!is.null(apsimSpec)){
-	write.bestList(besList,apsimSpec,simNo,resolutionTime);
+browser();
+	write.bestList(besList,apsimSpec,simNo,resolutionTime,(unbList$itemNo+penList$itemNo+proList$itemNo));
 }
 
 ##### VISUAL ########################################################
