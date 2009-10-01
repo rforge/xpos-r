@@ -114,7 +114,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 	## main loop
 	if(staSimAtDec <= decNo){
 		for (d in staSimAtDec:decNo){
-print(paste("   #     dec ",d," in ",decNo,sep=""));
+print(paste("   #           dec ",d," in ",decNo,sep=""));
 			####	remove previously created files
 			while(file.exists(paste(apsimSpec$path2out,"noYearFile.sim",sep=""))){
 				try(file.remove(paste(apsimSpec$path2out,"noYearFile.sim",sep="")),silent=TRUE);
@@ -125,10 +125,14 @@ print(paste("   #     dec ",d," in ",decNo,sep=""));
 		
 			# Deb test functions
 			if (mod==1 || mod==2 || mod==3 || mod==4){
+				temp <- NULL;
 				for (p in 1:perNo){
 					# no paralelism
-					temp[p,1:criNo] <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
-			}	}
+					# temp[p,1:criNo] <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
+					tmp <- simulateDeb(mod,regEva$decDef[[d]],per[p]);
+				}
+				temp <- rbind(temp,tmp);
+			}
 			# APSIM
 			if(mod==10){
 				# trying to paralelise
