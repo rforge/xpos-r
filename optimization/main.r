@@ -121,13 +121,12 @@ print("   sample");
 
 	## messages
 	print(paste("--  ",simNo,
-			#" (",format(difftime(Sys.time(),startingTime),format="%S"),") ",
+			" (",format(difftime(Sys.time(),startingTime,units="auto"),digits=4),") ",
 			" : ",
 			proList$itemNo," + ",
 			penList$itemNo," + ",
 			unbList$itemNo,
-			" : mem ",
-			memory.size(),
+			" : mem ", memory.size(),
 		sep=""),quote=FALSE
 	);
 
