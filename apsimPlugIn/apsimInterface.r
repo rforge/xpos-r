@@ -50,7 +50,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template011009.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template021009.sim"
 ##################################
 
 	#
@@ -120,7 +120,7 @@ apsim_userSettings <- function()
 	####	how many decisions define the decision space
 	# ex:	varNo <- 6;
 ##################################
-	varNo <- 2;
+	varNo <- 3;
 ##################################
 
 	####	set variable names that will appear in the template .sim file in order to be substituted during the process
@@ -128,8 +128,9 @@ apsim_userSettings <- function()
 	# ex: "var_decision1"
 	decNam <- array(c(
 ##################################
-	"var_IrrAmount",		#1
-	"var_MaizeFertAmount"	#2
+	"var_PeanutIrrAmount",	#1
+	"var_MaizeIrrAmount",	#2
+	"var_MaizeFertAmount"	#3
 ##################################
 	),dim=c(1,varNo));
 
@@ -143,7 +144,8 @@ apsim_userSettings <- function()
 	decS <- matrix(c(
 ##################################
 	0,	60,	5,	# min, max, minimal step of dec 1
-	0,	300,	10	# min, max, minimal step of dec 2
+	0,	60,	5,	# min, max, minimal step of dec 2
+	0,	300,	10	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
@@ -165,7 +167,7 @@ apsim_userSettings <- function()
 	# the criteria are defined in the "apsim_readOutputs" function
 	# ex:	criNo <- 7;
 ##################################
-	criNo <- 2;
+	criNo <- 3;
 ##################################
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
@@ -231,7 +233,8 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	criteria <- array(c(
 ##################################
 	col_peanutYield,		## crit 1
-	col_sumNlosses		## crit 2
+	col_maizeYield,		## crit 2
+	col_sumNlosses		## crit 3
 ##################################
 	),dim=criNo);
 
