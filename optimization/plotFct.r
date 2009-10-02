@@ -26,6 +26,7 @@ plotAxes <- function(regDef,varX,varY,labX,labY)
  ####################################################################
 plotRectangle <- function(regDef,varX,varY,filCol,borCol,title)
 {
+browser();
 	rect(	regDef[1,varX],	# x left
 		regDef[1,varY],	# y bottom
 		regDef[2,varX],	# x right
@@ -64,12 +65,12 @@ plotDecEva <- function(decNo,decEva,criX,criY,pch,color)
 ##
  # PLOTTING TO 'SEE' THE DECISION SPACE TROUGH THE PROCESS
  ####################################################################
-watchDecSpace <- function(uneList,bgCol)
+watchDecSpace <- function(uneList,varX,varY,bgCol)
 {
 	## decision space figure
 	for (r in 1:uneList$itemNo){
-		plotRectangle(uneList$regEva[[r]]$regDef,1,2,bgCol,"black",NULL);
-		plotDecDef(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decDef,1,2,"+","black");
+		plotRectangle(uneList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+		plotDecDef(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decDef,varX,varY,"+","black");
 	}
 }
 
@@ -179,10 +180,10 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		## decision space
 		if(!is.null(decDev)){
 			dev.set(decDev);
-			if(unbList$item>0){watchDecSpace(unbList,"red");}
-			if(penList$item>0){watchDecSpace(penList,"blue");}
-			if(proList$item>0){watchDecSpace(proList,"gold");}
-			#if(besList$item>0){watchDecSpace(besList,"green");}
+			if(unbList$item>0){watchDecSpace(unbList,1,2,"red");}
+			if(penList$item>0){watchDecSpace(penList,1,2,"blue");}
+			if(proList$item>0){watchDecSpace(proList,1,2,"gold");}
+			#if(besList$item>0){watchDecSpace(besList,1,2,"green");}
 		}
 
 		## criteria space
@@ -210,26 +211,26 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 			dev.set(decDev);
 			if(proList$itemNo>0){
 				par(mfg=proScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(penList$item>0){watchDecSpace(penList,"white");}
-				watchDecSpace(proList,"gold");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(penList$item>0){watchDecSpace(penList,1,2,"white");}
+				watchDecSpace(proList,1,2,"gold");
 			}
 			if(penList$itemNo>0){
 				par(mfg=penScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(proList$item>0){watchDecSpace(proList,"white");}
-				watchDecSpace(penList,"blue");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(proList$item>0){watchDecSpace(proList,1,2,"white");}
+				watchDecSpace(penList,1,2,"blue");
 			}
 			if(besList$itemNo>0){
 				par(mfg=besScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(proList$item>0){watchDecSpace(proList,"white");}
-				if(penList$item>0){watchDecSpace(penList,"white");}
-				watchDecSpace(besList,"green");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(proList$item>0){watchDecSpace(proList,1,2,"white");}
+				if(penList$item>0){watchDecSpace(penList,1,2,"white");}
+				watchDecSpace(besList,1,2,"green");
 			}	
 			if(unbList$item>0){
 				par(mfg=unbScreen);
-				watchDecSpace(unbList,"red");
+				watchDecSpace(unbList,1,2,"red");
 			}
 		}
 	
@@ -274,10 +275,10 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		## decision space
 		if(!is.null(decDev)){
 			dev.set(decDev);
-			if(unbList$item>0){watchDecSpace(unbList,"red");}
-			if(penList$item>0){watchDecSpace(penList,"blue");}
-			if(proList$item>0){watchDecSpace(proList,"gold");}
-			if(besList$item>0){watchDecSpace(besList,"green");}
+			if(unbList$item>0){watchDecSpace(unbList,1,2,"red");}
+			if(penList$item>0){watchDecSpace(penList,1,2,"blue");}
+			if(proList$item>0){watchDecSpace(proList,1,2,"gold");}
+			if(besList$item>0){watchDecSpace(besList,1,2,"green");}
 		}
 
 		## criteria space
@@ -305,26 +306,26 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 			dev.set(decDev);
 			if(proList$itemNo>0){
 				par(mfg=proScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(penList$item>0){watchDecSpace(penList,"white");}
-				watchDecSpace(proList,"gold");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(penList$item>0){watchDecSpace(penList,1,2,"white");}
+				watchDecSpace(proList,1,2,"gold");
 			}
 			if(penList$itemNo>0){
 				par(mfg=penScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(proList$item>0){watchDecSpace(proList,"white");}
-				watchDecSpace(penList,"blue");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(proList$item>0){watchDecSpace(proList,1,2,"white");}
+				watchDecSpace(penList,1,2,"blue");
 			}
 			if(besList$itemNo>0){
 				par(mfg=besScreen);
-				if(unbList$item>0){watchDecSpace(unbList,"white");}
-				if(proList$item>0){watchDecSpace(proList,"white");}
-				if(penList$item>0){watchDecSpace(penList,"white");}
-				watchDecSpace(besList,"green");
+				if(unbList$item>0){watchDecSpace(unbList,1,2,"white");}
+				if(proList$item>0){watchDecSpace(proList,1,2,"white");}
+				if(penList$item>0){watchDecSpace(penList,1,2,"white");}
+				watchDecSpace(besList,1,2,"green");
 			}	
 			if(unbList$item>0){
 				par(mfg=unbScreen);
-				watchDecSpace(unbList,"red");
+				watchDecSpace(unbList,1,2,"red");
 			}
 		}
 	
@@ -368,7 +369,6 @@ showListInDecisionSpace <- function(uneList,decS,varX,varY,bgCol)
 		plotAxes(decS,varX,varY,"decision X","decision Y");
 		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
 
-		watchDecSpace(uneList,bgCol);
+		watchDecSpace(uneList,1,2,bgCol);
 	}
-	stop();
 }

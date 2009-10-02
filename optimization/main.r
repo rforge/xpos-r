@@ -273,6 +273,6 @@ print(paste("# - the list of pending regions",sep=""),quote=FALSE);
 print(paste("# - the list of promising regions",sep=""),quote=FALSE);
 print(paste("# - the list of best regions",sep=""),quote=FALSE);
 print(paste("# have been stored here : ",outFile,sep=""),quote=FALSE);
-print(paste("# use the fct ShowListInDecSpace to visualise those lists",sep=""),quote=FALSE);
+#print(paste("# use the fct ShowListInDecSpace to visualise those lists",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
 }
