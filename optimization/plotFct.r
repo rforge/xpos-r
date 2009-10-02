@@ -26,7 +26,6 @@ plotAxes <- function(regDef,varX,varY,labX,labY)
  ####################################################################
 plotRectangle <- function(regDef,varX,varY,filCol,borCol,title)
 {
-browser();
 	rect(	regDef[1,varX],	# x left
 		regDef[1,varY],	# y bottom
 		regDef[2,varX],	# x right
