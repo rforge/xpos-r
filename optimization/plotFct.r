@@ -369,6 +369,6 @@ showListInDecisionSpace <- function(uneList,decS,varX,varY,bgCol)
 		plotAxes(decS,varX,varY,"decision X","decision Y");
 		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
 
-		watchDecSpace(uneList,1,2,bgCol);
+		watchDecSpace(uneList,varX,varY,bgCol);
 	}
 }
