@@ -50,7 +50,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template021009.sim"
+	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC-template051009.sim"
 ##################################
 
 	#
@@ -145,7 +145,7 @@ apsim_userSettings <- function()
 ##################################
 	0,	60,	5,	# min, max, minimal step of dec 1
 	0,	60,	5,	# min, max, minimal step of dec 2
-	0,	300,	10	# min, max, minimal step of dec 3
+	0,	400,	10	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
