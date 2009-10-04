@@ -252,7 +252,6 @@ outFile <- paste("./listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rDa
 save(decS,unbList,penList,proList,besList,file=outFile);
 file.remove(paste("./partialLists.rData",sep=""));
 if(!is.null(apsimSpec)){
-browser();
 	write.bestList(besList,apsimSpec,simNo,resolutionTime,(unbList$itemNo+penList$itemNo+proList$itemNo));
 }
 
