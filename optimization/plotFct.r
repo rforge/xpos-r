@@ -76,11 +76,11 @@ watchDecSpace <- function(uneList,varX,varY,bgCol)
 ##
  # PLOTTING TO 'SEE' THE CRITERIA SPACE TROUGH THE PROCESS
  ####################################################################
-watchCriSpace <- function(uneList,pch,pCol)
+watchCriSpace <- function(uneList,criX,criY,pch,pCol)
 {
 	## decision space figure
 	for (r in 1:uneList$itemNo){
-		plotDecEva(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decEva,1,2,pch,pCol);
+		plotDecEva(uneList$regEva[[r]]$itemNo,uneList$regEva[[r]]$decEva,criX,criY,pch,pCol);
 	}
 }
 
@@ -189,10 +189,10 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 		if(!is.null(criDev)){
 			dev.set(criDev);
 			plotRectangle(criS,1,2,"white","white","criteria space evaluation");
-			if(unbList$item>0){watchCriSpace(unbList,".","red");}
-			if(penList$item>0){watchCriSpace(penList,"+","blue");}
-			if(proList$item>0){watchCriSpace(proList,"+","black");}
-			if(besList$item>0){watchCriSpace(besList,"o","green");}
+			if(unbList$item>0){watchCriSpace(unbList,1,2,".","red");}
+			if(penList$item>0){watchCriSpace(penList,1,2,"+","blue");}
+			if(proList$item>0){watchCriSpace(proList,1,2,"+","black");}
+			if(besList$item>0){watchCriSpace(besList,1,2,"o","green");}
 		}
 	}
 
@@ -239,21 +239,21 @@ update_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,be
 			if(proList$itemNo>0){
 				par(mfg=proScreen);
 				plotRectangle(criS,1,2,"white","white","promising region evaluations");
-				watchCriSpace(proList,"+","black");
+				watchCriSpace(proList,1,2,"+","black");
 			}
 			if(penList$itemNo>0){
 				par(mfg=penScreen);
 				plotRectangle(criS,1,2,"white","white","pending region evaluations");
-				watchCriSpace(penList,"+","blue");
+				watchCriSpace(penList,1,2,"+","blue");
 			}	
 			if(besList$itemNo>0){
 				par(mfg=besScreen);
 				plotRectangle(criS,1,2,"white","white","current best region evaluations");
-				watchCriSpace(besList,"o","green");
+				watchCriSpace(besList,1,2,"o","green");
 			}	
 			if(unbList$item>0){
 				par(mfg=unbScreen);
-				watchCriSpace(unbList,".","red");
+				watchCriSpace(unbList,1,2,".","red");
 			}
 		}
 	}
@@ -284,10 +284,10 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 		if(!is.null(criDev)){
 			dev.set(criDev);
 			plotRectangle(criS,1,2,"white","white","criteria space evaluation");
-			if(unbList$item>0){watchCriSpace(unbList,".","red");}
-			if(penList$item>0){watchCriSpace(penList,"+","blue");}
-			if(proList$item>0){watchCriSpace(proList,"+","black");}
-			if(besList$item>0){watchCriSpace(besList,"o","green");}
+			if(unbList$item>0){watchCriSpace(unbList,1,2,".","red");}
+			if(penList$item>0){watchCriSpace(penList,1,2,"+","blue");}
+			if(proList$item>0){watchCriSpace(proList,1,2,"+","black");}
+			if(besList$item>0){watchCriSpace(besList,1,2,"o","green");}
 		}
 	}
 
@@ -334,21 +334,21 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 			if(proList$itemNo>0){
 				par(mfg=proScreen);
 				plotRectangle(criS,1,2,"white","white","promising region evaluations");
-				watchCriSpace(proList,"+","black");
+				watchCriSpace(proList,1,2,"+","black");
 			}
 			if(penList$itemNo>0){
 				par(mfg=penScreen);
 				plotRectangle(criS,1,2,"white","white","pending region evaluations");
-				watchCriSpace(penList,"+","blue");
+				watchCriSpace(penList,1,2,"+","blue");
 			}
 			if(besList$itemNo>0){
 				par(mfg=besScreen);
 				plotRectangle(criS,1,2,"white","white","current best region evaluations");
-				watchCriSpace(besList,"o","green");
+				watchCriSpace(besList,1,2,"o","green");
 			}	
 			if(unbList$item>0){
 				par(mfg=unbScreen);
-				watchCriSpace(unbList,".","red");
+				watchCriSpace(unbList,1,2,".","red");
 			}
 		}
 	}
@@ -356,18 +356,131 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 
 ## after optimization visualiation tools
  ####################################################################
-showListInDecisionSpace <- function(uneList,decS,varX,varY,bgCol)
+showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol)
 {
-	if(uneList$itemNo==0){
-		print("##",quote=FALSE);
-		print("## -- empty list",quote=FALSE);
-		print("##",quote=FALSE);
-	}else{
-		windows(title=" *** xPos-a : decision space visulalisation ***");
-		plot.new();
-		plotAxes(decS,varX,varY,"decision X","decision Y");
-		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+	windows(title=" *** xPos-a : decision space visulalisation ***");
+	plot.new();
+	plotAxes(decS,varX,varY,"decision X","decision Y");
+	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
 
-		watchDecSpace(uneList,varX,varY,bgCol);
+	if(proList$item>0){watchDecSpace(proList,varX,varY,"gold");}
+	if(penList$item>0){watchDecSpace(penList,varX,varY,"blue");}
+	if(unbList$item>0){watchDecSpace(unbList,varX,varY,"red");}
+	if(besList$item>0){watchDecSpace(besList,varX,varY,bgCol);}
+}
+
+## after optimization visualiation tools
+ ####################################################################
+showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol,thrMin,thrMax)
+{
+	windows(title=" *** xPos-a : decision space visulalisation ***");
+	plot.new();
+	plotAxes(decS,varX,varY,"decision X","decision Y");
+	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+
+	if(proList$item>0){watchDecSpace(proList,varX,varY,"gold");}
+	if(penList$item>0){watchDecSpace(penList,varX,varY,"blue");}
+	if(unbList$item>0){watchDecSpace(unbList,varX,varY,"red");}
+	if(besList$item>0){watchDecSpace(besList,varX,varY,"green");}
+
+	for (r in 1:besList$itemNo){
+	for (d in 1:besList$regEva[[r]]$itemNo){
+		if(min(besList$regEva[[r]]$decEva[[d]][,varX])<thrMin
+			&& max(besList$regEva[[r]]$decEva[[d]][,varX])<thrMax){
+			plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+		}
+	}}
+}
+
+## after optimization visualiation tools
+ ####################################################################
+showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
+{
+	windows(title=" *** xPos-a : criteria space visulalisation ***");
+	plot.new();
+	plotAxes(criS,criX,criY,"criterion A","criterion B");
+	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
+
+	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
+	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
+	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
+	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
+}
+
+##
+ # 3D PLOTTING THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
+ ####################################################################
+ # after optimization visualiation tools
+ # requires "scatterplot3d" R package
+ ####################################################################
+showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
+{
+#	windows(title=" *** xPos-a : criteria space visulalisation ***");
+#	plot.new();
+#	plotAxes(criS,criX,criY,"criterion A","criterion B");
+#	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
+
+	myPlot <- scatterplot3d::scatterplot3d(
+		mean(criS[1:2,criX]),
+		mean(criS[1:2,criY]),
+		mean(criS[1:2,criZ]),
+		xlim=criS[1:2,criX],
+		ylim=criS[1:2,criY],
+		zlim=criS[1:2,criZ],
+		pch="",angle=angle
+	);
+
+	if(proList$item>0){
+		uneList <- proList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="gold"
+				);
+			}
+		}
+	}
+	if(penList$item>0){
+		uneList <- penList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="blue"
+				);
+			}
+		}
+	}
+	if(unbList$item>0){
+		uneList <- unbList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="red"
+				);
+			}
+		}
+	}
+
+	if(besList$item>0){
+		uneList <- besList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=ptType,col=ptCol
+				);
+			}
+		}
 	}
 }

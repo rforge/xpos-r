@@ -54,7 +54,7 @@ if(mod==1 || mod==2 || mod==3 || mod==4){
 	criNo <- 2;
 	switch(mod,
 		{	criS <- matrix(c(0,1,0,10),2);	# Deb functions 1
-		},{	criS <- matrix(c(0,1,-0.5,2),2);	# Deb functions 2
+		},{	criS <- matrix(c(0,1,-0.5,4),2);	# Deb functions 2
 		},{	criS <- matrix(c(0,4,0,4),2);		# Deb functions 3
 		},{	criS <- matrix(c(0,4,0,4),2);		# Deb functions 4
 	});
@@ -135,6 +135,7 @@ print("   sample");
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 
+browser();
 	##### simulate every of the promising regions (i.e. proList)
 print("   simulate");
 	for (reg in 1:proList$itemNo){
@@ -151,8 +152,8 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	# probably faster to the target and/but recompute lots of decisions
 	# might be good, but at what cost
 	# in selection.r
-print("   keepTheBest");
-	proList <- keepTheBests(proList,2);
+#print("   keepTheBest");
+#	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
