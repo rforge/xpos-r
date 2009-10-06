@@ -129,7 +129,7 @@ apsim_userSettings <- function()
 	decNam <- array(c(
 ##################################
 	"var_PeanutIrrAmount",	#1
-	"var_MaizeIrrAmount",	#2
+	"var_MaizeIrrAmount",	#
 	"var_MaizeFertAmount"	#3
 ##################################
 	),dim=c(1,varNo));
@@ -145,7 +145,7 @@ apsim_userSettings <- function()
 ##################################
 	0,	60,	5,	# min, max, minimal step of dec 1
 	0,	60,	5,	# min, max, minimal step of dec 2
-	0,	400,	10	# min, max, minimal step of dec 3
+	0,	300,	10	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
@@ -394,7 +394,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(difftime(Sys.time(),enterLoop,units="mins") > period){
+			if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
 				print("failing to create output files");
 				browser();
 			}
@@ -406,15 +406,15 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 		fileEmpty <-  array(TRUE,dim=perNo);
 		for (p in 1:perNo){
 			if(file.info(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))[,"size"]>0){
-				fileCreated[p] <- FALSE;
+				fileEmpty[p] <- FALSE;
 			}
 		}
-		if(sum(fileCreated)==0){
+		if(sum(fileEmpty)==0){
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(difftime(Sys.time(),enterLoop,units="mins") > period){
-				print("failing to create write output files");
+			if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
+				print("failing to write output files");
 				browser();
 			}
 		}
@@ -429,7 +429,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 				fileCompleted[p] <- TRUE;
 			}else{
 				# because crop might fail to germinate and never creat harvest report
-				if(difftime(Sys.time(),enterLoop,units="mins") > period){
+				if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
 					print("failing to fill in output files");
 					browser();
 				}
