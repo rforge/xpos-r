@@ -394,7 +394,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
 				print("failing to create output files");
 				browser();
 			}
@@ -413,7 +413,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
 				print("failing to write output files");
 				browser();
 			}
@@ -427,15 +427,17 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
 			if( dim(lastYear)[1]==(2*period)){
 				fileCompleted[p] <- TRUE;
-			}else{
-				# because crop might fail to germinate and never creat harvest report
-				if(difftime(Sys.time(),enterLoop,units="mins") > (2*period)){
-					print("failing to fill in output files");
-					browser();
-				}
 			}
 		}
-		if(sum(fileCompleted)==perNo) break;
+		if(sum(fileCompleted)==perNo){
+			break;
+		}else{
+			# because crop might fail to germinate and never creat harvest report
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
+				print("failing to fill in output files");
+				browser();
+			}
+		}
 	}
 
 #print("read files");
