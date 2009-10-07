@@ -135,7 +135,7 @@ print("   sample");
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 
-browser();
+#browser();
 	##### simulate every of the promising regions (i.e. proList)
 print("   simulate");
 	for (reg in 1:proList$itemNo){
