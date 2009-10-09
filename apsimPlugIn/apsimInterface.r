@@ -19,8 +19,9 @@ apsim_userSettings <- function()
 	#
 	#	RUNNING MACHINE
 	#
-	####	To make the simulation runs quickest
-	# specify the number of processors you allow to use
+	####	To make the simulation run quicker on multiplle processor PCs
+	# specify the number of processors you're allowed to use
+	# until now: multi processors are used only for perturbation simulation of the same decision
 ##################################
 	proNo <- 7;
 ##################################
@@ -129,8 +130,8 @@ apsim_userSettings <- function()
 	decNam <- array(c(
 ##################################
 	"var_PeanutIrrAmount",	#1
-	"var_MaizeIrrAmount",	#
-	"var_MaizeFertAmount"	#3
+	"var_MaizeIrrAmount",		#2
+	"var_MaizeFertAmount"		#3
 ##################################
 	),dim=c(1,varNo));
 
