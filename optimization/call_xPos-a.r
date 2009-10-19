@@ -13,7 +13,7 @@
 #			simLimit,	## simulation number limit
 #			timLimit,	## time limit in sec
 #		  seeItThrough=NULL,	## for graphics {"g","d"}
-#			seed=NULL)## if needed (integer)
+#			seed=NULL)	## if needed (integer)
 
 source('main.r');
 ## CALL EXAMPLE
