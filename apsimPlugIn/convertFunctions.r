@@ -269,14 +269,17 @@ check_dayVSdim <- function(sDate,eDate,linNo)
 transform_type1 <- function(table,head)
 {
 	for(y in format(head$period$start,"%Y"):format(head$period$end,"%Y")){
-		if (is.leapYear(y)){
-			# cut before
+		if (is.leapYear(y)){			# cut before
 			dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
 			table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
 			# pull out section
 			oldSection <- table[(dayNo_bef+1):(dayNo_bef+365),1:dim(table)[2]];
 			# cut after
-			table_aft <- table[(dayNo_bef+365+1):dim(table)[1],1:dim(table)[2]];
+			if(y!=format(head$period$end,"%Y")){
+				table_aft <- table[(dayNo_bef+365+1):dim(table)[1],1:dim(table)[2]];
+			}else{ # no after
+				table_aft <- NULL;
+			}
 			# transform
 			newSection <- transform_365into366(oldSection);
 			# paste
@@ -404,6 +407,10 @@ convert_OneStation4OnePeriod <- function(path,stationName)
 	apsim_table[,1:3] <- as.integer(apsim_table[,1:3]);
 
 # write it into a .met file
+	# create output dir if does not exists
+	if(!file.exists(path$output)){
+		dir.create(path$output, showWarnings = TRUE, recursive = FALSE, mode = "0777");
+	}
 	# head
 	station <- strsplit(stationName,"\\.")[[1]][1];
 	file.copy("metFileTemplate.met",paste(path$output,station,".met",sep=""),overwrite=TRUE);
