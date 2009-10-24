@@ -25,18 +25,18 @@ source('rwfileOp.r');
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################
-path <- list("input"=			"../../Conversion/Inputs/",	## 1 ##
-		"output"=			"../../Conversion/Outputs/",	## 2 ##
-		"data"=list("tmin"=	"ex_tmn/",				## 3 ##
-				"tmax"=	"ex_tmx/",				## 3 ##
-				"ppt"=	"ex_ppt/"				## 3 ##
+path <- list("input"=			"../../Test/GCM2/",	## 1 ##
+		"output"=		"../../Test/Outputs/",## 2 ##
+		"data"=list(	"tmin"=	"tmn/",				## 3 ##
+				"tmax"=	"tmx/",				## 3 ##
+				"ppt"=	"ppt/"				## 3 ##
 			)
 		);
 
 ##
  # MAIN FUNCTION CALL
  #########################################################################
-convert_OneStation4OnePeriod(path,"Wedza.txt");
+convert_OneStation4OnePeriod(path,"0010425AW.txt");
 
 ##########################################################################
 ## FAQ
