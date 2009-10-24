@@ -131,14 +131,15 @@ transform_365into366 <- function(oldYear)
 	
      ## add 1 day in the middle of february
 	# ppt is 0
-	# tmin and tmax are the mean of 14/02 and 15/02
+	# tmin and tmax are copied (randomly) either from previous or following day
 
 	# 01-01 +44 days is the 14-02
 	# 01-01 +45 days is the 15-02
-	new1 <- mean(oldYear[44:45,1]);
-	new2 <- mean(oldYear[44:45,2]);
+	ifelse(runif(1)<0.5,day<-44,day<-45);
+	new1 <- oldYear[day,1];
+	new2 <- oldYear[day,2];
 	new3 <- 0;
-	
+
 	# 01-01 +44 as before
 	# 15-02 is new
 	# 01-01 +45 starts the 16-02 
@@ -154,51 +155,25 @@ return(newYear);
  ###############################################################################
 transform_360intoREAL <- function(oldYear,year)
 {
-     ## my guess
-	# 360 days is for 30 days a month all year round
-	# to be confirmed
-	
-     ## add 1 day in the middle of jan, mar, may, jul, aug, oct, dec
-	# in feb: minus 2 for non leap, minus 1 for leap year
+     ## leap year: add 1 day in the middle of jan, mar, may, jul, sep, nov
+     ## non leap year: add 1 day in the middle of mar, may, jul, sep, nov
 	# ppt is 0
-	# tmin and tmax are the mean of 28/02 and 01/03
+	# tmin and tmax are copied (randomly) either from previous or following day
 
-	# 15jan(15)
-	new1 <- mean(oldYear[15:16,1]);
-	new2 <- mean(oldYear[15:16,2]);
-	new3 <- 0;
-	temp <- oldYear[1:15,1:dim(oldYear)[2]];
-	temp <- rbind(temp,c(new1,new2,new3));
-	temp <- rbind(temp,oldYear[16:dim(oldYear)[1],1:dim(oldYear)[2]]);
-
-	# feb
-	before <- temp[1:31,1:dim(temp)[2]];
-	february <- temp[32:61,1:dim(temp)[2]];
-	after <- temp[62:dim(temp)[1],1:dim(temp)[2]];
-	pptOldFeb <- sum(february[,3]);
-	february <- array(february[-(round(runif(1)*dim(february)[1]-1)+1)],dim=c(29,dim(oldYear)[2]));
-	if (!is.leapYear(year))	february <- array(february[-(round(runif(1)*dim(february)[1]-1)+1)],dim=c(28,dim(oldYear)[2]));
-	pptNewFeb <- sum(february[,3]);
-	if (pptNewFeb<pptOldFeb){
-		day1 <- round(runif(1)*dim(february)[1]-1)+1;
-		february[day1,3] <- february[day1,3]+ 0.5* (pptOldFeb-pptNewFeb);
-		day2 <- round(runif(1)*dim(february)[1]-1)+1;
-		february[day2,3] <- february[day2,3]+ 0.5* (pptOldFeb-pptNewFeb);
-	}	
-	temp <- before;
-	temp <- rbind(temp,february);
-	temp <- rbind(temp,after);
-
-	# 15mar(73) - 15may(134) - 15jul(195) - 15aug(226) - 15oct(287) - 15dec(348)
-	for (d in c(73,134,195,226,287,348)){
-		if (is.leapYear(year)) d <- d+1;
-		new1 <- mean(temp[d:(d+1),1]);
-		new2 <- mean(temp[d:(d+1),2]);
+	ifelse (is.leapYear(year),step<-52,step<-60);
+	d<-step;
+	while(d<(365-step)){
+		ifelse(runif(1)<0.5,day<-d,day<-d+1);
+		new1 <- oldYear[day,1];
+		new2 <- oldYear[day,2];
 		new3 <- 0;
-		newYear <- temp[1:d,1:dim(temp)[2]];
+
+		newYear <- oldYear[1:d,1:dim(oldYear)[2]];
 		newYear <- rbind(newYear,c(new1,new2,new3));
-		newYear <- rbind(newYear,temp[(d+1):dim(temp)[1],1:dim(temp)[2]]);
-		temp <- newYear;
+		newYear <- rbind(newYear,oldYear[(d+1):dim(oldYear)[1],1:dim(oldYear)[2]]);
+		oldYear <- newYear;
+
+		d <- d+step;
 	}
 
 return(newYear);
@@ -269,9 +244,14 @@ check_dayVSdim <- function(sDate,eDate,linNo)
 transform_type1 <- function(table,head)
 {
 	for(y in format(head$period$start,"%Y"):format(head$period$end,"%Y")){
-		if (is.leapYear(y)){			# cut before
+		if (is.leapYear(y)){
+			# cut before
 			dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
-			table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
+			if(dayNo_bef>0){
+				table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
+			}else{
+				table_bef <- NULL;
+			}
 			# pull out section
 			oldSection <- table[(dayNo_bef+1):(dayNo_bef+365),1:dim(table)[2]];
 			# cut after
@@ -299,11 +279,19 @@ transform_type2 <- function(table,head)
 	for(y in format(head$period$start,"%Y"):format(head$period$end,"%Y")){
 		# cut before
 		dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
-		table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
+		if(dayNo_bef>0){
+			table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
+		}else{
+			table_bef <- NULL;
+		}
 		# pull out section
-		oldSection <- table[(dayNo_bef+1):(dayNo_bef+365),1:dim(table)[2]];
+		oldSection <- table[(dayNo_bef+1):(dayNo_bef+360),1:dim(table)[2]];
 		# cut after
-		table_aft <- table[(dayNo_bef+365+1):dim(table)[1],1:dim(table)[2]];
+		if(y!=format(head$period$end,"%Y")){
+			table_aft <- table[(dayNo_bef+360+1):dim(table)[1],1:dim(table)[2]];
+		}else{ # no after
+			table_aft <- NULL;
+		}
 		# transform
 		newSection <- transform_360intoREAL(oldSection,y);
 		# paste
