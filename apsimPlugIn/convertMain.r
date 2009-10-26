@@ -21,12 +21,12 @@ source('rwfileOp.r');
  # set paths to data
  # - path to the downscaled forlders tmin, tmax, ppt		## 1 ##
  # - path to where to save the produced .met files		## 2 ##
- # - folder names of those including tmin, tmax and ppt	## 3 ##
+ # - folder names of those including tmin, tmax and ppt		## 3 ##
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################
-path <- list("input"=			"../../Test/GCM2/",	## 1 ##
-		"output"=		"../../Test/Outputs/",## 2 ##
+path <- list(	"input"=	"../../../Test/GCM2/",	## 1 ##
+		"output"=	"../../../Test/Outputs/",	## 2 ##
 		"data"=list(	"tmin"=	"tmn/",				## 3 ##
 				"tmax"=	"tmx/",				## 3 ##
 				"ppt"=	"ppt/"				## 3 ##
@@ -36,7 +36,10 @@ path <- list("input"=			"../../Test/GCM2/",	## 1 ##
 ##
  # MAIN FUNCTION CALL
  #########################################################################
-convert_OneStation4OnePeriod(path,"0010425AW.txt");
+convert_OneStation4OnePeriod(	path,
+				"0010425AW.txt",	# station Name
+				inland=TRUE		# inland {TRUE,FALSE}
+				);
 
 ##########################################################################
 ## FAQ

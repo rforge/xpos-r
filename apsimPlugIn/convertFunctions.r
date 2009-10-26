@@ -187,14 +187,19 @@ return(newYear);
  # Evaluation of Solar Radiation Prediction Models in North America,
  # Agronomy Journal vol.96(2), pages 391-397, 2004
  ###############################################################################
-compute_radn <- function(table,station)
-{	# table is made of year,julianDay,tmin,tmax,ppt
+compute_radn <- function(table,station,inland)
+{	
+	if (is.null(inland)){
+		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
+		stop();
+	}
 
+	# table is made of year,julianDay,tmin,tmax,ppt
 	table <- array(as.numeric(table),dim=dim(table));
 	table <- cbind(table,array(NA,dim=dim(table)[1]));
 
 	for (line in 1:dim(table)[1]){
-		a 	<- 0.16;	# a in [0.1,1.2] for example 0.16 inland, 0.19 coastal
+		a 	<- ifelse(inland,0.16,0.19);	# a in [0.1,1.2] for example 0.16 inland, 0.19 coastal
 		latr 	<- station$lat * pi /180;
 		delta <- 0.4093*sin((2*pi*table[line,2]/365)-1.39);
 		ws	<- acos(-tan(latr)*tan(delta));
@@ -334,7 +339,7 @@ return(list("amp"=amp,"tav"=tav));
 ##
  # CONVERT 1 station for 1 time period
  ###############################################################################
-convert_OneStation4OnePeriod <- function(path,stationName)
+convert_OneStation4OnePeriod <- function(path,stationName,inland=NULL)
 {
 # read data files
 	path2file <- paste(path$input,path$data$tmin,stationName,sep="");
@@ -381,7 +386,7 @@ convert_OneStation4OnePeriod <- function(path,stationName)
 	}
 
 # compute radiation
-	apsim_table <- compute_radn(apsim_table,fileHead$station);
+	apsim_table <- compute_radn(apsim_table,fileHead$station,inland);
 # compute tav and amp
 	tavNamp <- compute_tavNamp(apsim_table);
 
