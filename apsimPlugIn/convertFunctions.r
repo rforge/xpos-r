@@ -402,7 +402,7 @@ convert_OneStation4OnePeriod <- function(path,stationName_tem,stationName_ppt,ou
 # write it into a .met file
 	# create output dir if does not exists
 	if(!file.exists(path$output)){
-		dir.create(path$output, showWarnings = TRUE, recursive = FALSE, mode = "0777");
+		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
 	}
 	# head
 #	station <- strsplit(stationName_tem,"\\.")[[1]][1];
