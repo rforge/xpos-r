@@ -339,17 +339,17 @@ return(list("amp"=amp,"tav"=tav));
 ##
  # CONVERT 1 station for 1 time period
  ###############################################################################
-convert_OneStation4OnePeriod <- function(path,stationName,inland=NULL)
+convert_OneStation4OnePeriod <- function(path,stationName_tem,stationName_ppt,outName,inland=NULL)
 {
 # read data files
-	path2file <- paste(path$input,path$data$tmin,stationName,sep="");
+	path2file <- paste(path$input,path$data$tmin,stationName_tem,sep="");
 	fileHead <- read_bruceHeadFile(path2file);
 
 	# make one table per station-period
 	table <- as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
-	path2file <- paste(path$input,path$data$tmax,stationName,sep="");
+	path2file <- paste(path$input,path$data$tmax,stationName_tem,sep="");
 	table <- cbind(table,as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE))));
-	path2file <- paste(path$input,path$data$ppt,stationName,sep="");
+	path2file <- paste(path$input,path$data$ppt,stationName_ppt,sep="");
 	table <- cbind(table,as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE))));
 
 # transform it if needed into real
@@ -405,16 +405,16 @@ convert_OneStation4OnePeriod <- function(path,stationName,inland=NULL)
 		dir.create(path$output, showWarnings = TRUE, recursive = FALSE, mode = "0777");
 	}
 	# head
-	station <- strsplit(stationName,"\\.")[[1]][1];
-	file.copy("metFileTemplate.met",paste(path$output,station,".met",sep=""),overwrite=TRUE);
-	changeVar(	"station_id",fileHead$station$id,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"station_comm",fileHead$comm,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"stat_lat",fileHead$station$lat,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"stat_lon",fileHead$station$lon,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"stat_alt",fileHead$station$alt,	paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"period_tav",tavNamp$tav,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
-	changeVar(	"period_amp",tavNamp$amp,		paste(path$output,station,".met",sep=""),paste(path$output,station,".met",sep=""));
+#	station <- strsplit(stationName_tem,"\\.")[[1]][1];
+	file.copy("metFileTemplate.met",paste(path$output,outName,".met",sep=""),overwrite=TRUE);
+	changeVar(	"station_id",fileHead$station$id,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"station_comm",fileHead$comm,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"stat_lat",fileHead$station$lat,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"stat_lon",fileHead$station$lon,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"stat_alt",fileHead$station$alt,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"period_tav",tavNamp$tav,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"period_amp",tavNamp$amp,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	# body
 	apsim_table <- format(apsim_table,justify="right",width=6);
-	write.table(apsim_table,paste(path$output,station,".met",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+	write.table(apsim_table,paste(path$output,outName,".met",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
 }

@@ -25,11 +25,11 @@ source('rwfileOp.r');
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################
-path <- list(	"input"=	"../../../Test/GCM2/",	## 1 ##
-		"output"=	"../../../Test/Outputs/",	## 2 ##
-		"data"=list(	"tmin"=	"tmn/",				## 3 ##
-				"tmax"=	"tmx/",				## 3 ##
-				"ppt"=	"ppt/"				## 3 ##
+path <- list(	"input"="/local/blue/users/lcoop/downscaling/afrstn.all.2.1a/run/cccma_cgcm3_1/",	## 1 ##
+		"output"="../../../../wine_shared/",	## 2 ##
+		"data"=list(	"tmin"=	"afr_tmn/",				## 3 ##
+				"tmax"=	"afr_tmx/",				## 3 ##
+				"ppt"=	"afr_ppt/"				## 3 ##
 			)
 		);
 
@@ -37,7 +37,9 @@ path <- list(	"input"=	"../../../Test/GCM2/",	## 1 ##
  # MAIN FUNCTION CALL
  #########################################################################
 convert_OneStation4OnePeriod(	path,
-				"0010425AW.txt",	# station Name
+				"0021130_A.txt",	# station Name for temperture files
+				"00211300.txt",		# station Name for precipitation files
+				"philadelphia",		# my output file name (no extension)
 				inland=TRUE		# inland {TRUE,FALSE}
 				);
 
