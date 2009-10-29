@@ -25,23 +25,34 @@ source('rwfileOp.r');
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################
-path <- list(	"input"="/local/blue/users/lcoop/downscaling/afrstn.all.2.1a/run/cccma_cgcm3_1/",	## 1 ##
-		"output"="../../../../wine_shared/",	## 2 ##
-		"data"=list(	"tmin"=	"afr_tmn/",				## 3 ##
-				"tmax"=	"afr_tmx/",				## 3 ##
-				"ppt"=	"afr_ppt/"				## 3 ##
+ # please use R path separator (even on windows), the same as Linux
+ # i.e. "/" (and not "\" as windows)
+ #########################################################################
+path <- list("input"="C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/",	## 1 ##
+		"output"="C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/MetFiles/",	## 2 ##
+		"data"=list("tmin"=	"tmn/",				## 3 ##
+				"tmax"=	"tmx/",				## 3 ##
+				"ppt"=	"ppt/"				## 3 ##
 			)
 		);
 
 ##
  # MAIN FUNCTION CALL
  #########################################################################
+ # if you are running the script in linux for linux use of the files, that's fine
+ # if you are running the script in windows for windows use of the files, that's fine
+ # BUT if you are running the script in linux for windows use of the files
+ # you'll face some formating problem
+ # we thought about fixing that, but if you intend to use it on windows,
+ # I guess you can afford to run the script on windows ...
+ #########################################################################
 convert_OneStation4OnePeriod(	path,
 				"0021130_A.txt",	# station Name for temperture files
-				"00211300.txt",		# station Name for precipitation files
-				"philadelphia",		# my output file name (no extension)
+				"00211300.txt",	# station Name for precipitation files
+				"philadelphia",	# my output file name (no extension)
 				inland=TRUE		# inland {TRUE,FALSE}
 				);
+
 
 ##########################################################################
 ## FAQ
