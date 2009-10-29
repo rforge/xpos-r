@@ -98,14 +98,7 @@ transform_360intoREAL <- function(oldYear,year)
 return(newYear);
 }
 
-##
- # SOLAR RADIATION ESTIMATION
- ###############################################################################
- # see
- # Ball, R.A. and Purcell, L.C. and Carey, S.K.,
- # Evaluation of Solar Radiation Prediction Models in North America,
- # Agronomy Journal vol.96(2), pages 391-397, 2004
- ###############################################################################
+# to be replaced
 compute_radn <- function(table,station,inland)
 {	
 	if (is.null(inland)){
@@ -126,6 +119,50 @@ compute_radn <- function(table,station,inland)
 		ks	<- a*(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
 
 		table[line,6] <- ks*Rsolar;
+	}
+return(table);
+}
+
+##
+ # SOLAR RADIATION ESTIMATION
+ ###############################################################################
+ # > see for solar radiation
+ # Ball, R.A. and Purcell, L.C. and Carey, S.K.,
+ # Evaluation of Solar Radiation Prediction Models in North America,
+ # Agronomy Journal vol.96(2), pages 391-397, 2004
+ # > see for extraterrestrial radiation
+ # http://www.fao.org/docrep/X0490E/x0490e00.htm#Contents
+ ###############################################################################
+compute_radn2 <- function(table,station,inland,southHemis=TRUE)
+{	
+	if (is.null(inland)){
+		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
+		stop();
+	}
+
+	# table is made of year,julianDay,tmin,tmax,ppt
+	table <- array(as.numeric(table),dim=dim(table));
+	table <- cbind(table,array(NA,dim=dim(table)[1]));
+
+	for (line in 1:dim(table)[1]){
+		
+		Gsc <- 0.0820;							# solar constant in MJm^(-2)min^(-1)
+		Dr <- 1+0.033cos(2*pi*J/365);			# inverse relative distance Earth-Sun
+		
+		phi <- pi*station$lat/180;				# latitude in radians
+		if(southHemis)	phi <- (-phi);			# -1 for southern hemisphere
+		
+		J <- table[line,2];						# julian day of the year
+		delta <- 0.409*sin(2*pi*(J-1.39)/365);	# solar declination
+		
+		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle in rad
+		# extraterrestrial radiaton
+		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*sin(Ws));
+		
+		Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
+		Tt <- Krs *(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
+		
+		table[line,6] <- Ra*Tt;
 	}
 return(table);
 }
