@@ -101,7 +101,7 @@ return(newYear);
 ##
  # SOLAR RADIATION ESTIMATION (OLD -wrong? VERSION) 
  ###############################################################################
-compute_radn_old <- function(table,station,inland)
+compute_radn <- function(table,station,inland)
 {	
 	if (is.null(inland)){
 		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
@@ -148,7 +148,7 @@ return(table);
  # 	year={1998}
  # }
  ###############################################################################
-compute_radn <- function(table,station,inland,southHemis=TRUE)
+compute_radn_new <- function(table,station,inland,southHemis=TRUE)
 {	
 	if (is.null(inland)){
 		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
