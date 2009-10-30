@@ -21,18 +21,18 @@ source('rwfileOp.r');
  # set paths to data
  # - path to the downscaled forlders tmin, tmax, ppt		## 1 ##
  # - path to where to save the produced .met files		## 2 ##
- # - folder names of those including tmin, tmax and ppt		## 3 ##
+ # - folder names of those including tmin, tmax and ppt	## 3 ##
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################
  # please use R path separator (even on windows), the same as Linux
  # i.e. "/" (and not "\" as windows)
  #########################################################################
-path <- list("input"="C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/",	## 1 ##
-		"output"="C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/MetFiles/",	## 2 ##
-		"data"=list("tmin"=	"tmn/",				## 3 ##
-				"tmax"=	"tmx/",				## 3 ##
-				"ppt"=	"ppt/"				## 3 ##
+path <- 	list(	"input"=			"Z:/Philadelphia/cccma_cgcm3_1/",
+			"output"=			"C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/",
+			"data"=list("tmin"=	"tmn/",
+					"tmax"=	"tmx/",
+					"ppt"=	"ppt/"
 			)
 		);
 
@@ -49,7 +49,7 @@ path <- list("input"="C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/
 convert_OneStation4OnePeriod(	path,
 				"0021130_A.txt",	# station Name for temperture files
 				"00211300.txt",	# station Name for precipitation files
-				"philadelphia",	# my output file name (no extension)
+				"test_new",	# my output file name (no extension)
 				inland=TRUE		# inland {TRUE,FALSE}
 				);
 
