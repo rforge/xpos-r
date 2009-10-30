@@ -98,8 +98,10 @@ transform_360intoREAL <- function(oldYear,year)
 return(newYear);
 }
 
-# to be replaced
-compute_radn <- function(table,station,inland)
+##
+ # SOLAR RADIATION ESTIMATION (OLD -wrong? VERSION) 
+ ###############################################################################
+compute_radn_old <- function(table,station,inland)
 {	
 	if (is.null(inland)){
 		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
@@ -127,13 +129,26 @@ return(table);
  # SOLAR RADIATION ESTIMATION
  ###############################################################################
  # > see for solar radiation
- # Ball, R.A. and Purcell, L.C. and Carey, S.K.,
- # Evaluation of Solar Radiation Prediction Models in North America,
- # Agronomy Journal vol.96(2), pages 391-397, 2004
+ # @article{ball2004evaluation,
+ # 	title={{Evaluation of solar radiation prediction models in North America}},
+ # 	author={Ball, R.A. and Purcell, L.C. and Carey, S.K.},
+ # 	journal={Agronomy Journal},
+ # 	volume={96},
+ # 	number={2},
+ # 	pages={391},
+ # 	year={2004},
+ # 	publisher={Am Soc Agronom}
+ # }
  # > see for extraterrestrial radiation
- # http://www.fao.org/docrep/X0490E/x0490e00.htm#Contents
+ # @article{allen1998crop,
+ # 	title={{Crop evapotranspiration-Guidelines for computing crop water requirements-FAO Irrigation and drainage paper 56}},
+ # 	author={Allen, R.G. and Pereira, L.S. and Raes, D. and Smith, M. and others},
+ # 	journal={FAO, Rome},
+ # 	volume={300},
+ # 	year={1998}
+ # }
  ###############################################################################
-compute_radn2 <- function(table,station,inland,southHemis=TRUE)
+compute_radn <- function(table,station,inland,southHemis=TRUE)
 {	
 	if (is.null(inland)){
 		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
@@ -147,13 +162,12 @@ compute_radn2 <- function(table,station,inland,southHemis=TRUE)
 	for (line in 1:dim(table)[1]){
 		
 		Gsc <- 0.0820;							# solar constant in MJm^(-2)min^(-1)
-		Dr <- 1+0.033cos(2*pi*J/365);			# inverse relative distance Earth-Sun
-		
-		phi <- pi*station$lat/180;				# latitude in radians
-		if(southHemis)	phi <- (-phi);			# -1 for southern hemisphere
-		
+		phi <- pi*station$lat/180;			# latitude in radians
+		if(southHemis)	phi <- (-phi);		# -1 for southern hemisphere
 		J <- table[line,2];						# julian day of the year
+		
 		delta <- 0.409*sin(2*pi*(J-1.39)/365);	# solar declination
+		Dr <- 1+0.033*cos(2*pi*J/365);		# inverse relative distance Earth-Sun
 		
 		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle in rad
 		# extraterrestrial radiaton
