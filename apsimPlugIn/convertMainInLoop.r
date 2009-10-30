@@ -35,7 +35,10 @@ return(path);
  ###############################################################################
 init_gcmNames <- function()
 {
-gcmNames <- list(	"ncep"=	list(	"con"=	"ncep2.1",
+gcmNames <- list(	"obs"=	list(	"con"=	"obs",
+						"futA"=	NULL,
+						"futB"=	NULL),
+			"ncep"=	list(	"con"=	"ncep2.1",
 						"futA"=	NULL,
 						"futB"=	NULL),
 			"cccm"=	list(	"con"=	"cccma_cgcm3_1",
@@ -92,7 +95,7 @@ print(gcms[[g]][[p]]);
 							"philadelphia",	# my output file name (no extension)
 							inland=TRUE		# inland {TRUE,FALSE}
 				     			);
-		if(g==1) break;
+		if(g==1 || g==2) break;	# obs and ncep
 	}
 }
 
