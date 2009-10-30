@@ -99,33 +99,6 @@ return(newYear);
 }
 
 ##
- # SOLAR RADIATION ESTIMATION (OLD -wrong? VERSION) 
- ###############################################################################
-compute_radn <- function(table,station,inland)
-{	
-	if (is.null(inland)){
-		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
-		stop();
-	}
-
-	# table is made of year,julianDay,tmin,tmax,ppt
-	table <- array(as.numeric(table),dim=dim(table));
-	table <- cbind(table,array(NA,dim=dim(table)[1]));
-
-	for (line in 1:dim(table)[1]){
-		a 	<- ifelse(inland,0.16,0.19);	# a in [0.1,1.2] for example 0.16 inland, 0.19 coastal
-		latr 	<- station$lat * pi /180;
-		delta <- 0.4093*sin((2*pi*table[line,2]/365)-1.39);
-		ws	<- acos(-tan(latr)*tan(delta));
-		Rsolar<- 118.08*(1+0.033*cos(0.0172*table[line,2]))*(ws*sin(latr)*sin(delta)+cos(latr)*cos(delta)*sin(ws))/pi;
-		ks	<- a*(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
-
-		table[line,6] <- ks*Rsolar;
-	}
-return(table);
-}
-
-##
  # SOLAR RADIATION ESTIMATION
  ###############################################################################
  # > see for solar radiation
@@ -148,7 +121,7 @@ return(table);
  # 	year={1998}
  # }
  ###############################################################################
-compute_radn_new <- function(table,station,inland,southHemis=TRUE)
+compute_radn <- function(table,station,inland)
 {	
 	if (is.null(inland)){
 		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
@@ -160,18 +133,17 @@ compute_radn_new <- function(table,station,inland,southHemis=TRUE)
 	table <- cbind(table,array(NA,dim=dim(table)[1]));
 
 	for (line in 1:dim(table)[1]){
-		
-		Gsc <- 0.0820;							# solar constant in MJm^(-2)min^(-1)
-		phi <- pi*station$lat/180;			# latitude in radians
-		if(southHemis)	phi <- (-phi);		# -1 for southern hemisphere
-		J <- table[line,2];						# julian day of the year
-		
-		delta <- 0.409*sin(2*pi*(J-1.39)/365);	# solar declination
+		Gsc <- 0.0820;					# solar constant = 0.0820 MJ.m^(-2).min^(-1)
+		phi <- pi*station$lat/180;			# latitude [rad] (N.B. South lat shouls be negative)
+		J <- table[line,2];				# julian day of the year
+
+		delta <- 0.409*sin((2*pi*J/365)-1.39);	# solar decimation [rad]
 		Dr <- 1+0.033*cos(2*pi*J/365);		# inverse relative distance Earth-Sun
 		
-		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle in rad
-		# extraterrestrial radiaton
-		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*sin(Ws));
+		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle [rad]
+		
+		# Extraterrestrial radiation for daily periods [MJ.m^(-2).day^(-1)]
+		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*cos(delta)*sin(Ws));
 		
 		Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
 		Tt <- Krs *(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
