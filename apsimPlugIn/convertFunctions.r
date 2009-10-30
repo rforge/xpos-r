@@ -146,6 +146,7 @@ compute_radn <- function(table,station,inland)
 		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*cos(delta)*sin(Ws));
 		
 		Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
+		# estimate of the atmospheric transmissivity
 		Tt <- Krs *(1+2.7*10^(-5)*station$alt)*sqrt(table[line,4]-table[line,3]);
 		
 		table[line,6] <- Ra*Tt;
