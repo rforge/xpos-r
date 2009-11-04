@@ -251,27 +251,46 @@ return(table);
 }
 
 ##
- # COMPUTE TAV AND AMP APSIM CONSTANTS
+ # COMPUTE tav AND amp APSIM CONSTANTS
+ # annual average ambient temperature (TAV)
+ # annual amplitude in mean monthly temperature (AMP)
+ ###############################################################################
+ # > ref
+ # http://www.apsim.info/apsim/Products/tav_amp.pdf
+ # results confirmed in face of the tav_amp.exe dos application
  ###############################################################################
 compute_tavNamp <- function(table)
 {
 	# daily mean
 	table <- cbind(table,array(NA,dim=dim(table)[1]));
+	table[,dim(table)[2]] <- (table[,3]+table[,4])/2;
+
+	yearlyAMP <- array(NA,dim=(table[dim(table)[1],1]-table[1,1]+1));
+	monthlyMean <- array(0,dim=c(12,5));
+	year <- table[1,1];
 	for (line in 1:dim(table)[1]){
-		table[line,dim(table)[2]] <- mean(table[line,3:4]);
-	}
-	monthlyMean <- array(0,dim=c(12,3));
-	for (line in 1:dim(table)[1]){
+		# yearly AMP
+		if (table[line,1]!=year){
+			yearlyAMP[year-table[1,1]+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
+			year <- table[line,1];
+			monthlyMean[,3] <- 0;
+			monthlyMean[,4] <- 0;
+		}
+		
+		# monthly mean
 		month <- as.numeric(format(as.Date(table[line,2]-1,origin=paste(table[line,1],"-01-01",sep="")),"%m"));
 		monthlyMean[month,1] <- monthlyMean[month,1]+table[line,dim(table)[2]];
 		monthlyMean[month,2] <- monthlyMean[month,2]+1;
+		monthlyMean[month,3] <- monthlyMean[month,3]+table[line,dim(table)[2]];
+		monthlyMean[month,4] <- monthlyMean[month,4]+1;
 	}
-	for (m in 1:12){
-		monthlyMean[m,3] <- monthlyMean[m,1]/monthlyMean[m,2];
-	}
+	
+	# complete
+	yearlyAMP[year-table[1,1]+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
+	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2];
 
-	amp <- format(max(monthlyMean[,3])-min(monthlyMean[,3]),digits=4);
-	tav <- format(mean(monthlyMean[,3]),digits=4);
+	amp <- format(mean(yearlyAMP),digits=4);
+	tav <- format(mean(monthlyMean[,5]),digits=4);
 
 return(list("amp"=amp,"tav"=tav));
 }
