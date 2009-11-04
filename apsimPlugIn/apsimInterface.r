@@ -23,7 +23,7 @@ apsim_userSettings <- function()
 	# specify the number of processors you're allowed to use
 	# until now: multi processors are used only for perturbation simulation of the same decision
 ##################################
-	proNo <- 7;
+	proNo <- 1;
 ##################################
 
 	####	PATH of the folder used as writing/readind folder for apsim .sim, .out, .sum working files
@@ -31,7 +31,7 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2workingDir <- "../Data/WorkingDirectory/";
+	path2workingDir <- "../../ApsimOptiInKatherine/WorkingDir/";
 ##################################
 
 	#
@@ -44,14 +44,14 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2template <- "../Data/Templates/";
+	path2template <- "../../ApsimOptiInKatherine/Templates/";
 ##################################
 
 
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC-template051009.sim"
+	simTemplate <- "wet-peanut_dry-maize_rotation-template051009_3dec.sim"
 ##################################
 
 	#
@@ -62,7 +62,7 @@ apsim_userSettings <- function()
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "C:\\\\User_Data\\\\ApsimOptimiser\\\\Data\\\\MetFiles\\\\";
+	path2MetFiles <- "C:\\\\Documents and Settings\\\\crespo\\\\Desktop\\\\OptiAlgo\\\\ApsimOptiInKatherine\\\\Met\\\\";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -129,7 +129,7 @@ apsim_userSettings <- function()
 	# ex: "var_decision1"
 	decNam <- array(c(
 ##################################
-	"var_PeanutIrrAmount",	#1
+	"var_PeanutIrrAmount",		#1
 	"var_MaizeIrrAmount",		#2
 	"var_MaizeFertAmount"		#3
 ##################################
@@ -144,9 +144,9 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	0,	60,	5,	# min, max, minimal step of dec 1
-	0,	60,	5,	# min, max, minimal step of dec 2
-	0,	300,	10	# min, max, minimal step of dec 3
+	0,	60,	10,	# min, max, minimal step of dec 1
+	0,	60,	10,	# min, max, minimal step of dec 2
+	0,	300,	25	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
