@@ -187,6 +187,7 @@ print("   update");
 	## partial storage
 	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
 
+#browser();
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
 	 	|| simNo>=simLimit	# simulation number limit
@@ -249,7 +250,7 @@ if (penList$itemNo==0){
 }	}
 
 ##### write/store outputs
-outFile <- paste("./listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
+outFile <- paste(apsimSpec$path2out,"listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
 save(decS,unbList,penList,proList,besList,file=outFile);
 file.remove(paste("./partialLists.rData",sep=""));
 if(!is.null(apsimSpec)){
