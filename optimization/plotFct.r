@@ -114,7 +114,7 @@ init_visualisation <- function(seeItThrough,decS,criS)
 				x11(title=" *** xPos-a : criteria space visulalisation ***");
 			}else{				windows(title=" *** xPos-a : criteria space visulalisation ***");
 			}
-s			criDev <- 3;
+			criDev <- 3;
 			plot.new();
 			plotAxes(criS,1,2,"criterion 1","criterion 2");
 			plotRectangle(criS,1,2,"white","white","criteria space evaluation");
@@ -156,8 +156,8 @@ s			criDev <- 3;
 		##### criteria space
 		if(dim(criS)[2]==2){
 			if(Sys.info()["sysname"]=="Linux"){
-				x11(title=" *** xPos-a : criteria space visulalisation ***");
-			}else{				windows(title=" *** xPos-a : criteria space visulalisation ***");
+					x11(title=" *** xPos-a : criteria space visulalisation ***");
+			}else{	windows(title=" *** xPos-a : criteria space visulalisation ***");
 			}
 			criDev <- 3;
 			plot.new();
