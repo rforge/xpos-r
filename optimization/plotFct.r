@@ -98,7 +98,10 @@ init_visualisation <- function(seeItThrough,decS,criS)
 
 		##### decision space
 		if(dim(decS)[2]==2){
-			windows(title=" *** xPos-a : decision space visulalisation ***");
+			if(Sys.info()["sysname"]=="Linux"){
+				x11(title=" *** xPos-a : decision space visulalisation ***");
+			}else{	windows(title=" *** xPos-a : decision space visulalisation ***");
+			}
 			decDev <- 2;
 			plot.new();
 			plotAxes(decS,1,2,"decision 1","decision 2");
@@ -107,8 +110,11 @@ init_visualisation <- function(seeItThrough,decS,criS)
 
 		##### criteria space
 		if(dim(criS)[2]==2){
-			windows(title=" *** xPos-a : criteria space visulalisation ***");
-			criDev <- 3;
+			if(Sys.info()["sysname"]=="Linux"){
+				x11(title=" *** xPos-a : criteria space visulalisation ***");
+			}else{				windows(title=" *** xPos-a : criteria space visulalisation ***");
+			}
+s			criDev <- 3;
 			plot.new();
 			plotAxes(criS,1,2,"criterion 1","criterion 2");
 			plotRectangle(criS,1,2,"white","white","criteria space evaluation");
@@ -129,7 +135,10 @@ init_visualisation <- function(seeItThrough,decS,criS)
 
 		##### decision space
 		if(dim(decS)[2]==2){
-			windows(title=" *** xPos-a : decision space visulalisation ***");
+			if(Sys.info()["sysname"]=="Linux"){
+				x11(title=" *** xPos-a : decision space visulalisation ***");
+			}else{	windows(title=" *** xPos-a : decision space visulalisation ***");
+			}
 			decDev <- 2;
 			plot.new();
 			par(mfcol=mfcol);
@@ -146,7 +155,10 @@ init_visualisation <- function(seeItThrough,decS,criS)
 
 		##### criteria space
 		if(dim(criS)[2]==2){
-			windows(title=" *** xPos-a : criteria space visulalisation ***");
+			if(Sys.info()["sysname"]=="Linux"){
+				x11(title=" *** xPos-a : criteria space visulalisation ***");
+			}else{				windows(title=" *** xPos-a : criteria space visulalisation ***");
+			}
 			criDev <- 3;
 			plot.new();
 				par(mfcol=mfcol);
