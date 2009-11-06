@@ -1,5 +1,5 @@
 ##
- # Is vector1 Pareto dominating v2
+ # Is vector1 Pareto dominating vector2
  ###############################################################################
 isV1V2.paretoDominating <- function(v1,v2)
 {
@@ -11,7 +11,7 @@ isV1V2.paretoDominating <- function(v1,v2)
 }
 
 ##
- # Is vector1 Pareto dominated by v2
+ # Is vector1 Pareto dominated by vector2
  ###############################################################################
 isV1V2.paretoDominated <- function(v1,v2)
 {
