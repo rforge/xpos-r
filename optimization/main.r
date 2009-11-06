@@ -112,11 +112,11 @@ if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 }
 repeat{
 	##### divide every of the promising regions (i.e. proList)
-print("   divide");
+#print("   divide");
 	proList <- divide_List(proList,partNo);
 
 	##### sample every of the promising regions (i.e. proList)
-print("   sample");
+#print("   sample");
 	proList <- sample_List(proList,decNo,varNo,perNo,criNo,2);
 
 	## messages
@@ -135,11 +135,11 @@ print("   sample");
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 
-browser();
+#browser();
 	##### simulate every of the promising regions (i.e. proList)
-print("   simulate");
+#print("   simulate");
 	for (reg in 1:proList$itemNo){
-print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
+#print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
 		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
@@ -158,34 +158,34 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
-print("   evaluate");
+#print("   evaluate");
 	proList <- evaluate_proList(proList,evalMeth,criterion);
 
 	##### current best (selection.r)
 	# !! check that prolist$selCri before and after does not change
 	if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
-print("   compute the best");
+#print("   compute the best");
 		besList <- update_bestList(proList,besList,evalMeth,criterion);
 	}
 
 	##### MULTICRITERIA
 	## add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
-print("   evaluate proPLUSpen");
+#print("   evaluate proPLUSpen");
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
 	##### update lists
-print("   update");
+#print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;
 	proList <- list("itemNo"=0,"regEva"=NULL);
 
 	## partial storage
-	save(decS,unbList,penList,proList,file=paste("./partialLists.rData",sep=""));
+	save(decS,unbList,penList,proList,file=paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 
 #browser();
 	## stopping criteria
@@ -211,7 +211,7 @@ print("   update");
 	}
 
 	##### select equally potentially optimal regions (proList)
-print("   select");
+#print("   select");
 	temp <- select(proList,penList,0);
 	proList <- temp$pro;
 	penList <- temp$pen;
@@ -219,7 +219,7 @@ print("   select");
 	##### MULTICRITERIA
 	## remove proList regions comparisons from penList regions
 	if(evalMeth==5){
-print("   evaluate proMINUSpen");
+#print("   evaluate proMINUSpen");
 		temp <- evaluate_penMINUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
