@@ -23,7 +23,7 @@ apsim_userSettings <- function()
 	# specify the number of processors you're allowed to use
 	# until now: multi processors are used only for perturbation simulation of the same decision
 ##################################
-	proNo <- 1;
+	proNo <- 4;
 ##################################
 
 	####	PATH of the folder used as writing/readind folder for apsim .sim, .out, .sum working files
