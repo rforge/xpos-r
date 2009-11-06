@@ -19,5 +19,7 @@ source('main.r');
 ## CALL EXAMPLE
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
 xPos(1,2,2,1,1000,600,"d")
+# 172800 secs = 48 hours
+# 86400 secs = 24 hours
 # 43200 secs = 12 hours
 # 18000 secs = 5 hours
