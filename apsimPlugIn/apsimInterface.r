@@ -337,6 +337,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 # but it does not !!
 # so here I am
 # 
+options(warn=-1);	# disable warnings
 	for (p in 1:perNo){
 		while(file.exists(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))){
 			try(file.remove(paste(path2apsimOutputs,"optimization_",p,".out",sep="")),silent=TRUE);
@@ -348,6 +349,7 @@ simulateApsim <- function(apsimSpec,dec,per,criNo)
 			try(file.remove(paste(path2apsimOutputs,"fileToSimulate_",p,".sum",sep="")),silent=TRUE);
 		}
 	}
+options(warn=0);	# enable warnings
 
 #print("create file");
 	for (p in 1:perNo){
