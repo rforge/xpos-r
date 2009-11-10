@@ -249,6 +249,9 @@ if (penList$itemNo==0){
 		stoppedBecauseOf <- "time over";
 }	}
 
+# criS
+# create and save criS if possible
+
 ##### write/store outputs
 outFile <- paste(apsimSpec$path2out,"listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
 save(decS,unbList,penList,proList,besList,file=outFile);
