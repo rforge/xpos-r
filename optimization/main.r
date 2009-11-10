@@ -139,7 +139,7 @@ repeat{
 	##### simulate every of the promising regions (i.e. proList)
 #print("   simulate");
 	for (reg in 1:proList$itemNo){
-#print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
+print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
 		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
@@ -249,13 +249,31 @@ if (penList$itemNo==0){
 		stoppedBecauseOf <- "time over";
 }	}
 
-# criS
-# create and save criS if possible
+# if does not exists before
+if(all(is.na(criS))){
+# criS (from besList only ... compare with unbList?)
+	## find the 'criNo' bests
+	criS <- array(NA,dim=c(2,criNo));
+	criS[1,] <- apply(besList$regEva[[1]]$decEva[[1]],2,min);
+	criS[2,] <- apply(besList$regEva[[1]]$decEva[[1]],2,max);
+	for (r in 1:besList$itemNo){
+		for (d in 1:besList$regEva[[r]]$itemNo){
+			for (c in 1:criNo){
+				if(min(besList$regEva[[r]]$decEva[[d]][,c])<criS[1,c]){
+					criS[1,c] <- min(besList$regEva[[r]]$decEva[[d]][,c]);
+				}
+				if(max(besList$regEva[[r]]$decEva[[d]][,c])>criS[2,c]){
+					criS[2,c] <- max(besList$regEva[[r]]$decEva[[d]][,c]);
+				}
+			}
+		}
+	}
+}
 
 ##### write/store outputs
 outFile <- paste(apsimSpec$path2out,"listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
-save(decS,unbList,penList,proList,besList,file=outFile);
-file.remove(paste("./partialLists.rData",sep=""));
+save(decS,criS,unbList,penList,proList,besList,file=outFile);
+file.remove(paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 if(!is.null(apsimSpec)){
 	write.bestList(besList,apsimSpec,simNo,resolutionTime,(unbList$itemNo+penList$itemNo+proList$itemNo));
 }
