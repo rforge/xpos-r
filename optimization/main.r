@@ -158,7 +158,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
-#print("   evaluate");
+print("   evaluate");
 	proList <- evaluate_proList(proList,evalMeth,criterion);
 
 	##### current best (selection.r)
@@ -171,14 +171,14 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	##### MULTICRITERIA
 	## add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
-#print("   evaluate proPLUSpen");
+print("   evaluate proPLUSpen");
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
 	##### update lists
-#print("   update");
+print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;
