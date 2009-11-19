@@ -420,22 +420,21 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,cr
 }
 
 ##
- # 3D PLOTTING THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
+ # 3D PLOTTING OF THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
  ####################################################################
  # after optimization visualiation tools
  # requires "scatterplot3d" R package
  ####################################################################
 showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
 {
-#	windows(title=" *** xPos-a : criteria space visulalisation ***");
-#	plot.new();
-#	plotAxes(criS,criX,criY,"criterion A","criterion B");
-#	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
+	title<-" *** xPos-a : criteria space 3D visulalisation ***";
+	X11(title=title); #windows(title=title);
+	plot.new();
 
 	myPlot <- scatterplot3d::scatterplot3d(
-		mean(criS[1:2,criX]),
-		mean(criS[1:2,criY]),
-		mean(criS[1:2,criZ]),
+		mean(criS[1:2,criX]),xlab="criterion 1",
+		mean(criS[1:2,criY]),ylab="criterion 2",
+		mean(criS[1:2,criZ]),zlab="criterion 3",
 		xlim=criS[1:2,criX],
 		ylim=criS[1:2,criY],
 		zlim=criS[1:2,criZ],
@@ -496,3 +495,117 @@ showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,
 		}
 	}
 }
+
+##
+ # 3D PLOTTING OF THE DECISION SPACE (NOT AVBAILABLE DURING THE PROCESS)
+ ####################################################################
+ # after optimization visualiation tools:
+ # decomposition by layers...?
+ ####################################################################
+showListFrontierIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+{
+library('scatterplot3d');
+
+	mfcol=c(2,2);
+	yzScreen <- c(1,1);
+	xzScreen <- c(2,1);
+	xyzScreen <- c(1,2);
+	xyScreen <- c(2,2);
+
+	x11(title=" *** xPos-a : 3D decision space visulalisation ***");
+	#windows(title=" *** xPos-a : decision space visulalisation ***");
+	plot.new();
+	par(mfcol=mfcol);
+
+	# plot 3D
+	par(mfg=xyzScreen)
+	scatterplot3d(
+		best$body[,1],xlab="decision 1",
+		best$body[,2],ylab="decision 2",
+		best$body[,3],zlab="decision 3",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec2],
+		zlim=decS[1:2,dec3],
+		type="p",highlight.3d=TRUE,tick=FALSE,
+		pch=20,angle=angle
+	);
+
+	# plot XY
+	par(mfg=xyScreen)
+	plot(	best$body[,1],xlab="decision 1",
+		best$body[,2],ylab="decision 2",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec2],
+		type="p",pch="+",col=bgCol,
+		main="dec1/dec2 projection"
+	);
+
+	# plot XZ
+	par(mfg=xzScreen)
+	plot(	best$body[,1],xlab="decision 1",
+		best$body[,3],ylab="decision 3",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec3],
+		type="p",pch="+",col=bgCol,
+		main="dec1/dec3 projection"
+	);
+
+	# plot YZ
+	par(mfg=yzScreen)
+	plot(	best$body[,2],xlab="decision 2",
+		best$body[,3],ylab="decision 3",
+		xlim=decS[1:2,dec2],
+		ylim=decS[1:2,dec3],
+		type="p",pch="+",col=bgCol,
+		main="dec2/dec3 projection"
+	);
+}
+
+computeFrontierIn3dDecisionSpace <- function(besList=besList,dec1=1,dec2=2,dec3=3)
+{
+	# compute the frontiere
+	frontiere <- NULL;
+	if(besList$item>0){
+		uneList <- besList;
+		for ( r in 1:uneList$itemNo){
+			print(paste(r," / ",uneList$itemNo,sep=""));
+			for(x in c(uneList$regEva[[r]]$regDef[1,dec1],uneList$regEva[[r]]$regDef[2,dec1])){
+			for(y in c(uneList$regEva[[r]]$regDef[1,dec2],uneList$regEva[[r]]$regDef[2,dec2])){
+			for(z in c(uneList$regEva[[r]]$regDef[1,dec3],uneList$regEva[[r]]$regDef[2,dec3])){
+				done<-FALSE;
+				point <- as.array(c(x,y,z));
+
+				if (!is.null(frontiere)){
+					for (l in 1:dim(frontiere)[1]){
+						if (all(frontiere[l,1:3]==point)){
+							frontiere[l,4]<-frontiere[l,4]+1;
+							done<-TRUE;
+							break;
+						}						
+					}
+				}
+				if(!done) frontiere <- rbind(frontiere,c(point,0));
+
+			}}}
+		}
+	}
+
+	front<-NULL;
+	body<-NULL;
+	for (l in 1:dim(frontiere)[1]){
+		if(frontiere[l,4]==0){
+			front <- rbind(front,frontiere[l,]);
+		}else{
+			body <- rbind(body,frontiere[l,]);
+		}
+	}
+
+write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
+write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
+browser();
+result<-list("allBest"=frontiere,"front"=front,"body"=body);
+save(result,file="frontiere.Rdata");
+
+return(result);
+}
+
