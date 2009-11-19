@@ -512,7 +512,7 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	x11(title=" *** xPos-a : 3D decision space visulalisation ***");
+	x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
 	#windows(title=" *** xPos-a : decision space visulalisation ***");
 	plot.new();
 	par(mfcol=mfcol);
