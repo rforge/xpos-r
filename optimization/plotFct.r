@@ -600,11 +600,10 @@ computeFrontierIn3dDecisionSpace <- function(besList=besList,dec1=1,dec2=2,dec3=
 		}
 	}
 
-write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
-write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
-browser();
+#write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
+#write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
 result<-list("allBest"=frontiere,"front"=front,"body"=body);
-save(result,file="frontiere.Rdata");
+#save(result,file="frontiere.Rdata");
 
 return(result);
 }
