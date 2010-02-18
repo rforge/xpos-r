@@ -153,7 +153,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	# might be good, but at what cost?
 	# in selection.r
 #print("   keepTheBest");
-#	proList <- keepTheBests(proList,2);
+	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
