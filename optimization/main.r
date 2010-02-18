@@ -150,7 +150,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	##### MULTICRITERIA
 	##### keep only the best decisions
 	# probably faster to the target and/but recompute lots of decisions
-	# might be good, but at what cost
+	# might be good, but at what cost?
 	# in selection.r
 #print("   keepTheBest");
 #	proList <- keepTheBests(proList,2);
