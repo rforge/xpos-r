@@ -10,15 +10,17 @@
 #			partNo,		## No of divided parts per region {2,3}
 #			decNo,		## decision number per region {0:automatic, 1...n }
 #			perNo,		## perturbation param number (no of random occurences to test uncertainty)
-#			simLimit,	## simulation number limit
-#			timLimit,	## time limit in sec
-#		  seeItThrough=NULL,	## for graphics {"g","d"}
-#			seed=NULL)	## if needed (integer)
+#			simLimit,		## simulation number limit
+#			timLimit,		## time limit in sec
+#			seeItThrough=NULL,## for graphics {"g","d"}
+#			seed=NULL)		## if needed (integer)
 
 source('main.r');
 ## CALL EXAMPLE
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
-xPos(10,2,0,6,1000000,216000)
+xPos(10,2,0,6,1000000,302400)
+#xPos(10,2,2,2,10,10)
+# 302400 secs = 3.5 days
 # 216000 secs = 2.5 days
 # 172800 secs = 2 days
 # 86400 secs = 24 hours
