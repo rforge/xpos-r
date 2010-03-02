@@ -44,6 +44,7 @@ source("evaluation.r");
 ##### random seed
 if(is.null(seed)){	runif(1);
 }else{			set.seed(seed);
+#				print(paste("seed =",seed,sep=""));
 }
 
 ##### initialize models
@@ -152,7 +153,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	# probably faster to the target and/but recompute lots of decisions
 	# might be good, but at what cost?
 	# in selection.r
-#print("   keepTheBest");
+print("   keepTheBest");
 	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
