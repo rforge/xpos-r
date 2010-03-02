@@ -428,7 +428,10 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,cr
 showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
 {
 	title<-" *** xPos-a : criteria space 3D visulalisation ***";
-	X11(title=title,width=12,height=12); #windows(title=title);
+	## LINUX
+	#X11(title=title,width=12,height=12);
+	## WINDOWS
+	windows(title=title);
 	plot.new();
 
 	myPlot <- scatterplot3d::scatterplot3d(
@@ -500,6 +503,7 @@ showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,
  # 3D PLOTTING OF THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
  ####################################################################
  # after optimization visualiation tools:
+ # TO BE COMPLETED
  ####################################################################
 showBestIn3dCriteriaSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
@@ -511,8 +515,10 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
-	#windows(title=" *** xPos-a : decision space visulalisation ***");
+	## LINUX
+	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
+	## WINDOWS
+	windows(title=" *** xPos-a : decision space visulalisation ***");
 	plot.new();
 	par(mfcol=mfcol);
 
@@ -565,7 +571,7 @@ library('scatterplot3d');
  ####################################################################
  # after optimization visualiation tools:
  ####################################################################
-showBestIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
 
@@ -575,8 +581,10 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
-	#windows(title=" *** xPos-a : decision space visulalisation ***");
+	## LINUX
+	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
+	## WINDOWS
+	windows(title=" *** xPos-a : decision space visulalisation ***");
 	plot.new();
 	par(mfcol=mfcol);
 
@@ -624,6 +632,75 @@ library('scatterplot3d');
 	);
 }
 
+##
+ # 3D PLOTTING OF THE DECISION SPACE (NOT AVBAILABLE DURING THE PROCESS)
+ ####################################################################
+ # after optimization visualiation tools:
+ ####################################################################
+showBestFrontIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+{
+library('scatterplot3d');
+
+	mfcol=c(2,2);
+	yzScreen <- c(1,1);
+	xzScreen <- c(2,1);
+	xyzScreen <- c(1,2);
+	xyScreen <- c(2,2);
+
+	## LINUX
+	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
+	## WINDOWS
+	windows(title=" *** xPos-a : decision space visulalisation ***");
+	plot.new();
+	par(mfcol=mfcol);
+
+	# plot 3D
+	par(mfg=xyzScreen)
+	scatterplot3d(
+		best$front[,1],xlab="decision 1",
+		best$front[,2],ylab="decision 2",
+		best$front[,3],zlab="decision 3",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec2],
+		zlim=decS[1:2,dec3],
+		type="p",highlight.3d=TRUE,tick=FALSE,
+		pch=20,angle=angle
+	);
+
+	# plot XY
+	par(mfg=xyScreen)
+	plot(	best$front[,1],xlab="decision 1",
+		best$front[,2],ylab="decision 2",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec2],
+		type="p",pch="+",col=bgCol,
+		main="dec1/dec2 projection"
+	);
+
+	# plot XZ
+	par(mfg=xzScreen)
+	plot(	best$front[,1],xlab="decision 1",
+		best$front[,3],ylab="decision 3",
+		xlim=decS[1:2,dec1],
+		ylim=decS[1:2,dec3],
+		type="p",pch="+",col=bgCol,
+		main="dec1/dec3 projection"
+	);
+
+	# plot YZ
+	par(mfg=yzScreen)
+	plot(	best$front[,2],xlab="decision 2",
+		best$front[,3],ylab="decision 3",
+		xlim=decS[1:2,dec2],
+		ylim=decS[1:2,dec3],
+		type="p",pch="+",col=bgCol,
+		main="dec2/dec3 projection"
+	);
+}
+
+##
+# COMPUTE BEST FOR show best in 3d decision space
+#####################################################################
 computeFrontierIn3dDecisionSpace <- function(besList,dec1,dec2,dec3)
 {
 	# compute the frontiere
@@ -670,4 +747,3 @@ result<-list("allBest"=frontiere,"front"=front,"body"=body);
 
 return(result);
 }
-
