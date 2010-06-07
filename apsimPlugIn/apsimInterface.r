@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wet-peanut_dry-maize_rotation-template051009_3dec.sim"
+	simTemplate <- "katherine_wet-peanut_dry-maize_rotation.sim"
 ##################################
 
 	#
@@ -62,7 +62,7 @@ apsim_userSettings <- function()
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "C:\\\\Documents and Settings\\\\crespo\\\\Desktop\\\\OptiAlgo\\\\ApsimOptiInKatherine\\\\Met\\\\";
+	path2MetFiles <- "../../ApsimOptiInKatherine/Met/";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -144,9 +144,9 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	0,	60,	10,	# min, max, minimal step of dec 1
-	0,	60,	10,	# min, max, minimal step of dec 2
-	0,	300,	25	# min, max, minimal step of dec 3
+	0,	60,	5,	# min, max, minimal step of dec 1
+	0,	60,	5,	# min, max, minimal step of dec 2
+	0,	300,	20	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
@@ -351,7 +351,8 @@ options(warn=-1);	# disable warnings
 	}
 options(warn=0);	# enable warnings
 
-#print("create file");
+### CREATE SIM FILES
+#print("create sim file");
 	for (p in 1:perNo){
 		# per in [0,1] has to be translate into a year
 		year[p] <- perDef[1]+per[p]*(perDef[2]-perDef[1]);
@@ -373,36 +374,62 @@ options(warn=0);	# enable warnings
 		# startYear and endYear define the length of the time period simulated (has to be included in the met file)
 		file.copy(paste(path2apsimOutputs,"noYearFile.sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),overwrite=TRUE);
 		changeVar(	"var_startYear",	year[p]-period,				paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
-		changeVar(	"var_endYear",	year[p],						paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
+		changeVar(	"var_endYear",	year[p],					paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
 		changeVar(	"var_title",	paste("optimization_",p,sep=""),	paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""),paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""));
 	}
-	for (p in 1:perNo){
+
+### CHECK ON SIM FILES CREATION
+#print("   :     wait sim files creation");# potential infinite loop
+	enterLoop <- Sys.time();
+	repeat{
+		simFileCreated <-  array(FALSE,dim=perNo);
+		for (p in 1:perNo){
+			if(file.exists(paste(path2apsimOutputs,"fileToSimulate_",p,".sim",sep=""))){
+				simFileCreated[p] <- TRUE;
+			}
+		}
+		if(sum(simFileCreated)==perNo){
+			break;
+		}else{
+			# I do not know why, but some does not get created ...
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
+				print("failing to create sim files");
+				browser();
+			}
+		}
+	}
+
+### RUN SIM FILES
 #print("run file");
+	for (p in 1:perNo){
 		## run simulation
-		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);
-#		sequencial<-FALSE;
+		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);	# one simulation happens in the R windows
+		#sequencial<-FALSE;							# none happens in the R windows, but get over my time limits regularly
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
 	}
 	
-#print("   :     wait files creation");# potential infinite loop
+### CHECK ON OUT FILES CREATION
+#print("   :     wait out files creation");# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
-		fileCreated <-  array(FALSE,dim=perNo);
+		outFileCreated <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
 			if(file.exists(paste(path2apsimOutputs,"optimization_",p,".out",sep=""))){
-				fileCreated[p] <- TRUE;
+				outFileCreated[p] <- TRUE;
 			}
 		}
-		if(sum(fileCreated)==perNo){
+		if(sum(outFileCreated)==perNo){
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to create output files");
 				browser();
 			}
 		}
 	}
+
+### CHECK ON OUT FILES DATA STORAGE
 #print("   :     wait files are not empty");	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
@@ -416,12 +443,14 @@ options(warn=0);	# enable warnings
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to write output files");
 				browser();
 			}
 		}
 	}
+
+### CHECK ON OUT FILES COMPLETION
 #print("   :     wait files completion");	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
@@ -436,13 +465,14 @@ options(warn=0);	# enable warnings
 			break;
 		}else{
 			# because crop might fail to germinate and never creat harvest report
-			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (5*period)){
+			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to fill in output files");
 				browser();
 			}
 		}
 	}
 
+### READ OUTPUTS
 #print("read files");
 	for (p in 1:perNo){
 		## read outputs from .out files
