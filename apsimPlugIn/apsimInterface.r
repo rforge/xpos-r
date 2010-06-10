@@ -78,7 +78,7 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 2;
+	period <- 3;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
@@ -144,9 +144,9 @@ apsim_userSettings <- function()
 	# N.B. according to the varNo above, you have to have as many (min,max,step) as variables
 	decS <- matrix(c(
 ##################################
-	0,	60,	5,	# min, max, minimal step of dec 1
-	0,	60,	5,	# min, max, minimal step of dec 2
-	0,	300,	20	# min, max, minimal step of dec 3
+	0,	60,	6,	# min, max, minimal step of dec 1
+	0,	60,	6,	# min, max, minimal step of dec 2
+	0,	300,	30	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
