@@ -370,7 +370,12 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
  ####################################################################
 showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol)
 {
-	windows(title=" *** xPos-a : decision space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : decision space visulalisation ***");##,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
 	plot.new();
 	plotAxes(decS,varX,varY,"decision X","decision Y");
 	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
@@ -385,7 +390,12 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
  ####################################################################
 showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol,thrMin,thrMax)
 {
-	windows(title=" *** xPos-a : decision space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : decision space visulalisation ***");##,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
 	plot.new();
 	plotAxes(decS,varX,varY,"decision X","decision Y");
 	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
@@ -408,7 +418,12 @@ showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,
  ####################################################################
 showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
 {
-	windows(title=" *** xPos-a : criteria space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : criteria space visulalisation ***");
+	}
 	plot.new();
 	plotAxes(criS,criX,criY,"criterion A","criterion B");
 	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
@@ -428,10 +443,12 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,cr
 showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
 {
 	title<-" *** xPos-a : criteria space 3D visulalisation ***";
-	## LINUX
-	#X11(title=title,width=12,height=12);
-	## WINDOWS
-	windows(title=title);
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : 3D decision space visulalisation ***");#,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
 	plot.new();
 
 	myPlot <- scatterplot3d::scatterplot3d(
@@ -503,9 +520,9 @@ showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,
  # 3D PLOTTING OF THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
  ####################################################################
  # after optimization visualiation tools:
- # TO BE COMPLETED
+ # IN CONSTRUCTION
  ####################################################################
-showBestIn3dCriteriaSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+showBestIn3dCriteriaSpace <- function(best,criS,bgCol,angle)
 {
 library('scatterplot3d');
 
@@ -515,53 +532,56 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	## LINUX
-	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
-	## WINDOWS
-	windows(title=" *** xPos-a : decision space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+			## LINUX
+			x11(title=" *** xPos-a : 3D criteria space visulalisation ***",width=11,height=11);
+	}else{		## WINDOWS
+			windows(title=" *** xPos-a : 3D criteria space visulalisation ***");
+	}
 	plot.new();
 	par(mfcol=mfcol);
 
 	# plot 3D
 	par(mfg=xyzScreen)
 	scatterplot3d(
-		best$body[,1],xlab="decision 1",
-		best$body[,2],ylab="decision 2",
-		best$body[,3],zlab="decision 3",
-		xlim=decS[1:2,dec1],
-		ylim=decS[1:2,dec2],
-		zlim=decS[1:2,dec3],
+		best$all[,1],xlab="criterion 1",
+		best$all[,2],ylab="criterion 2",
+		best$all[,3],zlab="criterion 3",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,2],
+		zlim=criS[1:2,3],
 		type="p",highlight.3d=TRUE,tick=FALSE,
 		pch=20,angle=angle
 	);
 
 	# plot XY
 	par(mfg=xyScreen)
-	plot(	best$body[,1],xlab="decision 1",
-		best$body[,2],ylab="decision 2",
-		xlim=decS[1:2,dec1],
-		ylim=decS[1:2,dec2],
-		type="p",pch="+",col=bgCol,
+	plot(	best$all[,1],xlab="criterion 1",
+		best$all[,2],ylab="criterion 2",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,2],
+		type="p",pch=".",col=bgCol,
 		main="dec1/dec2 projection"
 	);
+	lines(best$front,col="green")
 
 	# plot XZ
 	par(mfg=xzScreen)
-	plot(	best$body[,1],xlab="decision 1",
-		best$body[,3],ylab="decision 3",
-		xlim=decS[1:2,dec1],
-		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+	plot(	best$all[,1],xlab="criterion 1",
+		best$all[,3],ylab="criterion 3",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,3],
+		type="p",pch=".",col=bgCol,
 		main="dec1/dec3 projection"
 	);
 
 	# plot YZ
 	par(mfg=yzScreen)
-	plot(	best$body[,2],xlab="decision 2",
-		best$body[,3],ylab="decision 3",
-		xlim=decS[1:2,dec2],
-		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+	plot(	best$all[,2],xlab="criterion 2",
+		best$all[,3],ylab="criterion 3",
+		xlim=criS[1:2,2],
+		ylim=criS[1:2,3],
+		type	="p",pch=".",col=bgCol,
 		main="dec2/dec3 projection"
 	);
 }
@@ -571,6 +591,7 @@ library('scatterplot3d');
  ####################################################################
  # after optimization visualiation tools:
  ####################################################################
+#showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
@@ -581,16 +602,20 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	## LINUX
-	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
-	## WINDOWS
-	windows(title=" *** xPos-a : decision space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+			## LINUX
+			x11(title=" *** xPos-a : 3D decision space visulalisation ***");#,width=11,height=11);
+	}else{		## WINDOWS
+			windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
 	plot.new();
 	par(mfcol=mfcol);
 
 	# plot 3D
 	par(mfg=xyzScreen)
 	scatterplot3d(
+		## should be dec1, dec2 ... insead of 1,2 ..
+		## actually depends on compute function before ...?
 		best$body[,1],xlab="decision 1",
 		best$body[,2],ylab="decision 2",
 		best$body[,3],zlab="decision 3",
@@ -647,10 +672,12 @@ library('scatterplot3d');
 	xyzScreen <- c(1,2);
 	xyScreen <- c(2,2);
 
-	## LINUX
-	#x11(title=" *** xPos-a : 3D decision space visulalisation ***",width=12,height=12);
-	## WINDOWS
-	windows(title=" *** xPos-a : decision space visulalisation ***");
+	if(.Platform$OS.type=="unix"){
+			## LINUX
+			x11(title=" *** xPos-a : 3D decision space visulalisation ***");#,width=11,height=11);
+	}else{		## WINDOWS
+			windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
 	plot.new();
 	par(mfcol=mfcol);
 
@@ -745,5 +772,122 @@ computeFrontierIn3dDecisionSpace <- function(besList,dec1,dec2,dec3)
 result<-list("allBest"=frontiere,"front"=front,"body"=body);
 #save(result,file="frontiere.Rdata");
 
+return(result);
+}
+##
+# COMPUTE BEST FOR show best in 3d criteria space
+# CONSTRUCTION
+#####################################################################
+computeFrontierIn3dCriteriaSpace <- function(besList,cri1,cri2,cri3)
+{
+	# compute the frontiere
+	frontiere <- NULL;
+	if(besList$item>0){
+		uneList <- besList;
+		for ( r in 1:uneList$itemNo){
+			print(paste(r," / ",uneList$itemNo,sep=""));
+			for ( d in 1:uneList$regEva[[r]]$itemNo){
+				for ( p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+					frontiere <- rbind(frontiere,as.array(c(	uneList$regEva[[r]]$decEva[[d]][p,cri1],
+											uneList$regEva[[r]]$decEva[[d]][p,cri2],
+											uneList$regEva[[r]]$decEva[[d]][p,cri3]
+										)));
+				}
+			}
+		}
+	}
+
+	## pareto front only
+source('evaluation.r');
+	temp <- frontiere;
+	temp <- cbind(temp,array(0,dim=c(dim(temp)[1],1)));
+	for (p1 in 1:(dim(temp)[1]-1)){
+		for (p2 in (p1+1):dim(temp)[1]){
+			print(paste(p1," / ",p2,sep=""));
+			switch(paretoDomi_decPerVSdecPer(temp[p1,1:3],temp[p2,1:3]),
+				## 1: p1 dominates p2
+				{temp[p2,(dim(frontiere)[2]+1)]<-temp[p2,(dim(frontiere)[2]+1)]+1;},
+				## 2: p2 domintes p1
+				{temp[p1,(dim(frontiere)[2]+1)]<-temp[p1,(dim(frontiere)[2]+1)]+1;},
+				{}
+				);
+		}
+	}
+	front<-NULL;
+	for (l in 1:dim(temp)[1]){
+		if(temp[l,4]==0){
+			front <- rbind(front,temp[l,]);
+		}
+	}
+
+## XY front
+print("frontXY");
+	temp<-front[,1:2];
+	temp<-cbind(temp,array(0,dim=dim(temp)[1]));
+	for (l1 in 1:(dim(temp)[1]-1)){
+		for (l2 in (l1+1):dim(temp)[1]){
+			print(paste(l1," / ",l2,sep=""));
+			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
+				## 1: p1 dominates p2
+				{temp[l2,3]<-temp[l2,3]+1;},
+				## 2: p2 domintes p1
+				{temp[l1,3]<-temp[l1,3]+1;},
+				{}
+			);
+		}
+	}
+	frontXY<-NULL;
+	for (l in 1:dim(temp)[1]){
+		if(temp[l,3]==0){
+			frontXY <- rbind(frontXY,temp[l,]);
+		}
+	}
+
+## YZ front
+print("frontYZ");
+	temp<-front[,2:3];
+	temp<-cbind(temp,array(0,dim=dim(temp)[1]));
+	for (l1 in 1:(dim(temp)[1]-1)){
+		for (l2 in (l1+1):dim(temp)[1]){
+			print(paste(l1," / ",l2,sep=""));
+			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
+				## 1: p1 dominates p2
+				{temp[l2,3]<-temp[l2,3]+1;},
+				## 2: p2 domintes p1
+				{temp[l1,3]<-temp[l1,3]+1;},
+				{}
+			);
+		}
+	}
+	frontYZ<-NULL;
+	for (l in 1:dim(temp)[1]){
+		if(temp[l,3]==0){
+			frontYZ <- rbind(frontYZ,temp[l,]);
+		}
+	}
+		
+## XZ front
+print("frontXZY");
+	temp<-cbind(front[,1],front[,3],array(0,dim=dim(temp)[1]));
+	for (l1 in 1:(dim(temp)[1]-1)){
+		for (l2 in (l1+1):dim(temp)[1]){
+			print(paste(l1," / ",l2,sep=""));
+			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
+				## 1: p1 dominates p2
+				{temp[l2,3]<-temp[l2,3]+1;},
+				## 2: p2 domintes p1
+				{temp[l1,3]<-temp[l1,3]+1;},
+				{}
+			);
+		}
+	}
+	frontXZ<-NULL;
+	for (l in 1:dim(temp)[1]){
+		if(temp[l,3]==0){
+			frontXZ <- rbind(frontXZ,temp[l,]);
+		}
+	}
+
+result<-list("all"=frontiere,"front"=front,"frontXY"=frontXY,"frontYZ"=frontYZ,"frontXZ"=frontXZ);
 return(result);
 }
