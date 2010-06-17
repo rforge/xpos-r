@@ -380,7 +380,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 #
 
 ## IN DECISION SPACE
- # show a list of regions in the 2D decision space
+ # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
 showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol)
 {
@@ -439,32 +439,51 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 }
 
 ## IN DECISION SPACE
- # show regions which min and max are respectively less than thrMin and thrMax 
+ # show regions which min and max are respectively greater than thrMin and thrMax
+ # NB. minimization, so in the code it it less than the negative value
  ###############################################################################
-showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol,thrMin,thrMax)
+showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol,thrMin,thrMax)
 {
+	graphics.off();
+	colNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
+	linNo<-2;
+	mfcol=c(linNo,colNo/2);
+	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation ***");##,width=11,height=11);
+		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo/2,height=3.5*linNo);
 	}else{	## WINDOWS
-		windows(title=" *** xPos-a : decision space visulalisation ***");
+		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 	}
 	plot.new();
-	plotAxes(decS,varX,varY,"decision X","decision Y");
-	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+	par(mfcol=mfcol);
 
-	if(proList$item>0){watchDecSpace(proList,varX,varY,"gold");}
-	if(penList$item>0){watchDecSpace(penList,varX,varY,"blue");}
-	if(unbList$item>0){watchDecSpace(unbList,varX,varY,"red");}
-	if(besList$item>0){watchDecSpace(besList,varX,varY,"green");}
-
-	for (r in 1:besList$itemNo){
-	for (d in 1:besList$regEva[[r]]$itemNo){
-		if(min(besList$regEva[[r]]$decEva[[d]][,varX])<thrMin
-			&& max(besList$regEva[[r]]$decEva[[d]][,varX])<thrMax){
-			plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
+		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
+		par(mfg=screen);
+		par(mar=c(4,1,1,1));
+		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
+			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
+			type="n",				# do not plot
+			ann=FALSE,
+			xlim=c(decS[1,varX],decS[2,varX]),	# X limit
+			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
+			pty="s"
+		);
+		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.8);
+		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
+		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
+			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
+				for (d in 1:besList$regEva[[r]]$itemNo){
+					if(min(besList$regEva[[r]]$decEva[[d]][,varX])<(-thrMin) && max(besList$regEva[[r]]$decEva[[d]][,varX])<(-thrMax)){
+						plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+						plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
+					}
+				}
+			}
 		}
-	}}
+		screen<-screen+c(0,1);
+	}
 }
 
 ## NEEDED FOR BELOW DECISION SPACE FUNCTIONS
