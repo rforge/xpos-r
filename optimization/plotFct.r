@@ -385,11 +385,13 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol)
 {
 	graphics.off();
-	mfcol=c(1,floor((decS[2,varH]-decS[1,varH])/decS[3,varH]));
+	colNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
+	linNo<-2;
+	mfcol=c(linNo,colNo/2);
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=17,height=2.5);
+		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo/2,height=3.5*linNo);
 	}else{	## WINDOWS
 		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 	}
@@ -397,6 +399,7 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 	par(mfcol=mfcol);
 
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
+		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
 		par(mfg=screen);
 		par(mar=c(4,1,1,1));
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
@@ -410,22 +413,22 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.8);
 		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
-#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<layer && proList$regEva[[r]]$regDef[2,varH]>layer){
+#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<=layer && proList$regEva[[r]]$regDef[2,varH]>layer){
 #				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
 #				plotDecDef(proList$regEva[[r]]$itemNo,proList$regEva[[r]]$decDef,varX,varY,"+","black");
 #				watchDecSpace(proList,varX,varY,"gold");
 #			}
-#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<layer && penList$regEva[[r]]$regDef[2,varH]>layer){
+#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<=layer && penList$regEva[[r]]$regDef[2,varH]>layer){
 #				plotRectangle(penList$regEva[[r]]$regDef,varX,varY,"blue","black",NULL);
 #				plotDecDef(penList$regEva[[r]]$itemNo,penList$regEva[[r]]$decDef,varX,varY,"+","black");
 #				watchDecSpace(penList,varX,varY,"blue");
 #			}
-#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
+#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<=layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
 #				plotRectangle(unbList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
 #				plotDecDef(unbList$regEva[[r]]$itemNo,unbList$regEva[[r]]$decDef,varX,varY,"+","black");
 #				watchDecSpace(unbList,varX,varY,"red");
 #			}
-			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<layer && besList$regEva[[r]]$regDef[2,varH]>layer){
+			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
 				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
 				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 #				watchDecSpace(besList,varX,varY,bgCol);
