@@ -548,6 +548,7 @@ showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
 
+	graphics.off();
 	mfcol=c(2,2);
 	yzScreen <- c(1,1);
 	xzScreen <- c(2,1);
@@ -580,12 +581,13 @@ library('scatterplot3d');
 
 	# plot XY
 	par(mfg=xyScreen)
+	par(mar=c(2,2,2,1));
 	plot(	best$body[,1],xlab="decision 1",
 		best$body[,2],ylab="decision 2",
 		xlim=decS[1:2,dec1],
 		ylim=decS[1:2,dec2],
 		type="p",pch="+",col=bgCol,
-		main="dec1/dec2 projection"
+		main="dec1 vs. dec2 projection"
 	);
 
 	# plot XZ
@@ -618,6 +620,7 @@ showBestFrontIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
 
+	graphics.off();
 	mfcol=c(2,2);
 	yzScreen <- c(1,1);
 	xzScreen <- c(2,1);
@@ -684,6 +687,27 @@ library('scatterplot3d');
 ##### CRITERIA SPACE FUNCTIONS (start)
 #
 #
+
+## IN CRITERIA SPACE
+ # show a list of region in the criteria space
+ ####################################################################
+showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
+{
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : criteria space visulalisation ***");
+	}
+	plot.new();
+	plotAxes(criS,criX,criY,"criterion A","criterion B");
+	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
+
+	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
+	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
+	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
+	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
+}
 
 ## NEEDED FOR BELOW CRITERIA SPACE FUNCTIONS
  # based on besList,
@@ -807,26 +831,6 @@ return(result);
 }
 
 ## IN CRITERIA SPACE
- # show a list of region in the criteria space
- ####################################################################
-showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
-{
-	if(.Platform$OS.type=="unix"){
-		## LINUX
-		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
-	}else{	## WINDOWS
-		windows(title=" *** xPos-a : criteria space visulalisation ***");
-	}
-	plot.new();
-	plotAxes(criS,criX,criY,"criterion A","criterion B");
-	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
-
-	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
-	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
-	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
-	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
-}
-## IN CRITERIA SPACE
  # show ???
  # NB. requires "scatterplot3d" R package
  ####################################################################
