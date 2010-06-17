@@ -21,7 +21,7 @@ source('rwfileOp.r');
  # set paths to data
  # - path to the downscaled forlders tmin, tmax, ppt		## 1 ##
  # - path to where to save the produced .met files		## 2 ##
- # - folder names of those including tmin, tmax and ppt	## 3 ##
+ # - folder names of those including tmin, tmax and ppt		## 3 ##
  # or read it from "convertFunctions.r" with
  # > path <- init_paths();
  #########################################################################

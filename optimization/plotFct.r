@@ -366,28 +366,76 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 	}
 }
 
-## after optimization visualiation tools
- ####################################################################
-showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol)
+################################################################################
+################################################################################
+##
+## AFTER OPTIMIZATION PLOTTING FUNCTIONS
+##
+################################################################################
+################################################################################
+
+################################################################################
+##### DECISION SPACE FUNCTIONS (start)
+#
+#
+
+## IN DECISION SPACE
+ # show a list of regions in the 2D decision space
+ ###############################################################################
+showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol)
 {
+	graphics.off();
+	mfcol=c(1,floor((decS[2,varH]-decS[1,varH])/decS[3,varH]));
+	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation ***");##,width=11,height=11);
+		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=17,height=3);
 	}else{	## WINDOWS
-		windows(title=" *** xPos-a : decision space visulalisation ***");
+		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 	}
 	plot.new();
-	plotAxes(decS,varX,varY,"decision X","decision Y");
-	plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+	par(mfcol=mfcol);
 
-	if(proList$item>0){watchDecSpace(proList,varX,varY,"gold");}
-	if(penList$item>0){watchDecSpace(penList,varX,varY,"blue");}
-	if(unbList$item>0){watchDecSpace(unbList,varX,varY,"red");}
-	if(besList$item>0){watchDecSpace(besList,varX,varY,bgCol);}
+	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
+		par(mfg=screen);
+#		plotAxes(decS,varX,varY,paste("decision ",varX,sep=""),paste("decision ",varY,sep=""));
+		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
+			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
+			type="n",				# do not plot
+			xlim=c(decS[1,varX],decS[2,varX]),	# X limit
+			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
+			ann=FALSE				# no titles
+		);
+#		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
+#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<layer && proList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
+#				plotDecDef(proList$regEva[[r]]$itemNo,proList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchDecSpace(proList,varX,varY,"gold");
+#			}
+#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<layer && penList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(penList$regEva[[r]]$regDef,varX,varY,"blue","black",NULL);
+#				plotDecDef(penList$regEva[[r]]$itemNo,penList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchDecSpace(penList,varX,varY,"blue");
+#			}
+#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(unbList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
+#				plotDecDef(unbList$regEva[[r]]$itemNo,unbList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchDecSpace(unbList,varX,varY,"red");
+#			}
+			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<layer && besList$regEva[[r]]$regDef[2,varH]>layer){
+				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchDecSpace(besList,varX,varY,bgCol);
+			}
+		}
+		screen<-screen+c(0,1);
+	}
 }
 
-## after optimization visualiation tools
- ####################################################################
+## IN DECISION SPACE
+ # show regions which min and max are respectively less than thrMin and thrMax 
+ ###############################################################################
 showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,bgCol,thrMin,thrMax)
 {
 	if(.Platform$OS.type=="unix"){
@@ -414,184 +462,64 @@ showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,
 	}}
 }
 
-## after optimization visualiation tools
- ####################################################################
-showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
+## NEEDED FOR BELOW DECISION SPACE FUNCTIONS
+ # based on besList,
+ # compute a front and body of efficient decisions achieved
+ # NB. I did not embeded them into the graphical functions
+ #	as the computation might be quite time consumming
+ ###############################################################################
+computeFrontierIn3dDecisionSpace <- function(besList,dec1,dec2,dec3)
 {
-	if(.Platform$OS.type=="unix"){
-		## LINUX
-		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
-	}else{	## WINDOWS
-		windows(title=" *** xPos-a : criteria space visulalisation ***");
-	}
-	plot.new();
-	plotAxes(criS,criX,criY,"criterion A","criterion B");
-	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
-
-	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
-	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
-	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
-	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
-}
-
-##
- # 3D PLOTTING OF THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
- ####################################################################
- # after optimization visualiation tools
- # requires "scatterplot3d" R package
- ####################################################################
-showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
-{
-	title<-" *** xPos-a : criteria space 3D visulalisation ***";
-	if(.Platform$OS.type=="unix"){
-		## LINUX
-		x11(title=" *** xPos-a : 3D decision space visulalisation ***");#,width=11,height=11);
-	}else{	## WINDOWS
-		windows(title=" *** xPos-a : decision space visulalisation ***");
-	}
-	plot.new();
-
-	myPlot <- scatterplot3d::scatterplot3d(
-		mean(criS[1:2,criX]),xlab="criterion 1",
-		mean(criS[1:2,criY]),ylab="criterion 2",
-		mean(criS[1:2,criZ]),zlab="criterion 3",
-		xlim=criS[1:2,criX],
-		ylim=criS[1:2,criY],
-		zlim=criS[1:2,criZ],
-		pch="",angle=angle
-	);
-
-	if(proList$item>0){
-		uneList <- proList;
-		for ( r in 1:uneList$itemNo){
-			for (d in 1:uneList$regEva[[r]]$itemNo){	
-				myPlot$points3d(
-					uneList$regEva[[r]]$decEva[[d]][,criX],
-					uneList$regEva[[r]]$decEva[[d]][,criY],
-					uneList$regEva[[r]]$decEva[[d]][,criZ],
-					pch=".",col="gold"
-				);
-			}
-		}
-	}
-	if(penList$item>0){
-		uneList <- penList;
-		for ( r in 1:uneList$itemNo){
-			for (d in 1:uneList$regEva[[r]]$itemNo){	
-				myPlot$points3d(
-					uneList$regEva[[r]]$decEva[[d]][,criX],
-					uneList$regEva[[r]]$decEva[[d]][,criY],
-					uneList$regEva[[r]]$decEva[[d]][,criZ],
-					pch=".",col="blue"
-				);
-			}
-		}
-	}
-	if(unbList$item>0){
-		uneList <- unbList;
-		for ( r in 1:uneList$itemNo){
-			for (d in 1:uneList$regEva[[r]]$itemNo){	
-				myPlot$points3d(
-					uneList$regEva[[r]]$decEva[[d]][,criX],
-					uneList$regEva[[r]]$decEva[[d]][,criY],
-					uneList$regEva[[r]]$decEva[[d]][,criZ],
-					pch=".",col="red"
-				);
-			}
-		}
-	}
-
+	# compute the frontiere
+	frontiere <- NULL;
 	if(besList$item>0){
 		uneList <- besList;
 		for ( r in 1:uneList$itemNo){
-			for (d in 1:uneList$regEva[[r]]$itemNo){	
-				myPlot$points3d(
-					uneList$regEva[[r]]$decEva[[d]][,criX],
-					uneList$regEva[[r]]$decEva[[d]][,criY],
-					uneList$regEva[[r]]$decEva[[d]][,criZ],
-					pch=ptType,col=ptCol
-				);
-			}
+			print(paste(r," / ",uneList$itemNo,sep=""));
+			for(x in c(uneList$regEva[[r]]$regDef[1,dec1],uneList$regEva[[r]]$regDef[2,dec1])){
+			for(y in c(uneList$regEva[[r]]$regDef[1,dec2],uneList$regEva[[r]]$regDef[2,dec2])){
+			for(z in c(uneList$regEva[[r]]$regDef[1,dec3],uneList$regEva[[r]]$regDef[2,dec3])){
+				done<-FALSE;
+				point <- as.array(c(x,y,z));
+
+				if (!is.null(frontiere)){
+					for (l in 1:dim(frontiere)[1]){
+						if (all(frontiere[l,1:3]==point)){
+							frontiere[l,4]<-frontiere[l,4]+1;
+							done<-TRUE;
+							break;
+						}						
+					}
+				}
+				if(!done) frontiere <- rbind(frontiere,c(point,0));
+
+			}}}
 		}
 	}
-}
 
-##
- # 3D PLOTTING OF THE CRITERIA SPACE (NOT AVBAILABLE DURING THE PROCESS)
- ####################################################################
- # after optimization visualiation tools:
- # IN CONSTRUCTION
- ####################################################################
-showBestIn3dCriteriaSpace <- function(best,criS,bgCol,angle)
-{
-library('scatterplot3d');
-
-	mfcol=c(2,2);
-	yzScreen <- c(1,1);
-	xzScreen <- c(2,1);
-	xyzScreen <- c(1,2);
-	xyScreen <- c(2,2);
-
-	if(.Platform$OS.type=="unix"){
-			## LINUX
-			x11(title=" *** xPos-a : 3D criteria space visulalisation ***",width=11,height=11);
-	}else{		## WINDOWS
-			windows(title=" *** xPos-a : 3D criteria space visulalisation ***");
+	front<-NULL;
+	body<-NULL;
+	for (l in 1:dim(frontiere)[1]){
+		if(frontiere[l,4]==0){
+			front <- rbind(front,frontiere[l,]);
+		}else{
+			body <- rbind(body,frontiere[l,]);
+		}
 	}
-	plot.new();
-	par(mfcol=mfcol);
 
-	# plot 3D
-	par(mfg=xyzScreen)
-	scatterplot3d(
-		best$all[,1],xlab="criterion 1",
-		best$all[,2],ylab="criterion 2",
-		best$all[,3],zlab="criterion 3",
-		xlim=criS[1:2,1],
-		ylim=criS[1:2,2],
-		zlim=criS[1:2,3],
-		type="p",highlight.3d=TRUE,tick=FALSE,
-		pch=20,angle=angle
-	);
+#write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
+#write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
+result<-list("allBest"=frontiere,"front"=front,"body"=body);
+#save(result,file="frontiere.Rdata");
 
-	# plot XY
-	par(mfg=xyScreen)
-	plot(	best$all[,1],xlab="criterion 1",
-		best$all[,2],ylab="criterion 2",
-		xlim=criS[1:2,1],
-		ylim=criS[1:2,2],
-		type="p",pch=".",col=bgCol,
-		main="dec1/dec2 projection"
-	);
-	lines(best$front,col="green")
-
-	# plot XZ
-	par(mfg=xzScreen)
-	plot(	best$all[,1],xlab="criterion 1",
-		best$all[,3],ylab="criterion 3",
-		xlim=criS[1:2,1],
-		ylim=criS[1:2,3],
-		type="p",pch=".",col=bgCol,
-		main="dec1/dec3 projection"
-	);
-
-	# plot YZ
-	par(mfg=yzScreen)
-	plot(	best$all[,2],xlab="criterion 2",
-		best$all[,3],ylab="criterion 3",
-		xlim=criS[1:2,2],
-		ylim=criS[1:2,3],
-		type	="p",pch=".",col=bgCol,
-		main="dec2/dec3 projection"
-	);
+return(result);
 }
 
-##
- # 3D PLOTTING OF THE DECISION SPACE (NOT AVBAILABLE DURING THE PROCESS)
- ####################################################################
- # after optimization visualiation tools:
- ####################################################################
-#showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+## IN DECISION SPACE
+ # show the body of efficient decisions
+ # 	in 3D and dec1/dec2, dec1/dec3, dec2/dec3 projections
+ # NB. requires "scatterplot3d" R package
+ ###############################################################################
 showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
@@ -657,11 +585,11 @@ library('scatterplot3d');
 	);
 }
 
-##
- # 3D PLOTTING OF THE DECISION SPACE (NOT AVBAILABLE DURING THE PROCESS)
- ####################################################################
- # after optimization visualiation tools:
- ####################################################################
+## IN DECISION SPACE
+ # show the frontier of efficient decisions
+ # 	in 3D and dec1/dec2, dec1/dec3, dec2/dec3 projections
+ # NB. requires "scatterplot3d" R package
+ ###############################################################################
 showBestFrontIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
 {
 library('scatterplot3d');
@@ -725,59 +653,21 @@ library('scatterplot3d');
 	);
 }
 
-##
-# COMPUTE BEST FOR show best in 3d decision space
-#####################################################################
-computeFrontierIn3dDecisionSpace <- function(besList,dec1,dec2,dec3)
-{
-	# compute the frontiere
-	frontiere <- NULL;
-	if(besList$item>0){
-		uneList <- besList;
-		for ( r in 1:uneList$itemNo){
-			print(paste(r," / ",uneList$itemNo,sep=""));
-			for(x in c(uneList$regEva[[r]]$regDef[1,dec1],uneList$regEva[[r]]$regDef[2,dec1])){
-			for(y in c(uneList$regEva[[r]]$regDef[1,dec2],uneList$regEva[[r]]$regDef[2,dec2])){
-			for(z in c(uneList$regEva[[r]]$regDef[1,dec3],uneList$regEva[[r]]$regDef[2,dec3])){
-				done<-FALSE;
-				point <- as.array(c(x,y,z));
+#
+#
+##### DECISION SPACE FUNCTIONS (end)
+################################################################################
+##### CRITERIA SPACE FUNCTIONS (start)
+#
+#
 
-				if (!is.null(frontiere)){
-					for (l in 1:dim(frontiere)[1]){
-						if (all(frontiere[l,1:3]==point)){
-							frontiere[l,4]<-frontiere[l,4]+1;
-							done<-TRUE;
-							break;
-						}						
-					}
-				}
-				if(!done) frontiere <- rbind(frontiere,c(point,0));
-
-			}}}
-		}
-	}
-
-	front<-NULL;
-	body<-NULL;
-	for (l in 1:dim(frontiere)[1]){
-		if(frontiere[l,4]==0){
-			front <- rbind(front,frontiere[l,]);
-		}else{
-			body <- rbind(body,frontiere[l,]);
-		}
-	}
-
-#write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
-#write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
-result<-list("allBest"=frontiere,"front"=front,"body"=body);
-#save(result,file="frontiere.Rdata");
-
-return(result);
-}
-##
-# COMPUTE BEST FOR show best in 3d criteria space
-# CONSTRUCTION
-#####################################################################
+## NEEDED FOR BELOW CRITERIA SPACE FUNCTIONS
+ # based on besList,
+ # compute a front and body of non dominated groups achieved
+ # NB. I did not embeded them into the graphical functions
+ #	as the computation might be quite time consumming
+ # CONSTRUCTION
+ ###############################################################################
 computeFrontierIn3dCriteriaSpace <- function(besList,cri1,cri2,cri3)
 {
 	# compute the frontiere
@@ -891,3 +781,179 @@ print("frontXZY");
 result<-list("all"=frontiere,"front"=front,"frontXY"=frontXY,"frontYZ"=frontYZ,"frontXZ"=frontXZ);
 return(result);
 }
+
+## IN CRITERIA SPACE
+ # show a list of region in the criteria space
+ ####################################################################
+showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
+{
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : criteria space visulalisation ***");
+	}
+	plot.new();
+	plotAxes(criS,criX,criY,"criterion A","criterion B");
+	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
+
+	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
+	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
+	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
+	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
+}
+## IN CRITERIA SPACE
+ # show ???
+ # NB. requires "scatterplot3d" R package
+ ####################################################################
+showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,criZ,ptType,ptCol,angle)
+{
+	title<-" *** xPos-a : criteria space 3D visulalisation ***";
+	if(.Platform$OS.type=="unix"){
+		## LINUX
+		x11(title=" *** xPos-a : 3D decision space visulalisation ***");#,width=11,height=11);
+	}else{	## WINDOWS
+		windows(title=" *** xPos-a : decision space visulalisation ***");
+	}
+	plot.new();
+
+	myPlot <- scatterplot3d::scatterplot3d(
+		mean(criS[1:2,criX]),xlab="criterion 1",
+		mean(criS[1:2,criY]),ylab="criterion 2",
+		mean(criS[1:2,criZ]),zlab="criterion 3",
+		xlim=criS[1:2,criX],
+		ylim=criS[1:2,criY],
+		zlim=criS[1:2,criZ],
+		pch="",angle=angle
+	);
+
+	if(proList$item>0){
+		uneList <- proList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="gold"
+				);
+			}
+		}
+	}
+	if(penList$item>0){
+		uneList <- penList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="blue"
+				);
+			}
+		}
+	}
+	if(unbList$item>0){
+		uneList <- unbList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=".",col="red"
+				);
+			}
+		}
+	}
+
+	if(besList$item>0){
+		uneList <- besList;
+		for ( r in 1:uneList$itemNo){
+			for (d in 1:uneList$regEva[[r]]$itemNo){	
+				myPlot$points3d(
+					uneList$regEva[[r]]$decEva[[d]][,criX],
+					uneList$regEva[[r]]$decEva[[d]][,criY],
+					uneList$regEva[[r]]$decEva[[d]][,criZ],
+					pch=ptType,col=ptCol
+				);
+			}
+		}
+	}
+}
+
+## IN CRITERIA SPACE
+ # show ???
+ # NB. requires "scatterplot3d" R package
+ # IN CONSTRUCTION
+ ###############################################################################
+showBestIn3dCriteriaSpace <- function(best,criS,bgCol,angle)
+{
+library('scatterplot3d');
+
+	mfcol=c(2,2);
+	yzScreen <- c(1,1);
+	xzScreen <- c(2,1);
+	xyzScreen <- c(1,2);
+	xyScreen <- c(2,2);
+
+	if(.Platform$OS.type=="unix"){
+			## LINUX
+			x11(title=" *** xPos-a : 3D criteria space visulalisation ***",width=11,height=11);
+	}else{		## WINDOWS
+			windows(title=" *** xPos-a : 3D criteria space visulalisation ***");
+	}
+	plot.new();
+	par(mfcol=mfcol);
+
+	# plot 3D
+	par(mfg=xyzScreen)
+	scatterplot3d(
+		best$all[,1],xlab="criterion 1",
+		best$all[,2],ylab="criterion 2",
+		best$all[,3],zlab="criterion 3",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,2],
+		zlim=criS[1:2,3],
+		type="p",highlight.3d=TRUE,tick=FALSE,
+		pch=20,angle=angle
+	);
+
+	# plot XY
+	par(mfg=xyScreen)
+	plot(	best$all[,1],xlab="criterion 1",
+		best$all[,2],ylab="criterion 2",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,2],
+		type="p",pch=".",col=bgCol,
+		main="dec1/dec2 projection"
+	);
+	lines(best$front,col="green")
+	lines(best$front,col="green")
+
+	# plot XZ
+	par(mfg=xzScreen)
+	plot(	best$all[,1],xlab="criterion 1",
+		best$all[,3],ylab="criterion 3",
+		xlim=criS[1:2,1],
+		ylim=criS[1:2,3],
+		type="p",pch=".",col=bgCol,
+		main="dec1/dec3 projection"
+	);
+
+	# plot YZ
+	par(mfg=yzScreen)
+	plot(	best$all[,2],xlab="criterion 2",
+		best$all[,3],ylab="criterion 3",
+		xlim=criS[1:2,2],
+		ylim=criS[1:2,3],
+		type	="p",pch=".",col=bgCol,
+		main="dec2/dec3 projection"
+	);
+}
+
+#
+#
+##### CRITERIA SPACE FUNCTIONS (end)
+################################################################################
+
