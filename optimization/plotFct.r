@@ -389,7 +389,7 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=17,height=3);
+		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=17,height=2.5);
 	}else{	## WINDOWS
 		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 	}
@@ -398,15 +398,17 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		par(mfg=screen);
-#		plotAxes(decS,varX,varY,paste("decision ",varX,sep=""),paste("decision ",varY,sep=""));
+		par(mar=c(4,1,1,1));
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
 			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
+			ann=FALSE,
 			xlim=c(decS[1,varX],decS[2,varX]),	# X limit
 			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
-			ann=FALSE				# no titles
+			pty="s"
 		);
-#		plotRectangle(decS,varX,varY,"white","white","list regions visualisation");
+		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.8);
+		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
 #			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<layer && proList$regEva[[r]]$regDef[2,varH]>layer){
 #				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
