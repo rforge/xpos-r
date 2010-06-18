@@ -690,7 +690,7 @@ library('scatterplot3d');
 #
 
 ## IN CRITERIA SPACE
- # show a list of regions in the multiple 2D layers in decision space
+ # show a list of regions boundaries in the multiple 2D layers in criteria space
  ###############################################################################
 showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,varY,varH,bgCol)
 {
@@ -736,6 +736,7 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,va
 					}
 				}
 ## it looks like the criDef max,3 never reaches criS[2,3] ... ???
+## does it happen again?
 				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
 					rect(	criDef[1,varX],	# x left
 						criDef[1,varY],	# y bottom
