@@ -385,13 +385,14 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol)
 {
 	graphics.off();
-	colNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
 	linNo<-2;
-	mfcol=c(linNo,colNo/2);
+	layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
+	colNo<-layerNo/linNo;
+	mfcol=c(linNo,colNo);
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo/2,height=3.5*linNo);
+		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
 	}else{	## WINDOWS
 		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 	}
@@ -689,24 +690,66 @@ library('scatterplot3d');
 #
 
 ## IN CRITERIA SPACE
- # show a list of region in the criteria space
- ####################################################################
-showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,criY,ptType,ptCol)
+ # show a list of regions in the multiple 2D layers in decision space
+ ###############################################################################
+showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,varY,varH,bgCol)
 {
+	graphics.off();
+	linNo<-2;
+	layerNo<-10;
+	colNo<-layerNo/linNo;
+	mfcol=c(linNo,colNo);
+	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : criteria space visulalisation ***");##,width=11,height=11);
+		x11(title=" *** xPos-a : criteria space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
 	}else{	## WINDOWS
-		windows(title=" *** xPos-a : criteria space visulalisation ***");
+		windows(title=" *** xPos-a : criteria space visulalisation (2D) ***");
 	}
 	plot.new();
-	plotAxes(criS,criX,criY,"criterion A","criterion B");
-	plotRectangle(criS,criX,criY,"white","white","criteria space evaluation");
-
-	if(proList$item>0){watchCriSpace(proList,criX,criY,".","black");}
-	if(penList$item>0){watchCriSpace(penList,criX,criY,".","blue");}
-	if(unbList$item>0){watchCriSpace(unbList,criX,criY,".","red");}
-	if(besList$item>0){watchCriSpace(besList,criX,criY,ptType,ptCol);}
+	par(mfcol=mfcol);
+	for (layerMin in seq(criS[1,varH],criS[2,varH]-(criS[2,varH]-criS[1,varH])/layerNo,(criS[2,varH]-criS[1,varH])/layerNo)){	
+		if(layerMin==(criS[2,varH]-criS[1,varH])*2/layerNo) screen<-c(2,1);
+		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
+print(layerMin);
+print(layerMax);
+		par(mfg=screen);
+		par(mar=c(4,1,1,1));
+		plot(	seq(criS[1,varX],criS[2,varX],(criS[2,varX]-criS[1,varX])/10),	# non plotted
+			seq(criS[1,varY],criS[2,varY],(criS[2,varY]-criS[1,varY])/10),	# non plotted
+			type="n",				# do not plot
+			ann=FALSE,
+			xlim=c(criS[1,varX],criS[2,varX]),	# X limit
+			ylim=c(criS[1,varY],criS[2,varY]),	# Y limit
+			pty="s"
+		);
+		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.8);
+		mtext(paste(round(layerMin),"<= cri ",varH," <",round(layerMax),sep=""),side=1,line=3,cex=.8);
+		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
+#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<=layer && proList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
+#				plotDecDef(proList$regEva[[r]]$itemNo,proList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchcriSpace(proList,varX,varY,"gold");
+#			}
+#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<=layer && penList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(penList$regEva[[r]]$regDef,varX,varY,"blue","black",NULL);
+#				plotDecDef(penList$regEva[[r]]$itemNo,penList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchcriSpace(penList,varX,varY,"blue");
+#			}
+#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<=layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
+#				plotRectangle(unbList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
+#				plotDecDef(unbList$regEva[[r]]$itemNo,unbList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchcriSpace(unbList,varX,varY,"red");
+#			}
+browser();
+			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
+				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
+#				watchcriSpace(besList,varX,varY,bgCol);
+			}
+		}
+		screen<-screen+c(0,1);
+	}
 }
 
 ## NEEDED FOR BELOW CRITERIA SPACE FUNCTIONS
