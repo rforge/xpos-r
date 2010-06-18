@@ -798,7 +798,7 @@ source('evaluation.r');
 	}
 	front<-NULL;
 	for (l in 1:dim(temp)[1]){
-		if(temp[l,4]==0){
+		if(temp[l,(dim(frontiere)[2]+1)]==0){
 			front <- rbind(front,temp[l,]);
 		}
 	}
@@ -850,7 +850,7 @@ print("frontYZ");
 	}
 		
 ## XZ front
-print("frontXZY");
+print("frontXZ");
 	temp<-cbind(front[,1],front[,3],array(0,dim=dim(temp)[1]));
 	for (l1 in 1:(dim(temp)[1]-1)){
 		for (l2 in (l1+1):dim(temp)[1]){
