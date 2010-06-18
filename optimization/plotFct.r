@@ -709,10 +709,8 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,va
 	plot.new();
 	par(mfcol=mfcol);
 	for (layerMin in seq(criS[1,varH],criS[2,varH]-(criS[2,varH]-criS[1,varH])/layerNo,(criS[2,varH]-criS[1,varH])/layerNo)){	
-		if(layerMin==(criS[2,varH]-criS[1,varH])*2/layerNo) screen<-c(2,1);
+		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
 		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
-print(layerMin);
-print(layerMax);
 		par(mfg=screen);
 		par(mar=c(4,1,1,1));
 		plot(	seq(criS[1,varX],criS[2,varX],(criS[2,varX]-criS[1,varX])/10),	# non plotted
@@ -724,28 +722,31 @@ print(layerMax);
 			pty="s"
 		);
 		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.8);
-		mtext(paste(round(layerMin),"<= cri ",varH," <",round(layerMax),sep=""),side=1,line=3,cex=.8);
-		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
-#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<=layer && proList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
-#				plotDecDef(proList$regEva[[r]]$itemNo,proList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchcriSpace(proList,varX,varY,"gold");
-#			}
-#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<=layer && penList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(penList$regEva[[r]]$regDef,varX,varY,"blue","black",NULL);
-#				plotDecDef(penList$regEva[[r]]$itemNo,penList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchcriSpace(penList,varX,varY,"blue");
-#			}
-#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<=layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(unbList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
-#				plotDecDef(unbList$regEva[[r]]$itemNo,unbList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchcriSpace(unbList,varX,varY,"red");
-#			}
-browser();
-			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
-				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
-				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchcriSpace(besList,varX,varY,bgCol);
+		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.8);
+		for (r in 1:besList$itemNo){
+			if(besList$item>=r){
+				# define criteria box bondaries
+				criDef<-array(NA,dim=c(2,3));
+				for(d in 1:besList$regEva[[r]]$itemNo){
+					for(p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
+						for (c in 1:dim(besList$regEva[[r]]$decEva[[d]])[2]){
+							if(min(besList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(besList$regEva[[r]]$decEva[[d]][,c]);
+							if(max(besList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(besList$regEva[[r]]$decEva[[d]][,c]);
+						}
+					}
+				}
+## it looks like the criDef max,3 never reaches criS[2,3] ... ???
+				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
+					rect(	criDef[1,varX],	# x left
+						criDef[1,varY],	# y bottom
+						criDef[2,varX],	# x right
+						criDef[2,varY],	# y top
+						density=0,
+						border="black",
+						lwd=0.2,
+						asp=1
+					);
+				}
 			}
 		}
 		screen<-screen+c(0,1);
