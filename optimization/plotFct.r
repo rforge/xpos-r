@@ -402,7 +402,7 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
 		par(mfg=screen);
-		par(mar=c(4,1,1,1));
+		par(mar=c(4,2,1,0));
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
 			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -443,7 +443,7 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
  # show regions which min and max are respectively greater than thrMin and thrMax
  # NB. minimization, so in the code it it less than the negative value
  ###############################################################################
-showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol,thrMin,thrMax)
+showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol,cri,thrTop,thrBot)
 {
 	graphics.off();
 	colNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
@@ -462,7 +462,7 @@ showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
 		par(mfg=screen);
-		par(mar=c(4,1,1,1));
+		par(mar=c(4,2,1,0));
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
 			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -476,7 +476,7 @@ showRegInfInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
 				for (d in 1:besList$regEva[[r]]$itemNo){
-					if(min(besList$regEva[[r]]$decEva[[d]][,varX])<(-thrMin) && max(besList$regEva[[r]]$decEva[[d]][,varX])<(-thrMax)){
+					if(min(besList$regEva[[r]]$decEva[[d]][,cri])<thrTop && max(besList$regEva[[r]]$decEva[[d]][,cri])<thrBot){
 						plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
 						plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 					}
@@ -692,7 +692,7 @@ library('scatterplot3d');
 ## IN CRITERIA SPACE
  # show a list of regions boundaries in the multiple 2D layers in criteria space
  ###############################################################################
-showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,varY,varH,bgCol)
+showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH,bgCol)
 {
 	graphics.off();
 	linNo<-2;
@@ -712,7 +712,7 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,va
 		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
 		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
 		par(mfg=screen);
-		par(mar=c(4,1,1,1));
+		par(mar=c(4,2,1,0));
 		plot(	seq(criS[1,varX],criS[2,varX],(criS[2,varX]-criS[1,varX])/10),	# non plotted
 			seq(criS[1,varY],criS[2,varY],(criS[2,varY]-criS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -723,15 +723,15 @@ showListInCriteriaSpace <- function(proList,penList,unbList,besList,criS,varX,va
 		);
 		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.8);
 		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.8);
-		for (r in 1:besList$itemNo){
-			if(besList$item>=r){
+		for (r in 1:uneList$itemNo){
+			if(uneList$item>=r){
 				# define criteria box bondaries
 				criDef<-array(NA,dim=c(2,3));
-				for(d in 1:besList$regEva[[r]]$itemNo){
-					for(p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
-						for (c in 1:dim(besList$regEva[[r]]$decEva[[d]])[2]){
-							if(min(besList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(besList$regEva[[r]]$decEva[[d]][,c]);
-							if(max(besList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(besList$regEva[[r]]$decEva[[d]][,c]);
+				for(d in 1:uneList$regEva[[r]]$itemNo){
+					for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+						for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
+							if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
+							if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
 						}
 					}
 				}
