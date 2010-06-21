@@ -867,7 +867,7 @@ source('evaluation.r');
 	temp <- cbind(temp,array(0,dim=c(dim(temp)[1],1)));
 	for (p1 in 1:(dim(temp)[1]-1)){
 		for (p2 in (p1+1):dim(temp)[1]){
-			print(paste(p1," / ",p2,sep=""));
+			print(paste("frontXYZ: ",p1," / ",p2,sep=""));
 			switch(paretoDomi_decPerVSdecPer(temp[p1,1:3],temp[p2,1:3]),
 				## 1: p1 dominates p2
 				{temp[p2,(dim(frontiere)[2]+1)]<-temp[p2,(dim(frontiere)[2]+1)]+1;},
@@ -890,7 +890,7 @@ print("frontXY");
 	temp<-cbind(temp,array(0,dim=dim(temp)[1]));
 	for (l1 in 1:(dim(temp)[1]-1)){
 		for (l2 in (l1+1):dim(temp)[1]){
-			print(paste(l1," / ",l2,sep=""));
+			print(paste("frontXY: ",l1," / ",l2,sep=""));
 			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
 				## 1: p1 dominates p2
 				{temp[l2,3]<-temp[l2,3]+1;},
@@ -913,7 +913,7 @@ print("frontYZ");
 	temp<-cbind(temp,array(0,dim=dim(temp)[1]));
 	for (l1 in 1:(dim(temp)[1]-1)){
 		for (l2 in (l1+1):dim(temp)[1]){
-			print(paste(l1," / ",l2,sep=""));
+			print(paste("frontYZ: ",l1," / ",l2,sep=""));
 			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
 				## 1: p1 dominates p2
 				{temp[l2,3]<-temp[l2,3]+1;},
@@ -935,7 +935,7 @@ print("frontXZ");
 	temp<-cbind(front[,1],front[,3],array(0,dim=dim(temp)[1]));
 	for (l1 in 1:(dim(temp)[1]-1)){
 		for (l2 in (l1+1):dim(temp)[1]){
-			print(paste(l1," / ",l2,sep=""));
+			print(paste("frontXZ: ",l1," / ",l2,sep=""));
 			switch(paretoDomi_decPerVSdecPer(temp[l1,1:2],temp[l2,1:2]),
 				## 1: p1 dominates p2
 				{temp[l2,3]<-temp[l2,3]+1;},
