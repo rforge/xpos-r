@@ -382,7 +382,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
-showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,varY,varH,bgCol)
+showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol)
 {
 	graphics.off();
 	linNo<-2;
@@ -414,25 +414,9 @@ showListInDecisionSpace <- function(proList,penList,unbList,besList,decS,varX,va
 		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.8);
 		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
-#			if(proList$item>=r && proList$regEva[[r]]$regDef[1,varH]<=layer && proList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(proList$regEva[[r]]$regDef,varX,varY,"gold","black",NULL);
-#				plotDecDef(proList$regEva[[r]]$itemNo,proList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchDecSpace(proList,varX,varY,"gold");
-#			}
-#			if(penList$item>=r && penList$regEva[[r]]$regDef[1,varH]<=layer && penList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(penList$regEva[[r]]$regDef,varX,varY,"blue","black",NULL);
-#				plotDecDef(penList$regEva[[r]]$itemNo,penList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchDecSpace(penList,varX,varY,"blue");
-#			}
-#			if(unbList$item>=r && unbList$regEva[[r]]$regDef[1,varH]<=layer && unbList$regEva[[r]]$regDef[2,varH]>layer){
-#				plotRectangle(unbList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
-#				plotDecDef(unbList$regEva[[r]]$itemNo,unbList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchDecSpace(unbList,varX,varY,"red");
-#			}
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
 				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
 				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
-#				watchDecSpace(besList,varX,varY,bgCol);
 			}
 		}
 		screen<-screen+c(0,1);
@@ -545,7 +529,7 @@ return(result);
  # 	in 3D and dec1/dec2, dec1/dec3, dec2/dec3 projections
  # NB. requires "scatterplot3d" R package
  ###############################################################################
-showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+showBestBodyIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,angle)
 {
 library('scatterplot3d');
 
@@ -587,7 +571,7 @@ library('scatterplot3d');
 		best$body[,2],ylab="decision 2",
 		xlim=decS[1:2,dec1],
 		ylim=decS[1:2,dec2],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec1 vs. dec2 projection"
 	);
 
@@ -597,7 +581,7 @@ library('scatterplot3d');
 		best$body[,3],ylab="decision 3",
 		xlim=decS[1:2,dec1],
 		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec1/dec3 projection"
 	);
 
@@ -607,7 +591,7 @@ library('scatterplot3d');
 		best$body[,3],ylab="decision 3",
 		xlim=decS[1:2,dec2],
 		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec2/dec3 projection"
 	);
 }
@@ -617,7 +601,7 @@ library('scatterplot3d');
  # 	in 3D and dec1/dec2, dec1/dec3, dec2/dec3 projections
  # NB. requires "scatterplot3d" R package
  ###############################################################################
-showBestFrontIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,bgCol,angle)
+showBestFrontIn3dDecisionSpace <- function(best,decS,dec1,dec2,dec3,angle)
 {
 library('scatterplot3d');
 
@@ -656,7 +640,7 @@ library('scatterplot3d');
 		best$front[,2],ylab="decision 2",
 		xlim=decS[1:2,dec1],
 		ylim=decS[1:2,dec2],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec1/dec2 projection"
 	);
 
@@ -666,7 +650,7 @@ library('scatterplot3d');
 		best$front[,3],ylab="decision 3",
 		xlim=decS[1:2,dec1],
 		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec1/dec3 projection"
 	);
 
@@ -676,7 +660,7 @@ library('scatterplot3d');
 		best$front[,3],ylab="decision 3",
 		xlim=decS[1:2,dec2],
 		ylim=decS[1:2,dec3],
-		type="p",pch="+",col=bgCol,
+		type="p",pch="+",col="red",
 		main="dec2/dec3 projection"
 	);
 }
