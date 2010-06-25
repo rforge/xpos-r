@@ -986,7 +986,7 @@ graphics.off();
 		xlim=criS[1:2,1],
 		ylim=criS[1:2,2],
 		type="p",pch=".",col="green",
-		main="dec1/dec2 projection"
+		main="cri1/cri2 projection"
 	);
 	orderedFront<-best$frontXY[order(best$frontXY[,1]),];
 	lines(orderedFront[,1:2],col="red")
@@ -998,7 +998,7 @@ graphics.off();
 		xlim=criS[1:2,1],
 		ylim=criS[1:2,3],
 		type="p",pch=".",col="green",
-		main="dec1/dec3 projection"
+		main="cri1/cri3 projection"
 	);
 	orderedFront<-best$frontXZ[order(best$frontXZ[,1]),];
 	lines(orderedFront[,1:2],col="red")
@@ -1010,7 +1010,7 @@ graphics.off();
 		xlim=criS[1:2,2],
 		ylim=criS[1:2,3],
 		type	="p",pch=".",col="green",
-		main="dec2/dec3 projection"
+		main="cri2/cri3 projection"
 	);
 	orderedFront<-best$frontYZ[order(best$frontYZ[,1]),];
 	lines(orderedFront[,1:2],col="red")
