@@ -692,7 +692,7 @@ library('scatterplot3d');
 ## IN CRITERIA SPACE
  # show a list of regions boundaries in the multiple 2D layers in criteria space
  ###############################################################################
-showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH,bgCol)
+showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH)
 {
 	graphics.off();
 	linNo<-2;
@@ -961,7 +961,7 @@ return(result);
  # 	in 3D and cri1/cri2, cri1/cri3, cri2/cri3 projections
  # NB. requires "scatterplot3d" R package
  ###############################################################################
-showBestIn3dCriteriaSpace <- function(best,criS,bgCol,angle)
+showBestIn3dCriteriaSpace <- function(best,criS,angle)
 {
 library('scatterplot3d');
 graphics.off();
@@ -1001,10 +1001,10 @@ graphics.off();
 		best$all[,2],ylab="criterion 2",
 		xlim=criS[1:2,1],
 		ylim=criS[1:2,2],
-		type="p",pch=".",col=bgCol,
+		type="p",pch=".",col="green",
 		main="dec1/dec2 projection"
 	);
-	orderedFront<-bestinCri$frontXY[order(bestinCri$frontXY[,1]),];
+	orderedFront<-best$frontXY[order(best$frontXY[,1]),];
 	lines(orderedFront[,1:2],col="red")
 
 	# plot XZ
@@ -1013,10 +1013,10 @@ graphics.off();
 		best$all[,3],ylab="criterion 3",
 		xlim=criS[1:2,1],
 		ylim=criS[1:2,3],
-		type="p",pch=".",col=bgCol,
+		type="p",pch=".",col="green",
 		main="dec1/dec3 projection"
 	);
-	orderedFront<-bestinCri$frontXZ[order(bestinCri$frontXZ[,1]),];
+	orderedFront<-best$frontXZ[order(best$frontXZ[,1]),];
 	lines(orderedFront[,1:2],col="red")
 
 	# plot YZ
@@ -1025,10 +1025,10 @@ graphics.off();
 		best$all[,3],ylab="criterion 3",
 		xlim=criS[1:2,2],
 		ylim=criS[1:2,3],
-		type	="p",pch=".",col=bgCol,
+		type	="p",pch=".",col="green",
 		main="dec2/dec3 projection"
 	);
-	orderedFront<-bestinCri$frontYZ[order(bestinCri$frontYZ[,1]),];
+	orderedFront<-best$frontYZ[order(best$frontYZ[,1]),];
 	lines(orderedFront[,1:2],col="red")
 
 }
