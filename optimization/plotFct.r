@@ -382,7 +382,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
-showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol)
+showListInDecisionSpace <- function(besList,decS,varX,varY,varH)
 {
 	graphics.off();
 	linNo<-2;
@@ -415,7 +415,7 @@ showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol)
 		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
-				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"green","black",NULL);
 				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 			}
 		}
