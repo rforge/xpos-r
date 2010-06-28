@@ -30,7 +30,7 @@ plotRectangle <- function(regDef,varX,varY,filCol,borCol,title)
 		regDef[1,varY],	# y bottom
 		regDef[2,varX],	# x right
 		regDef[2,varY],	# y top
-		density=NA,
+		density=NULL,
 		col=filCol,
 		border=borCol,
 		asp=1
@@ -382,22 +382,26 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
-showListInDecisionSpace <- function(besList,decS,varX,varY,varH)
+showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
-	graphics.off();
-	linNo<-2;
-	layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
-	colNo<-layerNo/linNo;
-	mfcol=c(linNo,colNo);
-	screen <- c(1,1);
-	if(.Platform$OS.type=="unix"){
-		## LINUX
-		x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
-	}else{	## WINDOWS
-		windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
+	if(resetGraphDev){
+		graphics.off();
+		linNo<-2;
+		layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
+		colNo<-layerNo/linNo;
+		mfcol=c(linNo,colNo);
+		screen <- c(1,1);
+		if(.Platform$OS.type=="unix"){
+			## LINUX
+			x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
+		}else{	## WINDOWS
+			windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
+		}
+		plot.new();
+		par(mfcol=mfcol);
+	}else{
+		screen <- c(1,1);
 	}
-	plot.new();
-	par(mfcol=mfcol);
 
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
@@ -415,8 +419,12 @@ showListInDecisionSpace <- function(besList,decS,varX,varY,varH)
 		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
 		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
-				plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"green","black",NULL);
-				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
+				if(resetGraphDev){
+					plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,NA,NULL);
+				}else{
+					plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
+				}
+#				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 			}
 		}
 		screen<-screen+c(0,1);
@@ -663,6 +671,16 @@ library('scatterplot3d');
 		type="p",pch="+",col="red",
 		main="dec2/dec3 projection"
 	);
+}
+
+## IN DECISION SPACE
+ # show 2 lists of regions in the multiple 2D layers in decision space
+ # comparisons
+ ###############################################################################
+compareLists<-function(baseList,otherList,varX,varY,varH)
+{
+	showListInDecisionSpace(otherList,decS,varX,varY,varH,"green",TRUE);
+	showListInDecisionSpace(baseList,decS,varX,varY,varH,NULL,FALSE);
 }
 
 #
