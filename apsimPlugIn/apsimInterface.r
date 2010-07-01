@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "katherine_wet-peanut_dry-maize_rotation.sim"
+	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC2100.sim"
 ##################################
 
 	#
@@ -482,3 +482,71 @@ options(warn=0);	# enable warnings
 
 return(temp);
 }
+
+
+############################################################################################
+### only for reminder of katherine's simulations
+############################################################################################
+
+## apsim_userSettings <- function()
+##################################
+#	proNo <- 2;
+##################################
+#	path2workingDir <- "../../ApsimOptiInKatherine/WorkingDir/";
+##################################
+#	path2template <- "../../ApsimOptiInKatherine/Templates/";
+##################################
+#	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC2100.sim"
+##################################
+#	path2MetFiles <- "../../ApsimOptiInKatherine/Met/";
+##################################
+#	metFileName <- "Tindal.met";
+#	period <- 3;
+##################################
+#	1950,		# min year that you want to use as randomness
+#	2005,		# max year that you want to use as randomness
+##################################
+#	var_startDate <-	"1/12/var_startYear";
+#	var_endDate <-	"30/11/var_endYear";
+##################################
+#	varNo <- 3;
+##################################
+#	"var_PeanutIrrAmount",		#1
+#	"var_MaizeIrrAmount",		#2
+#	"var_MaizeFertAmount"		#3
+##################################
+#	0,	60,	6,	# min, max, minimal step of dec 1
+#	0,	60,	6,	# min, max, minimal step of dec 2
+#	0,	300,	30	# min, max, minimal step of dec 3
+##################################
+#	criNo <- 3;
+##################################
+
+## apsim_readOutputs <- function(path2Outputs, fileName, criNo)
+##################################
+#	col_year <- 1;
+#	col_ddmmyy <- 2;
+#	# crop type : maize
+#	col_maizeBiomass <- 4;
+#	col_maizeYield <- 5;
+#	# crop type : peanut
+#	col_peanutBiomass <- 7;
+#	col_peanutYield <- 8;
+#	col_cumDrainage <- 9;
+#	col_cumRunoff <- 10;
+#	col_cumDenit <- 11;
+#	col_cumNLeached <- 12;
+#	col_cumNRunoff <- 13;
+#	col_irrigTot <- 14;
+#	col_fertiliser <- 15;
+#	col_rain <- 16;
+##################################
+#	col_peanutYield,		## crit 1
+#	col_maizeYield,		## crit 2
+#	col_sumNlosses		## crit 3
+##################################
+#	col_maizeBiomass,		# to maximize
+#	col_maizeYield,		# to maximize
+#	col_peanutBiomass,	# to maximize
+#	col_peanutYield		# to maximize
+##################################
