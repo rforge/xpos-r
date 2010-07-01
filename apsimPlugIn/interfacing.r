@@ -7,8 +7,8 @@
 ##
  # initializations
  ####################################################################
-source("apsimInterface.r");
-source("rwfileOp.r");
+#source("apsimInterface.r");
+#source("rwfileOp.r");
 
 ## set decisions manually in apsim_interface.r
 #decSpe <- apsim_userSettings();
