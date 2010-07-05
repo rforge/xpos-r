@@ -136,7 +136,6 @@ repeat{
 		update_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 	}
 
-#browser();
 	##### simulate every of the promising regions (i.e. proList)
 #print("   simulate");
 	for (reg in 1:proList$itemNo){
@@ -153,13 +152,13 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	# probably faster to the target and/but recompute lots of decisions
 	# might be good, but at what cost?
 	# in selection.r
-print("   keepTheBest");
+#print("   keepTheBest");
 	proList <- keepTheBests(proList,2);
 
 	##### evaluate every of the promising regions (i.e. proList)
 	# should be able to do it smootherly by removing one region and adding two,
 	# instead of re-computing everything?
-print("   evaluate");
+#print("   evaluate");
 	proList <- evaluate_proList(proList,evalMeth,criterion);
 
 	##### current best (selection.r)
@@ -172,14 +171,14 @@ print("   evaluate");
 	##### MULTICRITERIA
 	## add proList (offspring) regions comparisons to penList regions
 	if(evalMeth==5){
-print("   evaluate proPLUSpen");
+#print("   evaluate proPLUSpen");
 		temp <- evaluate_penPLUSproList(proList,penList,evalMeth);
 		proList <- temp$pro;
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
 	##### update lists
-print("   update");
+#print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
 	penList <- temp$pen;
 	unbList <- temp$unb;

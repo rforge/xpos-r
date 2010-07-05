@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wheatAtStephenFarm_base.sim"
+	simTemplate <- "wheatAtStephenFarm_base_020710.sim"
 ##################################
 
 	#
@@ -236,7 +236,6 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	col_wheatYield <- 5;
 	col_irrigTot <- 6;
 	col_fertiliser <- 7;
-	col_rain <- 8;
 ##################################
 #	col_sumNlosses <- 17; # sum of 11,12,13
 	
@@ -253,8 +252,13 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
 	colNo <- dim(temp)[2]+1;
 
-	#### make 2 lines (maize + peanut) one
-	# this is required for rotations (of 2 crops)
+	#### opt.A : from 1 line only
+	# no rotations
+	response <- array(NA,dim=c(1,colNo));
+	response <- temp[dim(temp)[1],];
+
+#	#### opt.B init : make 2 lines (maize + peanut) one
+#	# this is required for rotations (of 2 crops)
 #	lin_temp <- 1; lin_res <- 1;	res1 <- temp[lin_temp,];
 #	lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
 #	response <- array(NA,dim=c(1,colNo));
@@ -264,11 +268,12 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 #			if(res1[1,col]!=res2[1,col]){
 #				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
 #			}; next;
-#		}; response[1,col] <- res1[1,col]+res2[1,col];
+#		};
+#		response[1,col] <- res1[1,col]+res2[1,col];
 #	}
-
-	#### sum some results into another
-	# this is required total N losses for example
+#
+#	#### opt.B init : make 2 lines (maize + peanut) one
+#	# this is required for rotations (of 2 crops)
 #	response[1,colNo] <- sum(response[1,11:13]);
 #	repeat{
 #		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
@@ -283,6 +288,8 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 #				}; next;
 #			}; res[1,col] <- res1[1,col]+res2[1,col];
 #		};
+#		## sum some results into another
+#		# this is required total N losses for example
 #		res[1,colNo] <- sum(res[1,11:13]);
 #		response <- rbind(response,res);
 #	}
@@ -474,7 +481,10 @@ options(warn=0);	# enable warnings
 		fileCompleted <-  array(FALSE,dim=perNo);
 		for (p in 1:perNo){
 			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
-			if( dim(lastYear)[1]==(cropPerYear*period)){
+# if start and end date are in different years
+#			if( dim(lastYear)[1]==(cropPerYear*period)){
+# otherwise
+			if( dim(lastYear)[1]==(cropPerYear*period+1)){
 				fileCompleted[p] <- TRUE;
 			}
 		}
@@ -497,6 +507,7 @@ options(warn=0);	# enable warnings
 		temp[p,1:criNo] <- apsim_readOutputs(path2apsimOutputs,paste("optimization_",p,sep=""),criNo);
 	}
 
+#print("get out of simulateApsim");
 return(temp);
 }
 
