@@ -70,7 +70,7 @@ apsim_userSettings <- function()
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "stephenFarmNCEP.met";
+	metFileName <- "stephenFarm_mpi_echam5-fb.met";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
@@ -85,8 +85,11 @@ apsim_userSettings <- function()
 	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
 ##################################
-	1982,		# min year that you want to use as randomness
-	2008,		# max year that you want to use as randomness
+	1984,		# min year that you want to use as randomness
+# watch out for 2100 faked as 2100...
+# 2100 is not leap, but any fitting fake year within the last century (allowed with APSIM so far)
+# will be leap. for now, do not simulate 2100
+	1999,		# max year that you want to use as randomness
 ##################################
 	1		# 1: discreet for APSIM
 	),dim=3); 

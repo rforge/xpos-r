@@ -354,6 +354,8 @@ convert_OneStation4OnePeriod <- function(path,stationName_tem,stationName_ppt,ou
 
 # waiting for a nicer solution within apsim
 # make year a fake, and realY the actual year
+# still one issue: 2100 is not a leap year, and any fake within the last century (allowed by APSIM so far) will be leap
+# solution so far, do not simulate 2100 with apsim !!
 	fake_year <- array(apsim_table[,1]-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(apsim_table)[1]);
 	apsim_table <- cbind(fake_year,apsim_table);
 

@@ -28,8 +28,8 @@ source('rwfileOp.r');
  # please use R path separator (even on windows), the same as Linux
  # i.e. "/" (and not "\" as windows)
  #########################################################################
-path <- 	list(	"input"=			"Z:/StephenFarm/ncep2.2008/",
-			"output"=			"C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/Stephen/",
+path <- 	list(	"input"=			"C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/DownscaledData/StephenFarm/mpi_echam5-fb/",
+			"output"=			"C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/ApsimMetFiles/StephenFarm/mpi_echam5-fb/",
 			"data"=list("tmin"=	"tmn/",
 					"tmax"=	"tmx/",
 					"ppt"=	"ppt/"
@@ -48,8 +48,8 @@ path <- 	list(	"input"=			"Z:/StephenFarm/ncep2.2008/",
  #########################################################################
 convert_OneStation4OnePeriod(	path,
 				"0041347_A.txt",	# station Name for temperture files
-				"00413470.txt",	# station Name for precipitation files
-				"stephenFarm",	# my output file name (no extension)
+				"corruptedName.txt",	# station Name for precipitation files
+				"stephenFarm_mpi_echam5-fb",	# my output file name (no extension)
 				inland=TRUE		# inland {TRUE,FALSE}
 				);
 
