@@ -728,8 +728,8 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			ylim=c(criS[1,varY],criS[2,varY]),	# Y limit
 			pty="s"
 		);
-		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.8);
-		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.8);
+		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.7);
+		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.7);
 		## all boxes
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
@@ -779,7 +779,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 							criDef[2,varY],	# y top
 							density=0,
 							border="darkblue",
-							lwd=0.3,
+							lwd=0.1,
 							asp=1
 						);
 					}
@@ -790,7 +790,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 							criDef[2,varY],	# y top
 							density=0,
 							border="darkgreen",
-							lwd=0.3,
+							lwd=0.1,
 							asp=1
 						);
 					}
@@ -801,12 +801,22 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 							criDef[2,varY],	# y top
 							density=0,
 							border="red",
-							lwd=0.5,
+							lwd=0.3,
 							asp=1
 						);
 					}
 				}
 			}
+		}
+		if(all(screen==c(linNo,colNo))){
+			legend("topleft",
+				legend=c(	"all non dominated groups",
+						paste("best crit.",varX," included <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)),sep=""),
+						paste("best crit.",varY," included <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)),sep=""),
+						paste("incl. an opt. outcome in cri",varX,"/cri",varY,sep="")),
+				fill=c("gray", "darkblue", "darkgreen", "red"),
+				bty="n", cex=0.9
+				)       
 		}
 		screen<-screen+c(0,1);
 	}
