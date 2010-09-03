@@ -382,8 +382,11 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
-showListInDecisionSpace <- function(besList,proList,penList,unbList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
+showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
+	coloredPercentile<-3;
+	localFront<-criBest$front;
+
 	if(resetGraphDev){
 		graphics.off();
 		linNo<-2;
@@ -416,17 +419,66 @@ showListInDecisionSpace <- function(besList,proList,penList,unbList,decS,varX,va
 			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
 			pty="s"
 		);
-		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.8);
-		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.8);
-		for (r in 1:max(proList$itemNo,penList$itemNo,unbList$itemNo,besList$itemNo)){
+		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.7);
+		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.7);
+		for (r in 1:besList$itemNo){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
+				## all efficient decisions
 				if(resetGraphDev){
 					plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,NA,NULL);
 				}else{
 					plotRectangle(besList$regEva[[r]]$regDef,varX,varY,bgCol,"black",NULL);
 				}
+				## some interesting ones
+				for (d in 1:besList$regEva[[r]]$itemNo){
+					for (p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
+						if(any(besList$regEva[[r]]$decEva[[d]][p,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))){
+							if(resetGraphDev){
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"purple",NA,NULL);
+							}else{
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"purple","black",NULL);
+							}
+						}
+						if(any(besList$regEva[[r]]$decEva[[d]][p,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile))){
+							if(resetGraphDev){
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkblue",NA,NULL);
+							}else{
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkblue","black",NULL);
+							}
+						}
+						if(any(besList$regEva[[r]]$decEva[[d]][p,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile))){
+							if(resetGraphDev){
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkgreen",NA,NULL);
+							}else{
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkgreen","black",NULL);
+							}
+						}
+						if(	any(besList$regEva[[r]]$decEva[[d]][p,1]==localFront[,1]) &&
+							any(besList$regEva[[r]]$decEva[[d]][p,2]==localFront[,2]) &&
+							any(besList$regEva[[r]]$decEva[[d]][p,3]==localFront[,3])){
+							if(resetGraphDev){
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red",NA,NULL);
+							}else{
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
+							}
+						}
+					}
+				}
 #				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 			}
+		}
+#		if(all(screen==c(linNo,colNo))){
+#			legend("bottomleft",
+		if(all(screen==c(1,1))){
+			legend("topleft",
+				legend=c(	"all efficient decision areas",
+						paste("best crit.1 achieved <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)),sep=""),
+						paste("best crit.2 achieved <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)),sep=""),
+						paste("best crit.3 achieved <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile)),sep=""),
+						paste("reach an optimal outcome",sep="")),
+				fill=c("gray", "darkblue", "darkgreen", "purple", "red"),
+				bty="n", cex=0.9
+				)       
 		}
 		screen<-screen+c(0,1);
 	}
@@ -701,10 +753,12 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	linNo<-2;
 	layerNo<-10;
 	colNo<-layerNo/linNo;
-	coloredPercentile<-1;
-	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
-	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
-	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
+	coloredPercentile<-3;
+#	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
+#	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
+#	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
+	localFront<-criBest$front;
+
 	mfcol=c(linNo,colNo);
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
@@ -758,7 +812,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				}
 			}
 		}
-		## only the boxes reahing one best
+		## only the boxes reaching one best
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
 				# define criteria box bondaries
@@ -794,7 +848,27 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 							asp=1
 						);
 					}
-					if(any(criDef[1,varX]==localFront[,1]) || any(criDef[1,varY]==localFront[,2])){
+				}
+			}
+		}
+		## only the boxes reaching one optimal
+		for (r in 1:uneList$itemNo){
+			if(uneList$item>=r){
+				# define criteria box bondaries
+				criDef<-array(NA,dim=c(2,3));
+				for(d in 1:uneList$regEva[[r]]$itemNo){
+					for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+						for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
+							if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
+							if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
+						}
+					}
+				}
+				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
+#					if(any(criDef[1,varX]==localFront[,1]) || any(criDef[1,varY]==localFront[,2])){
+					if(	any(uneList$regEva[[r]]$decEva[[d]][p,1]==localFront[,1]) &&
+						any(uneList$regEva[[r]]$decEva[[d]][p,2]==localFront[,2]) &&
+						any(uneList$regEva[[r]]$decEva[[d]][p,3]==localFront[,3])){
 						rect(	criDef[1,varX],	# x left
 							criDef[1,varY],	# y bottom
 							criDef[2,varX],	# x right
@@ -813,7 +887,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				legend=c(	"all non dominated groups",
 						paste("best crit.",varX," included <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)),sep=""),
 						paste("best crit.",varY," included <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)),sep=""),
-						paste("incl. an opt. outcome in cri",varX,"/cri",varY,sep="")),
+						paste("include an optimal outcome",sep="")),
 				fill=c("gray", "darkblue", "darkgreen", "red"),
 				bty="n", cex=0.9
 				)       
