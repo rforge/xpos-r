@@ -382,7 +382,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
-showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
+showListInDecisionSpace <- function(besList,proList,penList,unbList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
 	if(resetGraphDev){
 		graphics.off();
@@ -393,7 +393,8 @@ showListInDecisionSpace <- function(besList,decS,varX,varY,varH,bgCol,resetGraph
 		screen <- c(1,1);
 		if(.Platform$OS.type=="unix"){
 			## LINUX
-			x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
+			# /2 so it can fit into a a4, which is required to copy into a fig format
+			x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=2*colNo,height=2.4*linNo);
 		}else{	## WINDOWS
 			windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 		}
@@ -694,17 +695,21 @@ compareLists<-function(baseList,otherList,varX,varY,varH)
 ## IN CRITERIA SPACE
  # show a list of regions boundaries in the multiple 2D layers in criteria space
  ###############################################################################
-showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH)
+showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 {
 	graphics.off();
 	linNo<-2;
 	layerNo<-10;
 	colNo<-layerNo/linNo;
+	coloredPercentile<-1;
+	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
+	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
+	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
 	mfcol=c(linNo,colNo);
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : criteria space visulalisation (2D) ***",width=3*colNo,height=3.5*linNo);
+		x11(title=" *** xPos-a : criteria space visulalisation (2D) ***",width=2*colNo,height=2.4*linNo);
 	}else{	## WINDOWS
 		windows(title=" *** xPos-a : criteria space visulalisation (2D) ***");
 	}
@@ -725,6 +730,7 @@ showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH)
 		);
 		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.8);
 		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.8);
+		## all boxes
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
 				# define criteria box bondaries
@@ -745,10 +751,60 @@ showListInCriteriaSpace <- function(uneList,criS,varX,varY,varH)
 						criDef[2,varX],	# x right
 						criDef[2,varY],	# y top
 						density=0,
-						border="black",
-						lwd=0.2,
+						border="gray",
+						lwd=0.1,
 						asp=1
 					);
+				}
+			}
+		}
+		## only the boxes reahing one best
+		for (r in 1:uneList$itemNo){
+			if(uneList$item>=r){
+				# define criteria box bondaries
+				criDef<-array(NA,dim=c(2,3));
+				for(d in 1:uneList$regEva[[r]]$itemNo){
+					for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+						for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
+							if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
+							if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
+						}
+					}
+				}
+				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
+					if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="darkblue",
+							lwd=0.3,
+							asp=1
+						);
+					}
+					if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="darkgreen",
+							lwd=0.3,
+							asp=1
+						);
+					}
+					if(any(criDef[1,varX]==localFront[,1]) || any(criDef[1,varY]==localFront[,2])){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="red",
+							lwd=0.5,
+							asp=1
+						);
+					}
 				}
 			}
 		}
@@ -1043,4 +1099,21 @@ graphics.off();
 #
 ##### CRITERIA SPACE FUNCTIONS (end)
 ################################################################################
+
+################################################################################
+# TOOLS TO COPY DEVICE INTO SPECIFIC GRAPHICAL FORMATS
+################################################################################
+
+## EPS
+copyDev2eps <- function(title,file)
+{
+	dev.print(device=postscript,title=title,paper="special",horizontal=FALSE,file=file);
+}
+
+## FIG
+## HAS TO BE SMALLER THAN AN A4 FORMAT
+copyDev2fig <- function(file)
+{
+	dev.print(device=xfig,file=file);
+}
 
