@@ -375,6 +375,7 @@ convert_OneStation4OnePeriod <- function(path,stationName_tem,stationName_ppt,ou
 	changeVar(	"station_comm",fileHead$comm,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	changeVar(	"stat_lat",fileHead$station$lat,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	changeVar(	"stat_lon",fileHead$station$lon,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
+	changeVar(	"inLand",ifelse(inland,"0.16 (in land)","0.19 (coastal)"),	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	changeVar(	"stat_alt",fileHead$station$alt,	paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	changeVar(	"period_tav",tavNamp$tav,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
 	changeVar(	"period_amp",tavNamp$amp,		paste(path$output,outName,".met",sep=""),paste(path$output,outName,".met",sep=""));
