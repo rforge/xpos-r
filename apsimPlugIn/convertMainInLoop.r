@@ -8,27 +8,19 @@
 ##
  # REQUIRED SOURCES
  #########################################################################
-source('convertFunctions.r');
+source('convertMain.r');
 source('rwfileOp.r');
 
 ################################################################################
 ## USER SETTINGS START HERE
 ## fill in what you need only. I know it sounds obvious, but ...
 ################################################################################
-## 
- # DATA: where and what
- ###############################################################################
-init_paths <- function()
-{
-path <- 	list(	"input"=			"Z:/Philadelphia/",
-			"output"=			"C:/Documents and Settings/crespo/Desktop/ApsimInBergRiver/MetFiles/",
-			"data"=list("tmin"=	"tmn/",
-					"tmax"=	"tmx/",
-					"ppt"=	"ppt/"
-			)
-		);
-return(path);
-}
+# SO FAR
+# you have to change input/output paths
+# folder names
+# file names
+# inland variable
+# -------------------------> in the convertMain.r file
 
 ## 
  # GC MODELS NAMES (MODEL 1 IS NCEP)
@@ -89,12 +81,7 @@ print(gcms[[g]][[p]]);
 		path2data <- path;
 		path2data$input <- paste(path$input,gcms[[g]][[p]],"/",sep="");
 		path2data$output <- paste(path$output,gcms[[g]][[p]],"/",sep="");
-		convert_OneStation4OnePeriod(	path2data,		# path to data
-							"0021130_A.txt",	# station Name for temperature files
-							"00211300.txt",	# station Name for precipitation files
-							"philadelphia",	# my output file name (no extension)
-							inland=TRUE		# inland {TRUE,FALSE}
-				     			);
+		convert("APSIM"); # convert takes "APSIM" and soon "AQUACROP"
 		if(g==1 || g==2) break;	# obs and ncep
 	}
 }

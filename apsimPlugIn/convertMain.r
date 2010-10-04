@@ -7,34 +7,8 @@
  # functions are made to convert:
  # - 1 station
  # - during 1 continuous period of time 
- # -> i.e. 3 files: tmin,tmax,ppt according to Bruce's dowscaled format
+ # -> i.e. 3 files: tmin,tmax,ppt according to Bruce's downscaled format
  #########################################################################
-
-##
- # REQUIRED SOURCES
- #########################################################################
-source('convertFunctions.r');
-source('rwfileOp.r');
-
-## REQUIRED PATH TO DATA
- #########################################################################
- # set paths to data
- # - path to the downscaled forlders tmin, tmax, ppt		## 1 ##
- # - path to where to save the produced .met files		## 2 ##
- # - folder names of those including tmin, tmax and ppt		## 3 ##
- # or read it from "convertFunctions.r" with
- # > path <- init_paths();
- #########################################################################
- # please use R path separator (even on windows), the same as Linux
- # i.e. "/" (and not "\" as windows)
- #########################################################################
-path <- 	list(	"input"=			"C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/DownscaledData/StephenFarm/mpi_echam5-fb/",
-			"output"=			"C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/ApsimMetFiles/StephenFarm/mpi_echam5-fb/",
-			"data"=list("tmin"=	"tmn/",
-					"tmax"=	"tmx/",
-					"ppt"=	"ppt/"
-			)
-		);
 
 ##
  # MAIN FUNCTION CALL
@@ -46,35 +20,62 @@ path <- 	list(	"input"=			"C:/Documents and Settings/crespo/Desktop/Apsim/Wester
  # we thought about fixing that, but if you intend to use it on windows,
  # I guess you can afford to run the script on windows ...
  #########################################################################
-convert_OneStation4OnePeriod(	path,
-				"0041347_A.txt",	# station Name for temperture files
-				"corruptedName.txt",	# station Name for precipitation files
-				"stephenFarm_mpi_echam5-fb",	# my output file name (no extension)
-				inland=TRUE		# inland {TRUE,FALSE}
-				);
+ #
+ # NONE OF THESE FUNCTIONS DEAL WITH MISSING VALUES
+ # 
+ #########################################################################
 
+convert <- function (cropModel)
+{
+
+source('convertFunctions.r');
+source('rwfileOp.r');
+
+if(cropModel=="APSIM" || cropModel=="apsim" || cropModel=="ap" || cropModel=="AP"){
+## APSIM format
+ # please use R path separator (even on windows), the same as Linux
+ # i.e. "/" (and not "\" as windows)
+ #########################################################################
+apsim_convert_OneStation4OnePeriod(	path=list("input"=	"/home/csag/crespo/Desktop/AquaCrop/",			# where to read the input data
+						"output"=	"/home/csag/crespo/Desktop/AquaCrop/ApsimFormat/",	# where to write the output data
+						"data"=	list(	"tmin"=	"tmin/",	# folder name for minimal temperatures
+								"tmax"=	"tmax/",	# folder name for maximal temperatures
+								"ppt"=	"ppt/")),	# folder name for precipitation
+					"0725756AW.txt",	# station Name for temperture files
+					"0725756AW.txt",	# station Name for precipitation files
+					"0725756AW",		# my output file name (no extension)
+					inland=TRUE		# inland {TRUE,FALSE}
+					);
+}
+
+if(cropModel=="AQUACROP" || cropModel=="aquacrop" || cropModel=="aq" || cropModel=="AQ"){
+## AQUACROP format
+ # please use R path separator (even on windows), the same as Linux
+ # i.e. "/" (and not "\" as windows)
+ #########################################################################
+aquacrop_convert_OneStation4OnePeriod(	path=list(	"input"=	"/home/csag/crespo/Desktop/AquaCrop/",			# where to read the input data
+						"output"=	"/home/csag/crespo/Desktop/AquaCrop/AquaCropFormat/",	# where to write the output data
+						"data"=	list(	"tmin"=	"tmin/",	# folder name for minimal temperatures
+								"tmax"=	"tmax/",	# folder name for maximal temperatures
+								"ppt"=	"ppt/")),	# folder name for precipitation
+					"XAI-XAI.txt",	# station Name for temperture files
+					"XAI-XAI.txt",	# station Name for precipitation files
+					"XAI-XAI",	# my output file name (no extension)
+					inland=FALSE	# inland {TRUE,FALSE}
+					);
+}
+}
 
 ##########################################################################
 ## FAQ
 ##########################################################################
 #
 # ? where are the produced file ?
-# wherever you set into data$outputs in init_data() (convertD2A.r)
+# whatever you wrote as "output"
 # 
 # ? can I run the process for more than one station/period ?
-# No current fct run that, but feel free to use available functions
-# to produce your own scripts, you'll find every kind of loop typing
-# "?Control" in a R terminal, and already some hand-made facilitating functions
-# such as list of station ("init_stationNames"), list of gcm ("init_gcmNames")
-# and others in "convertFunctions"
+# see convertMainLoop.r file
 #
-# ?
-#
-#
-#
-#
-#
-#
-#
+
 
 
