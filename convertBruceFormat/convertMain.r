@@ -1,9 +1,6 @@
 ##
- # FILE convertMain.r
- # AUTHOR olivier crespo
- # https://r-forge.r-project.org/projects/xpos-r/
- # convert bruce's downscaled format into apsim's met file
- #########################################################################
+ # TO BE REMOVED ....
+ ###############################################################################
  # functions are made to convert:
  # - 1 station
  # - during 1 continuous period of time 

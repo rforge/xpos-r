@@ -1,9 +1,6 @@
 ##
- # FILE convertMainInLoop.r
- # AUTHOR olivier crespo
- # https://r-forge.r-project.org/projects/xpos-r/
- # convert bruce's downscaled format into apsim's met file
- #########################################################################
+ # TO BE REMOVED ....
+ ###############################################################################
 
 ##
  # REQUIRED SOURCES

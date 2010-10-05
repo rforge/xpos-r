@@ -1,35 +1,8 @@
 ##
- # FILE convertFunctions.r
- # AUTHOR olivier crespo
- # https://r-forge.r-project.org/projects/xpos-r/
+ # TO BE REMOVED ....
  ###############################################################################
 
-## 
- # HEAD FILES FORMAT
- ###############################################################################
-read_bruceHeadFile <- function(path2file)
-{
-	## first line
-	temp <- scan(path2file,what="character",sep=" ",nlines=1,quiet=TRUE);
-	temp <- temp[temp!=""];
-	station <- list("id"=temp[1],"lat"=as.numeric(temp[2]),"lon"=as.numeric(temp[3]),"alt"=as.numeric(temp[4]));
 
-	## second line
-	temp <- scan(path2file,what="character",sep=" ",skip=1,nlines=1,quiet=TRUE);
-	temp <- temp[temp!=""];
-	period <- list("start"=as.Date(temp[1],"%Y%m%d"),"end"=as.Date(temp[2],"%Y%m%d"),"type"=as.numeric(temp[3]));
-	## for info
-	# year	=	format(date,"%Y")
-	# month	=	format(date,"%m")
-	# day	=	format(date,"%d")
-
-	## third line
-	temp <- scan(path2file,what="character",sep=" ",skip=2,nlines=1,quiet=TRUE);
-	temp <- temp[temp!=""];
-	comm <- temp[1];
-
-return(list("station"=station,"period"=period,"comment"=comm));
-}
 ################################################################################
 ## USER SETTINGS END HERE
 ## meaning: be careful if you change anything below
@@ -38,85 +11,6 @@ return(list("station"=station,"period"=period,"comment"=comm));
 ################################################################################
 ## FUNCTIONS THAT YOU MAY WANT TO PLAY WITH
 ################################################################################
-
-##
- # CHECK on consitencies and commons
- ###############################################################################
-checkData <- function (path,stationName_tem,stationName_ppt)
-{
-	path2file <- paste(path$input,path$data$tmin,stationName_tem,sep="");
-	fileHead_tmn <- read_bruceHeadFile(path2file);
-
-	path2file <- paste(path$input,path$data$tmax,stationName_tem,sep="");
-	fileHead_tmx <- read_bruceHeadFile(path2file);
-
-	path2file <- paste(path$input,path$data$ppt,stationName_ppt,sep="");
-	fileHead_ppt <- read_bruceHeadFile(path2file);
-
-# check on common coordinates
-	stopProcess<-0;
-	minLat<-min(fileHead_tmn$station$lat,fileHead_tmx$station$lat,fileHead_ppt$station$lat);
-	maxLat<-max(fileHead_tmn$station$lat,fileHead_tmx$station$lat,fileHead_ppt$station$lat);
-	if(minLat!=maxLat){
-		stopProcess<-1;
-		print("# WARNING: latitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
-	}
-	minLon<-min(fileHead_tmn$station$lon,fileHead_tmx$station$lon,fileHead_ppt$station$lon);
-	maxLon<-max(fileHead_tmn$station$lon,fileHead_tmx$station$lon,fileHead_ppt$station$lon);
-	if(minLon!=maxLon){
-		stopProcess<-2;
-		print("# WARNING: longitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
-	}
-	minAlt<-min(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
-	maxAlt<-max(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
-	if(minAlt!=maxAlt){
-		stopProcess<-3;
-		print("# WARNING: altitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
-	}
-	if(stopProcess>0){
-		print("### are you aware of the above warning(s)?",quote=FALSE);
-		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
-		browser();
-	}
-
-# check dates consistencies
-	stopProcess<-0;
-	if(fileHead_tmn$period$end-fileHead_tmn$period$start < 0){
-		stopProcess <- -1;
-		print("# ERROR: tmn ending date is prior to tmn starting date",quote=FALSE);
-	}
-	if(fileHead_tmx$period$end-fileHead_tmx$period$start < 0){
-		stopProcess <- -2;
-		print("# ERROR: tmx ending date is prior to tmx starting date",quote=FALSE);
-	}
-	if(fileHead_ppt$period$end-fileHead_ppt$period$start < 0){
-		stopProcess <- -3;
-		print("# ERROR: ppt ending date is prior to ppt starting date",quote=FALSE);
-	}
-	if(stopProcess<0){
-		print("### The formatting process cannot deal with the above error(s)!",quote=FALSE);
-		stop();
-	}
-
-# find out the longest common period
-	stopProcess <- 0;
-	fileHead<-fileHead_tmn;
-	fileHead$period$start<-max(fileHead_tmn$period$start,fileHead_tmx$period$start,fileHead_ppt$period$start);
-	fileHead$period$end<-min(fileHead_tmn$period$end,fileHead_tmx$period$end,fileHead_ppt$period$end);
-	if(fileHead$period$end-fileHead$period$start < 0){
-		stopProcess <- 1;
-		print("# ERROR: there is no common period of time given tmn, tmx and ppt data files",quote=FALSE);
-	}
-	minType<-min(fileHead_tmn$period$type,fileHead_tmx$period$type,fileHead_ppt$period$type);
-	maxType<-max(fileHead_tmn$period$type,fileHead_tmx$period$type,fileHead_ppt$period$type);
-	if(minType!=maxType){
-		stopProcess <- 2;
-		print("# ERROR: there data type (0,1,2,3) are not consitent across tmn, tmx and ppt data files",quote=FALSE);
-	}
-	if(stopProcess>0)	stop();
-
-return(fileHead);
-}
 
 ##
  # TRANSFORM 365 DAYS A YEAR INTO 366
