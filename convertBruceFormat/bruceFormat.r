@@ -9,6 +9,21 @@
  ###############################################################################
 
 
+##
+ # CHANGE an old known variable (characters string) into a new one
+ ###############################################################################
+ # not really attached to bruce data
+ # but useful for all, and bruce data functions are used by all
+ ###############################################################################
+changeVar <- function(oldVar,newVar,oldFile,newFile)
+{	
+	tempFile <- readLines(oldFile,n=-1,warn=FALSE);
+	tempFile <- sub(oldVar, newVar, tempFile);
+	# for double occurences on the same line (e.g. sowing date at day)
+	tempFile <- sub(oldVar, newVar, tempFile);
+	writeLines(tempFile,newFile,sep="\n");
+}
+
 ## 
  # HEAD FILES FORMAT
  ###############################################################################

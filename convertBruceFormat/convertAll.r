@@ -23,7 +23,7 @@ readPaths <- function()
 	input <- "/home/csag/crespo/Desktop/ConversionTestData/Inputs/";
 
 	# in which folder to write out the data
-	output <- "/home/csag/crespo/Desktop/ConversionTestData/Output/"
+	output <- "/home/csag/crespo/Desktop/ConversionTestData/Test/"
 
 	# what is the name of the max temp data folder
 	folder <- list	(	"tmn"=	"ex_tmn/",	# folder name for minimal temperatures
@@ -40,12 +40,7 @@ readPaths <- function()
 	inland <- TRUE;		# TRUE (station is in land), FALSE (coastal)
 
 # concatanate everything
-	paths =	list	(	"input"=	input,
-				"output"=	output,
-				"folder"=	folder,
-				"file"=		file,
-				"inland"=	inland
-			);
+	paths <- list("input"=input,"output"=output,"folder"=folder,"file"=file,"inland"=inland);
 
 return(paths);
 }
@@ -55,11 +50,19 @@ return(paths);
  ###############################################################################
  # is the function to be called for any conversion
  ###############################################################################
-convert <- function()
+convert <- function(targetModel)
 {
 ### sources
 	source("checkFunctions.r");
 	source("bruceFormat.r");
+### target models
+	if(targetModel=="APSIM" || targetModel=="AP" || targetModel=="apsim" || targetModel=="ap") targetModel <- 1;
+	if(targetModel=="AQUACROP" || targetModel=="AQ" || targetModel=="aquacrop" || targetModel=="aq") targetModel <- 2;
+	if (!is.numeric(targetModel)){
+		print("### ERROR: unknown target model");
+		print("### targetModel available so far: 'APSIM' or 'AQUACROP'");
+		stop();
+	}
 
 ###
 	print("... read paths ...");
@@ -84,7 +87,7 @@ convert <- function()
 	checkMissing(data);
 
 ## because so far, no crop model deal with missing data
- # 3: I need to make sure years are made of 365 and 366 days
+ # 3: I need to make sure years are made of real number of days
 	switch(fileHead$period$type+1,
 		{	# 0 is for real
 		},{	# 1 is for 365
@@ -94,6 +97,34 @@ convert <- function()
 		}
 	);
 
-print("end of main process");
-browser();
+## then starts the crop model related operations
+	switch(targetModel,
+		{	                            #################### APSIM #
+			source('convertToApsim.r');
+			print("... create years and julian days ...");
+			data <- createYearJulianDays(data,fileHead);
+			print("... compute radiation ...");
+			data <- compute_radn(data,fileHead$station,path_list$inland);
+			print("... compute tav and amp ...");
+			data <- compute_tavNamp(data);
+			print("... format and write data into .met file ...");
+			formatToMetFile(data,fileHead,path_list);
+		},	# APSIM ####################
+		{	                            ################# AQUACROP #
+			# aquacrop deals with day, 10-days and monthly records
+			# so far we deal only with day records
+			source('convertToAquacrop.r');
+#			print("... create years and julian days ...");
+#			data <- createYearJulianDays(data,fileHead);
+#			print("... compute radiation ...");
+#			data <- compute_radn(data,fileHead$station,path_list$inland);
+#			print("... compute tav and amp ...");
+#			data <- compute_tavNamp(data);
+			print("... format and write data into .TMP, .PLU files ...");
+			formatToTMPFile(data,fileHead,path_list);
+			formatToPLUFile(data,fileHead,path_list);
+		}	# AQUACROP #################
+	);
+
+print("... conversion completed ...");
 }
