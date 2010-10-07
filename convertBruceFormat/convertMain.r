@@ -26,20 +26,20 @@
 readPaths <- function()
 {
 	# in which folder to read the data
-	input <- "/home/csag/crespo/Desktop/ConversionTestData/Inputs/";
+	input <- "/home/csag/crespo/Desktop/AquaCrop/";
 
 	# in which folder to write out the data
-	output <- "/home/csag/crespo/Desktop/ConversionTestData/Test/"
+	output <- "/home/csag/crespo/Desktop/AquaCrop/Test/"
 
 	# what is the name of the max temp data folder
-	folder <- list	(	"tmn"=	"ex_tmn/",	# folder name for minimal temperatures
-				"tmx"=	"ex_tmx/",	# folder name for maximal temperatures
-				"ppt"=	"ex_ppt/"		# folder name for precipitation
+	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
+				"tmx"=	"tmax/",	# folder name for maximal temperatures
+				"ppt"=	"ppt/"		# folder name for precipitation
 			);	
 
 	# what are the names of temp and prec data files
-	file <- list	(	"temp"=	"Buhera.txt",	# file name of both temperature files
-				"prec"=	"Buhera.txt"		# file name of precepitation file (which is sometimes different)
+	file <- list	(	"temp"=	"0725756AW.txt",	# file name of both temperature files
+				"prec"=	"0725756AW.txt"		# file name of precepitation file (which is sometimes different)
 			);	
 
 	# for radn computation only
@@ -93,7 +93,8 @@ convert <- function(targetModel)
 
 ###
 	print("... looking for missing data ...");
-	checkMissing(data);
+	data <- checkMissing(data);
+	checkTmpRain(data);
 
 ## because so far, no crop model deal with missing data
  # 3: I need to make sure years are made of real number of days

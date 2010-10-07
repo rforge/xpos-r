@@ -91,7 +91,7 @@ checkDates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
  ###############################################################################
  # give ERRORS and stop the process
  ###############################################################################
-longestPperiod <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
+longestPeriod <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 {
 	stopProcess <- 0;
 
@@ -141,7 +141,7 @@ checkData <- function (path)
 
 	checkCoordinates(fileHead_tmn,fileHead_tmx,fileHead_ppt);
 	checkDates(fileHead_tmn,fileHead_tmx,fileHead_ppt);
-	fileHead<-longestPperiod(fileHead_tmn,fileHead_tmx,fileHead_ppt);
+	fileHead<-longestPeriod(fileHead_tmn,fileHead_tmx,fileHead_ppt);
 
 return(fileHead);
 }
@@ -156,42 +156,115 @@ checkMissing <- function(data)
 	ppt <- data$ppt;	ppt_missing<-FALSE;
 
 # NA
-	if (any(is.na(tmn),na.rm=FALSE)) tmn_missing<-TRUE;
-	if (any(is.na(tmx),na.rm=FALSE)) tmx_missing<-TRUE;
-	if (any(is.na(ppt),na.rm=FALSE)) ppt_missing<-TRUE;
+	if (any(is.na(tmn))){
+		tmn_missing<-TRUE;
+		tmn[is.na(tmn)] <- as.numeric("Na");
+	}
+	if (any(is.na(tmx))){
+		tmx_missing<-TRUE;
+		tmx[is.na(tmx)] <- as.numeric("Na");
+	}
+	if (any(is.na(ppt))){
+		ppt_missing<-TRUE;
+		ppt[is.na(ppt)] <- as.numeric("Na");
+	}
 	
 # NaN
-	if (any(is.nan(tmn),na.rm=FALSE)) tmn_missing<-TRUE;
-	if (any(is.nan(tmx),na.rm=FALSE)) tmx_missing<-TRUE;
-	if (any(is.nan(ppt),na.rm=FALSE)) ppt_missing<-TRUE;
+	if (any(is.nan(tmn))){
+		tmn_missing<-TRUE;
+		tmn[is.nan(tmn)] <- as.numeric("Na");
+	}
+	if (any(is.nan(tmx))){
+		tmx_missing<-TRUE;
+		tmx[is.nan(tmx)] <- as.numeric("Na");
+	}
+	if (any(is.nan(ppt))){
+		ppt_missing<-TRUE;
+		ppt[is.nan(ppt)] <- as.numeric("Na");
+	}
 
 # null
-	if (any(is.null(tmn),na.rm=FALSE)) tmn_missing<-TRUE;
-	if (any(is.null(tmx),na.rm=FALSE)) tmx_missing<-TRUE;
-	if (any(is.null(ppt),na.rm=FALSE)) ppt_missing<-TRUE;
+	if (any(is.null(tmn))){
+		tmn_missing<-TRUE;
+		tmn[is.null(tmn)] <- as.numeric("Na");
+	}
+	if (any(is.null(tmx))){
+		tmx_missing<-TRUE;
+		tmx[is.null(tmx)] <- as.numeric("Na");
+	}
+	if (any(is.null(ppt))){
+		ppt_missing<-TRUE;
+		ppt[is.null(ppt)] <- as.numeric("Na");
+	}
 
 # -999
-	if (any(tmn==-999,na.rm=TRUE)) tmn_missing<-TRUE;
-	if (any(tmx==-999,na.rm=TRUE)) tmx_missing<-TRUE;
-	if (any(ppt==-999,na.rm=TRUE)) ppt_missing<-TRUE;
+	if (any(tmn==-999)){
+		tmn_missing<-TRUE;
+		tmn[tmn==-999] <- as.numeric("Na");
+	}
+	if (any(tmx==-999)){
+		tmx_missing<-TRUE;
+		tmx[tmx==-999] <- as.numeric("Na");
+	}
+	if (any(ppt==-999)){
+		ppt_missing<-TRUE;
+		ppt[ppt==-999] <- as.numeric("Na");
+	}
 
 # WARNINGS
 	if(tmn_missing){
-		print("# WARNING: we detected missing values in the TEMP MIN file");
-		print("# are you aware than any additional computation (radn, ET0 ..) is compromised?");
-		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
-		browser();
+		data$tmn <- tmn;
+		print("# WARNING: we detected missing values in the TEMP MIN file",quote=FALSE);
 	}
 	if(tmx_missing){
-		print("# WARNING: we detected missing values in the TEMP MAX file");
-		print("# are you aware than any additional computation (radn, ET0 ..) is compromised?");
-		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
-		browser();
+		data$tmx <- tmx;
+		print("# WARNING: we detected missing values in the TEMP MAX file",quote=FALSE);
 	}
 	if(ppt_missing){
-		print("# WARNING: we detected missing values in the PREC file");
-		print("# are you aware than any additional computation (radn, ET0 ..) is compromised?");
+		data$ppt <- ppt;
+		print("# WARNING: we detected missing values in the PREC file",quote=FALSE);
+	}
+
+
+return(data);
+}
+
+##
+ # CHECK TEMP AND RAIN DATA
+ ###############################################################################
+checkTmpRain <- function(data)
+{
+	tmn <- data$tmn;	tmn_missing<-FALSE;
+	tmx <- data$tmx;	tmx_missing<-FALSE;
+	ppt <- data$ppt;	ppt_missing<-FALSE;
+
+	stopProcess <- 0;
+# tmin
+	if (any(as.numeric(tmn)<(-50),na.rm=TRUE)){
+		stopProcess <- 1;
+		print("# WARNING: there is min temperature < -50 !!",quote=FALSE);
+	}
+# tmax
+	if (any(as.numeric(tmx)>70,na.rm=TRUE)){
+		stopProcess <- 2;
+		print("# WARNING: there is max temperature > 70 !!",quote=FALSE);
+	}
+# tmin - tmax
+	if (any((as.numeric(tmx)-as.numeric(tmn))<0,na.rm=TRUE)){
+		stopProcess <- 3;
+		print("# WARNING: there is max temperature < min temperature !!",quote=FALSE);
+	}
+# ppt
+	if (any(as.numeric(ppt)<0,na.rm=TRUE)){
+		stopProcess <- 4;
+		print("# WARNING: there is ppt < 0 !!",quote=FALSE);
+	}
+
+# print errors and wait for acknowledgment
+	if(stopProcess>0){
+		print("# WARNING: suspicious data in your set, are you aware of these ?",quote=FALSE);
 		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
 		browser();
 	}
 }
+
