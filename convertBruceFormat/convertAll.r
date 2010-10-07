@@ -55,6 +55,9 @@ convert <- function(targetModel)
 ### sources
 	source("checkFunctions.r");
 	source("bruceFormat.r");
+	source("agriParameters.r");
+	source("metTransformations.r");
+
 ### target models
 	if(targetModel=="APSIM" || targetModel=="AP" || targetModel=="apsim" || targetModel=="ap") targetModel <- 1;
 	if(targetModel=="AQUACROP" || targetModel=="AQ" || targetModel=="aquacrop" || targetModel=="aq") targetModel <- 2;
@@ -114,15 +117,14 @@ convert <- function(targetModel)
 			# aquacrop deals with day, 10-days and monthly records
 			# so far we deal only with day records
 			source('convertToAquacrop.r');
-#			print("... create years and julian days ...");
-#			data <- createYearJulianDays(data,fileHead);
-#			print("... compute radiation ...");
-#			data <- compute_radn(data,fileHead$station,path_list$inland);
-#			print("... compute tav and amp ...");
-#			data <- compute_tavNamp(data);
-			print("... format and write data into .TMP, .PLU files ...");
+			print("... create years and julian days ...");
+			data <- createYearJulianDays(data,fileHead);
+			print("... compute ETo ...");
+			data <- compute_ETo(data,fileHead$station,path_list$inland);
+			print("... format and write data into .TMP, .PLU and .ETo files ...");
 			formatToTMPFile(data,fileHead,path_list);
 			formatToPLUFile(data,fileHead,path_list);
+			formatToEToFile(data,fileHead,path_list);
 		}	# AQUACROP #################
 	);
 

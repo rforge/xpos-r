@@ -9,96 +9,6 @@
  ###############################################################################
 
 ##
- # CREATE YEAR AND JULIAN DAYS
- ###############################################################################
-createYearJulianDays <- function(data,fileHead)
-{
-	firstYear <- format(fileHead$period$start,"%Y");
-	lastYear <- format(fileHead$period$end,"%Y");
-	firstDay <- fileHead$period$start-as.Date(paste(firstYear,"01","01",sep="-"),"%Y-%m-%d")+1;
-	lastDay <- fileHead$period$end-as.Date(paste(lastYear,"01","01",sep="-"),"%Y-%m-%d")+1;
-	
-	apsim_year <- array(firstYear,dim=1);
-	apsim_julDay <- array(firstDay,dim=1);
-	li <- 1;
-	for (y in firstYear:lastYear){
-		if (y == firstYear) d <- firstDay;
-		repeat{
-			# boundaries conditions
-			if(y==lastYear && d==lastDay)	break;
-			if(!is.leapYear(y) && d==365)	{d<-0; break;}
-			if(d==366)	{d<-0; break;}
-			d <- d+1;
-			li <- li+1;
-			# apsim table update
-			apsim_year <- array(c(apsim_year,y),dim=dim(apsim_year)+1); 
-			apsim_julDay <- array(c(apsim_julDay,d),dim=dim(apsim_julDay)+1);
-		}
-	}
-
-	data <- list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=apsim_year,"julDay"=apsim_julDay);
-return(data)
-}
-
-##
- # SOLAR RADIATION ESTIMATION
- ###############################################################################
- # > see for solar radiation
- # @article{ball2004evaluation,
- # 	title={{Evaluation of solar radiation prediction models in North America}},
- # 	author={Ball, R.A. and Purcell, L.C. and Carey, S.K.},
- # 	journal={Agronomy Journal},
- # 	volume={96},
- # 	number={2},
- # 	pages={391},
- # 	year={2004},
- # 	publisher={Am Soc Agronom}
- # }
- # > see for extraterrestrial radiation
- # @article{allen1998crop,
- # 	title={{Crop evapotranspiration-Guidelines for computing crop water requirements-FAO Irrigation and drainage paper 56}},
- # 	author={Allen, R.G. and Pereira, L.S. and Raes, D. and Smith, M. and others},
- # 	journal={FAO, Rome},
- # 	volume={300},
- # 	year={1998}
- # }
- ###############################################################################
-compute_radn <- function(data,station,inland=NULL)
-{	
-	if (is.null(inland)){
-		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
-		stop();
-	}
-
-	for (line in 1:dim(data$year)){
-		Gsc <- 0.0820;					# solar constant = 0.0820 MJ.m^(-2).min^(-1)
-		phi <- pi*station$lat/180;			# latitude [rad] (N.B. South lat shouls be negative)
-		J <- data$julDay[line];				# julian day of the year
-
-		delta <- 0.409*sin((2*pi*J/365)-1.39);		# solar decimation [rad]
-		Dr <- 1+0.033*cos(2*pi*J/365);			# inverse relative distance Earth-Sun
-		
-		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle [rad]
-		
-		# Extraterrestrial radiation for daily periods [MJ.m^(-2).day^(-1)]
-		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*cos(delta)*sin(Ws));
-		
-		Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
-		# estimate of the atmospheric transmissivity
-		Tt <- Krs *(1+2.7*10^(-5)*station$alt)*sqrt(data$tmx[line]-data$tmn[line]);
-		
-		if(line==1){
-			radn <- array((Ra*Tt),dim=1);
-		}else{
-			radn <- array(c(radn,(Ra*Tt)),dim=dim(radn)+1);
-		}
-	}
-
-	data <- list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"radn"=radn);
-return(data);
-}
-
-##
  # COMPUTE tav AND amp APSIM CONSTANTS
  # annual average ambient temperature (TAV)
  # annual amplitude in mean monthly temperature (AMP)
@@ -140,7 +50,7 @@ compute_tavNamp <- function(data)
 	amp <- format(mean(yearlyAMP),digits=4);
 	tav <- format(mean(monthlyMean[,5]),digits=4);
 
-	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"radn"=data$radn,"amp"=amp,"tav"=tav);
+	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
 return(data);
 }
 
@@ -162,7 +72,7 @@ formatToMetFile <- function(data,fileHead,path)
 	apsim_table <- cbind(apsim_table,as.numeric(data$tmn));		# temp min titled	'mint'
 	apsim_table <- cbind(apsim_table,as.numeric(data$tmx));		# temp max titled	'maxt'
 	apsim_table <- cbind(apsim_table,as.numeric(data$ppt));		# precipitation titled	'rain'
-	apsim_table <- cbind(apsim_table,as.numeric(data$radn));	# radiation titled	'mint'
+	apsim_table <- cbind(apsim_table,as.numeric(data$sRad));	# radiation titled	'mint'
 	apsim_table[,4:7] <- format(apsim_table[,4:7],digits=2);
 
 # write it into a .met file
