@@ -92,6 +92,13 @@ return(data);
  # pages={81--92},
  # year={1972}
  # }
+ # > see for dew point temperature
+ # @book{linacre1992climate,
+ # title={{Climate data and resources: a reference and guide}},
+ # author={Linacre, E.},
+ # year={1992},
+ # publisher={Psychology Press}
+ # }
  ###############################################################################
 compute_ETo <- function(data,station,inland=NULL)
 {	
@@ -121,10 +128,7 @@ compute_ETo <- function(data,station,inland=NULL)
 		#	looks like mine is lower ...
 
 		# calculation of vapour pressures
-# mark - where does this come from?
-		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;
-# ???		Tdew <- data$tmn[line];							# dew point temperature [°C] - assuming that Tdew is near Tmin
-# ???		Tdew <- data$tmn[line] - 2 or -3;					# arid regions
+		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;	# Linacre estimation
 		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));	# saturation vapour pressure at the air temperature tmn
 		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));	# saturation vapour pressure at the air temperature tmx
 		es <- (eTmax+eTmin)/2;							# saturation vapour pressure [kPa]
@@ -140,7 +144,7 @@ compute_ETo <- function(data,station,inland=NULL)
 
 ## =>		# Priestley-Taylor Potential Evapotranspiration
 		G <- 0;		# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
-		alpha<- 1.30;	# it seems that the best estimate of alpha is the overall mean (land and water) of 1.26 (over land though alpha seems rather greater than lower ~1.30)
+		alpha<- 1.30;	# the overall mean (land and water) of 1.26 (over land though alpha seems rather greater ~1.30)
 		PE <- alpha*(Rn-G)*slopeVap/(slopeVap+psychCon);
 	
 ## =>		# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]

@@ -47,8 +47,8 @@ compute_tavNamp <- function(data)
 	yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
 	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2];
 
-	amp <- format(mean(yearlyAMP),digits=4);
-	tav <- format(mean(monthlyMean[,5]),digits=4);
+	amp <- format(mean(yearlyAMP),digits=3);
+	tav <- format(mean(monthlyMean[,5]),digits=3);
 
 	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
 return(data);
@@ -73,7 +73,7 @@ formatToMetFile <- function(data,fileHead,path)
 	apsim_table <- cbind(apsim_table,as.numeric(data$tmx));		# temp max titled	'maxt'
 	apsim_table <- cbind(apsim_table,as.numeric(data$ppt));		# precipitation titled	'rain'
 	apsim_table <- cbind(apsim_table,as.numeric(data$sRad));	# radiation titled	'mint'
-	apsim_table[,4:7] <- format(apsim_table[,4:7],digits=2);
+	apsim_table[,4:7] <- format(apsim_table[,4:7],digits=3);
 
 # write it into a .met file
 	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".met",sep="");

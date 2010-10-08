@@ -174,7 +174,7 @@ return(data);
 ##
  # TRANSFORM DAY No OVER A PERIOD TO REAL _ type 360 days
  ###############################################################################
-transform_type2 <- function(table,head)
+transform_type2 <- function(data,head)
 {
 	table <- data$tmn;
 	table <- cbind(table,data$tmx);

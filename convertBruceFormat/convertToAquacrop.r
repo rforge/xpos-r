@@ -77,11 +77,11 @@ formatToEToFile <- function(data,fileHead,path)
 
 # make one table from all the data
 	apsim_table <- array(as.numeric(data$ETo_PT),dim=dim(data$ETo_PT));	# Priestley-Taylor
-	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM));		# Penman-Monteith
-	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_ma));		# mark
-	apsim_table <- cbind(apsim_table,as.numeric(data$dpT));			# dewpoint temp
-	apsim_table <- cbind(apsim_table,as.numeric(data$tmn));			# min temp
-	apsim_table <- format(apsim_table,digits=2);
+#	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM));		# Penman-Monteith
+#	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_ma));		# mark
+#	apsim_table <- cbind(apsim_table,as.numeric(data$dpT));			# dewpoint temp
+#	apsim_table <- cbind(apsim_table,as.numeric(data$tmn));			# min temp
+	apsim_table <- format(apsim_table,digits=3);
 
 # write it into a .TMP file
 	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".ETo",sep="");

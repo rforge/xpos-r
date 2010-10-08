@@ -25,7 +25,7 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxLat<-max(fileHead_tmn$station$lat,fileHead_tmx$station$lat,fileHead_ppt$station$lat);
 	if(minLat!=maxLat){
 		stopProcess<-1;
-		print("# WARNING: latitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
+		print("# WARNING: unconsitent latitudes -> take tmn one",quote=FALSE);
 	}
 
 # check on longitudes
@@ -33,7 +33,7 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxLon<-max(fileHead_tmn$station$lon,fileHead_tmx$station$lon,fileHead_ppt$station$lon);
 	if(minLon!=maxLon){
 		stopProcess<-2;
-		print("# WARNING: longitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
+		print("# WARNING: unconsitent longitudes -> take tmn one",quote=FALSE);
 	}
 
 # check on altitudes
@@ -41,15 +41,15 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxAlt<-max(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
 	if(minAlt!=maxAlt){
 		stopProcess<-3;
-		print("# WARNING: altitudes are not consistent accross the tmn, tmx and ppt files",quote=FALSE);
+		print("# WARNING: unconsitent altitudes -> take tmn one",quote=FALSE);
 	}
 
 # print warnings and wait for acknowledgment
-	if(stopProcess>0){
-		print("### are you aware of the above warning(s)?",quote=FALSE);
-		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
-		browser();
-	}
+#	if(stopProcess>0){
+#		print("### are you aware of the above warning(s)?",quote=FALSE);
+#		print("### TYPE either: 'c' (resume the process) or 'Q' (quit the process)",quote=FALSE);
+#		browser();
+#	}
 }
 
 ##
