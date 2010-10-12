@@ -76,12 +76,24 @@ formatToEToFile <- function(data,fileHead,path)
 # I hope so :)
 
 # make one table from all the data
-	apsim_table <- array(as.numeric(data$ETo_PT),dim=dim(data$ETo_PT));	# Priestley-Taylor
-#	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM));		# Penman-Monteith
-#	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_ma));		# mark
-#	apsim_table <- cbind(apsim_table,as.numeric(data$dpT));			# dewpoint temp
-#	apsim_table <- cbind(apsim_table,as.numeric(data$tmn));			# min temp
-	apsim_table <- format(apsim_table,digits=3);
+	apsim_table <- array(as.integer(data$julDay),dim=dim(data$julDay));
+	apsim_table <- cbind(apsim_table,as.integer(data$year));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT1));		# Priestley-Taylor
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT2));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT3));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT4));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT5));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PT6));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM1));		# Penman-Monteith
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM2));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM3));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_PM4));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_HS));
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_mm));		# mark modified
+	apsim_table <- cbind(apsim_table,as.numeric(data$ETo_ma));		# mark original
+#	apsim_table <- cbind(apsim_table,as.numeric(data$ex_1)); 
+#	apsim_table <- cbind(apsim_table,as.numeric(data$ex_2));
+	apsim_table[,3:15] <- format(apsim_table[,3:15],digits=3);
 
 # write it into a .TMP file
 	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".ETo",sep="");

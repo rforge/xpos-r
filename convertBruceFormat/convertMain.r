@@ -26,10 +26,10 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "/home/csag/crespo/Desktop/AquaCrop/Inputs/";
+	input <- "/home/csag/crespo/Desktop/AquaCrop/Inputs/cccma_cgcm3_1/";
 
 	# in which folder to write out the data
-	output <- "/home/csag/crespo/Desktop/AquaCrop/Outputs/"
+	output <- "/home/csag/crespo/Desktop/AquaCrop/Test/"
 
 	# what are the name of the data folders
 	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
@@ -46,18 +46,18 @@ return(list("input"=input,"output"=output,"folder"=folder));
  ###############################################################################
 init_stations <- function()
 {
-stations <- list(	list(	"temp"="0725756AW.txt",		# name for temp data file
-				"prec"="0725756AW.txt",		# name for prec data file (could be the same)
-					"inLand"=TRUE),		# is the station in land (TRUE) or on the coast (FALSE)
-			list(	"temp"="CHOKWE.txt",
-				"prec"="CHOKWE.txt",
-					"inLand"=TRUE),
+stations <- list(#	list(	"temp"="0725756AW.txt",		# name for temp data file
+#				"prec"="0725756AW.txt",		# name for prec data file (could be the same)
+#				"inLand"=TRUE),			# is the station in land (TRUE) or on the coast (FALSE)
+#			list(	"temp"="CHOKWE.txt",
+#				"prec"="CHOKWE.txt",
+#				"inLand"=TRUE),
 			list(	"temp"="SUSSUNDENGA.txt",
 				"prec"="SUSSUNDENGA.txt",
-					"inLand"=TRUE),
-			list(	"temp"="XAI-XAI.txt",
-				"prec"="XAI-XAI.txt",
-					"inLand"=FALSE)
+				"inLand"=TRUE)
+#			list(	"temp"="XAI-XAI.txt",
+#				"prec"="XAI-XAI.txt",
+#				"inLand"=FALSE)
 		);
 
 return(stations);
@@ -69,45 +69,35 @@ return(stations);
  ###############################################################################
 init_GCMs <- function()
 {
-GCMs <- list(	#"obs"=	list(	"con"=	"obs"),
-
-#		"ncep"=	list(	"con"=	"ncep2.1"),
-
-#		"cccm"=	list(	"con"=	"cccma_cgcm3_1",
-#					"futA"=	"cccma_cgcm3_1-fa",
-#						"futB"=	"cccma_cgcm3_1-fb"),
-
-#		"cgcm"=	list(	"con"=	"mri_cgcm2_3_2a",
-#					"futA"=	"mri_cgcm2_3_2a-fa",
-#						"futB"=	"mri_cgcm2_3_2a-fb"),
-
-#		"cnrm"=	list(	"con"=	"cnrm_cm3",
-#					"futA"=	"cnrm_cm3-fa",
-#						"futB"=	"cnrm_cm3-fb"),
-
-#	"csiro35"=	list(	"con"=	"csiro_mk3_5",
-#					"futA"=	"csiro_mk3_5-fa",
-#						"futB"=	"csiro_mk3_5-fb"),
-
-#	"echam"=	list(	"con"=	"mpi_echam5",
-#					"futA"=	"mpi_echam5-fa",
-#						"futB"=	"mpi_echam5-fb"),
-
-#		"echo"=	list(	"con"=	"miub_echo_g",
-#					"futA"=	"miub_echo_g-fa",
-#						"futB"=	"miub_echo_g-fb"),
-
-#		"gfdl"=	list(	"con"=	"gfdl_cm2_0",
-#					"futA"=	"gfdl_cm2_0-fa",
-#						"futB"=	"gfdl_cm2_0-fb"),
-
-#		"giss"=	list(	"con"=	"giss_model_e_r",
-#					"futA"=	"giss_model_e_r-fa",
-#						"futB"=	"giss_model_e_r-fb"),
-
+GCMs <- list(	"obs"=	list(	"con"=	"obs"),
+		"ncep"=	list(	"con"=	"ncep2.1"),
+		"cccm"=	list(	"con"=	"cccma_cgcm3_1",
+				"futA"=	"cccma_cgcm3_1-fa",
+				"futB"=	"cccma_cgcm3_1-fb"),
+		"cgcm"=	list(	"con"=	"mri_cgcm2_3_2a",
+				"futA"=	"mri_cgcm2_3_2a-fa",
+				"futB"=	"mri_cgcm2_3_2a-fb"),
+		"cnrm"=	list(	"con"=	"cnrm_cm3",
+				"futA"=	"cnrm_cm3-fa",
+				"futB"=	"cnrm_cm3-fb"),
+		"csiro35"=list(	"con"=	"csiro_mk3_5",
+				"futA"=	"csiro_mk3_5-fa",
+				"futB"=	"csiro_mk3_5-fb"),
+		"echam"=list(	"con"=	"mpi_echam5",
+				"futA"=	"mpi_echam5-fa",
+				"futB"=	"mpi_echam5-fb"),
+		"echo"=	list(	"con"=	"miub_echo_g",
+				"futA"=	"miub_echo_g-fa",
+				"futB"=	"miub_echo_g-fb"),
+		"gfdl"=	list(	"con"=	"gfdl_cm2_0",
+				"futA"=	"gfdl_cm2_0-fa",
+				"futB"=	"gfdl_cm2_0-fb"),
+		"giss"=	list(	"con"=	"giss_model_e_r",
+				"futA"=	"giss_model_e_r-fa",
+				"futB"=	"giss_model_e_r-fb"),
 		"ipsl"=	list(	"con"=	"ipsl_cm4",
-					"futA"=	"ipsl_cm4-fa",
-						"futB"=	"ipsl_cm4-fb")
+				"futA"=	"ipsl_cm4-fa",
+				"futB"=	"ipsl_cm4-fb")
 	);
 return(GCMs);
 }
@@ -184,9 +174,7 @@ convert <- function(model,manyGCMs=FALSE)
 									),
 							"inland"=stations[[s]]$inLand
 						);
-			print(" ----->");
-			print(paste(" --->     processing station: ",stations[[s]]$temp,sep=""));
-			print(" ----->");
+			print(paste(" ----->  processing station: ",stations[[s]]$temp,sep=""));
 			switch(model,
 				{	# all
 					convertOne("ap",pathToStation,FALSE);
