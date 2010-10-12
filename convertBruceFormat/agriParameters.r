@@ -122,7 +122,7 @@ return(data);
  #	year = {1997},
  #	pages = {243--252}
  # }
- # good biblio in here: http://www.apesimulator.it/help/models/evapotranspiration/
+ # good summary in here: http://www.apesimulator.it/help/models/evapotranspiration/
  ###############################################################################
 compute_ETo <- function(data,station,inland=NULL)
 {	
@@ -175,7 +175,7 @@ compute_ETo <- function(data,station,inland=NULL)
 		# PTC, a and VPD coefficients (at least) VARY ACCORDING TO HUMID OR ARID
 		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);# see {f._castellv_methods_1997}
 		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
-		PTc <- 1.26;					# alpha overall average see {c._h._b._priestley_assessment_1972}
+		PTc <- 1.30;					# alpha overall average is 1.26, see {c._h._b._priestley_assessment_1972}
 		a <- 0.04;					# ranges from 0 to 0.1 (humid to arid)
 		VPDmax_1 <- eTmax - ea;				# see {f._castellv_methods_1997}
 		VPDmax_2 <- (eTmax-eTmin)/(1-a*(eTmax-eTmin));	# see {f._castellv_methods_1997}
@@ -197,14 +197,7 @@ compute_ETo <- function(data,station,inland=NULL)
 		PT_3 <- alpha_31/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
 		PT_4 <- alpha_32/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
 		PT_5 <- alpha_33/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-		PT_6 <- alpha_34/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-	
-## => 		# mark modified
-# read that VPD = es -ea and VPD max = eTmin - eTmax
-		a <- 0.04  # should vary between 0 (humid) and 0.08 (very arid)
-		VPDmax <- (eTmax - eTmin) / (1 - (a * (eTmax - eTmin)))
-		VPD <- 0.475 * VPDmax
-		pet <- (1+((1.30-1)*VPD))/lambda*(Rn-G)*slopeVap/(slopeVap+psychCon)
+		PT_6 <- alpha_34/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);	# mark's version improved for P, Rnl(_3) and slopeVap
 
 ## =>		# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
 		# significant sensitivity to arid/humid condition and vegetation height through windspeed
@@ -234,10 +227,7 @@ compute_ETo <- function(data,station,inland=NULL)
 			ETo_PM3 <- array(PM_3,dim=1);
 			ETo_PM4 <- array(PM_4,dim=1);
 			ETo_HS <- array(HS,dim=1);
-			ETo_mm <- array(pet,dim=1);
 			ETo_ma <- array(mark,dim=1);
-			extra_1 <- array(VPDmax,dim=1);
-			extra_2 <- array(eTmax-eTmin,dim=1);
 		}else{
 			ETo_PT1 <- array(c(ETo_PT1,PT_1),dim=dim(ETo_PT1)+1);
 			ETo_PT2 <- array(c(ETo_PT2,PT_2),dim=dim(ETo_PT2)+1);
@@ -250,10 +240,7 @@ compute_ETo <- function(data,station,inland=NULL)
 			ETo_PM3 <- array(c(ETo_PM3,PM_3),dim=dim(ETo_PM3)+1);
 			ETo_PM4 <- array(c(ETo_PM4,PM_4),dim=dim(ETo_PM4)+1);
 			ETo_HS <- array(c(ETo_HS,HS),dim=dim(ETo_HS)+1);
-			ETo_mm <- array(c(ETo_mm,pet),dim=dim(ETo_mm)+1);
 			ETo_ma <- array(c(ETo_ma,mark),dim=dim(ETo_ma)+1);
-			extra_1 <- array(c(extra_1,VPDmax),dim=dim(extra_1)+1);
-			extra_2 <- array(c(extra_2,eTmax-eTmin),dim=dim(extra_2)+1);
 		}
 	}
 
@@ -261,7 +248,8 @@ compute_ETo <- function(data,station,inland=NULL)
 			"ETo_PT1"=ETo_PT1,"ETo_PT2"=ETo_PT2,"ETo_PT3"=ETo_PT3,"ETo_PT4"=ETo_PT4,"ETo_PT5"=ETo_PT5,"ETo_PT6"=ETo_PT6,
 			"ETo_PM1"=ETo_PM1,"ETo_PM2"=ETo_PM2,"ETo_PM3"=ETo_PM3,"ETo_PM4"=ETo_PM4,
 			"ETo_HS"=ETo_HS,
-			"ETo_mm"=ETo_mm,"ETo_ma"=ETo_ma,"ex_1"=extra_1,"ex_2"=extra_2);
+			"ETo_ma"=ETo_ma);
+
 return(data);
 }
 
