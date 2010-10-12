@@ -152,7 +152,7 @@ compute_ETo <- function(data,station,inland=NULL)
 		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;	# see {delobel_review_2009}
 		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));	# min saturation vapour pressure [kPa]
 		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));	# max saturation vapour pressure [kPa]
-		eTmean <- es <- (eTmax+eTmin)/2;					# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
+#		eTmean <- es <- (eTmax+eTmin)/2;					# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
 		ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));				# actual vapour pressure [kPa]
 
 		# calculation of Slope of saturation vapour pressure curve
@@ -173,82 +173,84 @@ compute_ETo <- function(data,station,inland=NULL)
 		# Priestley-Taylor coefficient see ...
 		# According to its original formulation (Priestley and Taylor, 1972), alpha is a constant term (alpha=PTc, where PTc is the dimensionless Priestley-Taylor constant). An average value of PTc=1.26 was found by the authors and theoretically explained by Lhomme (1996) for "the evapotranspiration from a horizontally uniform saturated surface", that closely resembles a surface of well-watered short grasses under humid conditions. The literature shows that PTc can vary from 1.08 to more than 1.60 as a function of the advectivity of the environment (Villalobos et al., 2002). The constant should be increased for arid and semi-arid climates up to PTc=1.70-1.75, according to ASCE (1990). Lower values are expected for wetlands.
 		# PTC, a and VPD coefficients (at least) VARY ACCORDING TO HUMID OR ARID
-		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);# see {f._castellv_methods_1997}
-		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
+#		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);# see {f._castellv_methods_1997}
+#		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
 		PTc <- 1.30;					# alpha overall average is 1.26, see {c._h._b._priestley_assessment_1972}
 		a <- 0.04;					# ranges from 0 to 0.1 (humid to arid)
-		VPDmax_1 <- eTmax - ea;				# see {f._castellv_methods_1997}
+#		VPDmax_1 <- eTmax - ea;				# see {f._castellv_methods_1997}
 		VPDmax_2 <- (eTmax-eTmin)/(1-a*(eTmax-eTmin));	# see {f._castellv_methods_1997}
-		VPD_1 <- es-ea;
-		VPD_2 <- eTc - eTmin;				# see {f._castellv_methods_1997}
-		VPD_31 <- 0.475*VPDmax_1+0;			# c=0.475 here ranges from 0.45 to 0.50 from arid to humid
+#		VPD_1 <- es-ea;
+#		VPD_2 <- eTc - eTmin;				# see {f._castellv_methods_1997}
+#		VPD_31 <- 0.475*VPDmax_1+0;			# c=0.475 here ranges from 0.45 to 0.50 from arid to humid
 		VPD_32 <- 0.475*VPDmax_2+0;			# c=0.475 here ranges from 0.45 to 0.50 from arid to humid
-		alpha_1 <- PTc;					# see {c._h._b._priestley_assessment_1972}
-		alpha_2 <- (1+psychCon/slopeVap)/(1+0.6);	# see {c._h._b._priestley_assessment_1972}
-		alpha_31 <- 1+(PTc-1)*1*VPD_1;			# see {j._l._steiner_lysimetric_1991}
-		alpha_32 <- 1+(PTc-1)*1*VPD_2;
-		alpha_33 <- 1+(PTc-1)*1*VPD_31;
+#		alpha_1 <- PTc;					# see {c._h._b._priestley_assessment_1972}
+#		alpha_2 <- (1+psychCon/slopeVap)/(1+0.6);	# see {c._h._b._priestley_assessment_1972}
+#		alpha_31 <- 1+(PTc-1)*1*VPD_1;			# see {j._l._steiner_lysimetric_1991}
+#		alpha_32 <- 1+(PTc-1)*1*VPD_2;
+#		alpha_33 <- 1+(PTc-1)*1*VPD_31;
 		alpha_34 <- 1+(PTc-1)*1*VPD_32;
 
 ## =>		# Priestley-Taylor Potential Evapotranspiration
-		G <- 0;		# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
-		PT_1 <- alpha_1/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-		PT_2 <- alpha_2/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-		PT_3 <- alpha_31/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-		PT_4 <- alpha_32/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
-		PT_5 <- alpha_33/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
+		G <- 0;								# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
+#		PT_1 <- alpha_1/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
+#		PT_2 <- alpha_2/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
+#		PT_3 <- alpha_31/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
+#		PT_4 <- alpha_32/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
+#		PT_5 <- alpha_33/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);
 		PT_6 <- alpha_34/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);	# mark's version improved for P, Rnl(_3) and slopeVap
 
 ## =>		# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
-		# significant sensitivity to arid/humid condition and vegetation height through windspeed
-		# this relation has been produced for : sub-humid, low to moderate wind speed, short vegetation
-		windSpeed <- 2;	# wind speed at 2 m height [m.s^(-1)]  - 2 m/s is used as a temporary estimate - Due to the appearance of windSpeed in both the nominator and denominator of the FAO Penman-Monteith equation, ETo is not highly sensitive to normal ranges of wind speed - N.B. taller is the ground vegetation considered, greater is the sensitivity
-		PM_1 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_1/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
-		PM_2 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_2/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
-		PM_3 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_31/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
-		PM_4 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_32/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
+#		# significant sensitivity to arid/humid condition and vegetation height through windspeed
+#		# this relation has been produced for : sub-humid, low to moderate wind speed, short vegetation
+#		windSpeed <- 2;	# wind speed at 2 m height [m.s^(-1)]  - 2 m/s is used as a temporary estimate - Due to the appearance of windSpeed in both the nominator and denominator of the FAO Penman-Monteith equation, ETo is not highly sensitive to normal ranges of wind speed - N.B. taller is the ground vegetation considered, greater is the sensitivity
+#		PM_1 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_1/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
+#		PM_2 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_2/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
+#		PM_3 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_31/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
+#		PM_4 <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_32/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
 
 ## =>		# Hargreaves and Samani
-		a <- 0; b <- 1;		# unadjusted version
-		HS <- a+b*0.0023/lambda*(((data$tmx[line]+data$tmn[line])/2)+17.8)*sqrt(data$tmx[line]-data$tmn[line])*data$eRad[line];
+#		a <- 0; b <- 1;		# unadjusted version
+#		HS <- a+b*0.0023/lambda*(((data$tmx[line]+data$tmn[line])/2)+17.8)*sqrt(data$tmx[line]-data$tmn[line])*data$eRad[line];
 
-## =>		mark
-		mark <- compute_mark(data$tmn[line],data$tmx[line],station$lat,station$alt,data$julDay[line]);
+## =>		mark original version
+#		mark <- compute_mark(data$tmn[line],data$tmx[line],station$lat,station$alt,data$julDay[line]);
 
 		if(line==1){
-			ETo_PT1 <- array(PT_1,dim=1);
-			ETo_PT2 <- array(PT_2,dim=1);
-			ETo_PT3 <- array(PT_3,dim=1);
-			ETo_PT4 <- array(PT_4,dim=1);
-			ETo_PT5 <- array(PT_5,dim=1);
+#			ETo_PT1 <- array(PT_1,dim=1);
+#			ETo_PT2 <- array(PT_2,dim=1);
+#			ETo_PT3 <- array(PT_3,dim=1);
+#			ETo_PT4 <- array(PT_4,dim=1);
+#			ETo_PT5 <- array(PT_5,dim=1);
 			ETo_PT6 <- array(PT_6,dim=1);
-			ETo_PM1 <- array(PM_1,dim=1);
-			ETo_PM2 <- array(PM_2,dim=1);
-			ETo_PM3 <- array(PM_3,dim=1);
-			ETo_PM4 <- array(PM_4,dim=1);
-			ETo_HS <- array(HS,dim=1);
-			ETo_ma <- array(mark,dim=1);
+#			ETo_PM1 <- array(PM_1,dim=1);
+#			ETo_PM2 <- array(PM_2,dim=1);
+#			ETo_PM3 <- array(PM_3,dim=1);
+#			ETo_PM4 <- array(PM_4,dim=1);
+#			ETo_HS <- array(HS,dim=1);
+#			ETo_ma <- array(mark,dim=1);
 		}else{
-			ETo_PT1 <- array(c(ETo_PT1,PT_1),dim=dim(ETo_PT1)+1);
-			ETo_PT2 <- array(c(ETo_PT2,PT_2),dim=dim(ETo_PT2)+1);
-			ETo_PT3 <- array(c(ETo_PT3,PT_3),dim=dim(ETo_PT3)+1);
-			ETo_PT4 <- array(c(ETo_PT4,PT_4),dim=dim(ETo_PT4)+1);
-			ETo_PT5 <- array(c(ETo_PT5,PT_5),dim=dim(ETo_PT5)+1);
+#			ETo_PT1 <- array(c(ETo_PT1,PT_1),dim=dim(ETo_PT1)+1);
+#			ETo_PT2 <- array(c(ETo_PT2,PT_2),dim=dim(ETo_PT2)+1);
+#			ETo_PT3 <- array(c(ETo_PT3,PT_3),dim=dim(ETo_PT3)+1);
+#			ETo_PT4 <- array(c(ETo_PT4,PT_4),dim=dim(ETo_PT4)+1);
+#			ETo_PT5 <- array(c(ETo_PT5,PT_5),dim=dim(ETo_PT5)+1);
 			ETo_PT6 <- array(c(ETo_PT6,PT_6),dim=dim(ETo_PT6)+1);
-			ETo_PM1 <- array(c(ETo_PM1,PM_1),dim=dim(ETo_PM1)+1);
-			ETo_PM2 <- array(c(ETo_PM2,PM_2),dim=dim(ETo_PM2)+1);
-			ETo_PM3 <- array(c(ETo_PM3,PM_3),dim=dim(ETo_PM3)+1);
-			ETo_PM4 <- array(c(ETo_PM4,PM_4),dim=dim(ETo_PM4)+1);
-			ETo_HS <- array(c(ETo_HS,HS),dim=dim(ETo_HS)+1);
-			ETo_ma <- array(c(ETo_ma,mark),dim=dim(ETo_ma)+1);
+#			ETo_PM1 <- array(c(ETo_PM1,PM_1),dim=dim(ETo_PM1)+1);
+#			ETo_PM2 <- array(c(ETo_PM2,PM_2),dim=dim(ETo_PM2)+1);
+#			ETo_PM3 <- array(c(ETo_PM3,PM_3),dim=dim(ETo_PM3)+1);
+#			ETo_PM4 <- array(c(ETo_PM4,PM_4),dim=dim(ETo_PM4)+1);
+#			ETo_HS <- array(c(ETo_HS,HS),dim=dim(ETo_HS)+1);
+#			ETo_ma <- array(c(ETo_ma,mark),dim=dim(ETo_ma)+1);
 		}
 	}
 
 	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
-			"ETo_PT1"=ETo_PT1,"ETo_PT2"=ETo_PT2,"ETo_PT3"=ETo_PT3,"ETo_PT4"=ETo_PT4,"ETo_PT5"=ETo_PT5,"ETo_PT6"=ETo_PT6,
-			"ETo_PM1"=ETo_PM1,"ETo_PM2"=ETo_PM2,"ETo_PM3"=ETo_PM3,"ETo_PM4"=ETo_PM4,
-			"ETo_HS"=ETo_HS,
-			"ETo_ma"=ETo_ma);
+#			"ETo_PT1"=ETo_PT1,"ETo_PT2"=ETo_PT2,"ETo_PT3"=ETo_PT3,"ETo_PT4"=ETo_PT4,"ETo_PT5"=ETo_PT5,
+#			"ETo_PM1"=ETo_PM1,"ETo_PM2"=ETo_PM2,"ETo_PM3"=ETo_PM3,"ETo_PM4"=ETo_PM4,
+#			"ETo_HS"=ETo_HS,
+#			"ETo_ma"=ETo_ma,
+			"ETo"=ETo_PT6
+		);
 
 return(data);
 }

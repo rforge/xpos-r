@@ -76,7 +76,7 @@ formatToEToFile <- function(data,fileHead,path)
 # I hope so :)
 
 # make one table from all the data
-	table <- array(as.numeric(data$ETo_PT6),dim=dim(data$ETo_PT6));
+	table <- array(as.numeric(data$ETo),dim=dim(data$ETo));
 	table <- format(table,digits=3);
 
 # write it into a .ETo file
