@@ -46,17 +46,25 @@ return(list("input"=input,"output"=output,"folder"=folder));
  ###############################################################################
 init_stations <- function()
 {
-stations <- list(#	list(	"temp"="0725756AW.txt",		# name for temp data file
-#				"prec"="0725756AW.txt",		# name for prec data file (could be the same)
-#				"inLand"=TRUE),			# is the station in land (TRUE) or on the coast (FALSE)
+stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
+#				"prec"="templateName2.txt",		# name for prec data file (could be the same)
+#				"arid"= 3,				# default=3 - humidity conditions from 1 (extremely humid) to 5 (extremely arid)
+#				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
+#			list(	"temp"="0725756AW.txt",
+#				"prec"="0725756AW.txt",
+#				"arid"= 3,
+#				"inLand"=TRUE),
 #			list(	"temp"="CHOKWE.txt",
 #				"prec"="CHOKWE.txt",
+#				"arid"= 3,
 #				"inLand"=TRUE),
 			list(	"temp"="SUSSUNDENGA.txt",
 				"prec"="SUSSUNDENGA.txt",
+				"arid"= 3,
 				"inLand"=TRUE)
 #			list(	"temp"="XAI-XAI.txt",
 #				"prec"="XAI-XAI.txt",
+#				"arid"= 3,
 #				"inLand"=FALSE)
 		);
 
@@ -144,7 +152,8 @@ convert <- function(model,manyGCMs=FALSE)
 									"file"=		list(	"temp"=stations[[s]]$temp,
 												"prec"=stations[[s]]$prec
 											),
-									"inland"=stations[[s]]$inLand
+									"inland"=stations[[s]]$inLand,
+									"arid"=stations[[s]]$arid
 								);
 					print(paste(" ----->  processing station: ",stations[[s]]$temp,sep=""));
 					switch(model,
@@ -172,7 +181,8 @@ convert <- function(model,manyGCMs=FALSE)
 							"file"=		list(	"temp"=stations[[s]]$temp,
 										"prec"=stations[[s]]$prec
 									),
-							"inland"=stations[[s]]$inLand
+							"inland"=stations[[s]]$inLand,
+							"arid"=stations[[s]]$arid
 						);
 			print(paste(" ----->  processing station: ",stations[[s]]$temp,sep=""));
 			switch(model,
@@ -240,12 +250,13 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
 		}
 	);
 
+	if(seeSteps)	print("... create years and julian days ...");
+	data <- createYearJulianDays(data,fileHead);
+
 ## then starts the crop model related operations
 	switch(targetModel,
 		{	                            #################### APSIM #
 			source('convertToApsim.r');
-			if(seeSteps)	print("... create years and julian days ...");
-			data <- createYearJulianDays(data,fileHead);
 			if(seeSteps)	print("... compute radiation ...");
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
 			if(seeSteps)	print("... compute tav and amp ...");
@@ -257,10 +268,8 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
 			# aquacrop deals with day, 10-days and monthly records
 			# so far we deal only with day records
 			source('convertToAquacrop.r');
-			if(seeSteps)	print("... create years and julian days ...");
-			data <- createYearJulianDays(data,fileHead);
 			if(seeSteps)	print("... compute ETo ...");
-			data <- compute_ETo(data,fileHead$station,pathToStation$inland);
+			data <- compute_ETo(data,fileHead$station,pathToStation$inland,pathToStation$arid);
 			if(seeSteps)	print("... format and write data into .TMP, .PLU and .ETo files ...");
 			formatToTMPFile(data,fileHead,pathToStation);
 			formatToPLUFile(data,fileHead,pathToStation);
