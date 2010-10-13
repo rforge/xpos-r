@@ -124,16 +124,18 @@ return(data);
  # }
  # good summary in here: http://www.apesimulator.it/help/models/evapotranspiration/
  ###############################################################################
-compute_ETo <- function(data,station,inland=NULL,arid=NULL)
+compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 {	
-	if (is.null(arid) || arid < 1 || arid > 5){
-		print("# WARNING: wrong arid parameter -> assuming average humidity condition");
+	station <- fileHead$station;
+	if (is.null(arid) || arid < 1 || arid > 6){
+		print("# WARNING: wrong arid parameter -> assuming dry subhumid condition");
 		arid <- 3;
 	}
 
 	# compute Rs
 	data <- compute_radn(data,station,inland);
 
+	# compute everything else
 	for (line in 1:dim(data$year)){
 		# calculation of psychometric constant
 		Tmean <- (data$tmx[line]+data$tmn[line])/2;
@@ -142,21 +144,19 @@ compute_ETo <- function(data,station,inland=NULL,arid=NULL)
 		P <- Po*((Tko-a1*(station$alt-alto))/Tko)^(g/(a1*R));		# atmospheric pressure
 		Cp <- 0.001013;							# specific heat at constant pressure, 1.013.10^(-3) [MJ.kg^(-1).°C^(-1)]
 		epsilon <- 0.622;						# ratio molecular weight of water vapour/dry air = 0.622
-		lambda <- 2.501-(0.002361*Tmean);				# latent heat of vaporization, 2.45 [MJ.kg^(-1)]
+		lambda <- 2.501-(0.002361*Tmean);				# latent heat of vaporization [MJ.kg^(-1)]
 		psychCon <- Cp*P/(epsilon*lambda);				# psychrometric constant [kPa.°C^(-1)]
 
-		# calculation of vapour pressures
-		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;	# see {delobel_review_2009}
-		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));	# min saturation vapour pressure [kPa]
-		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));	# max saturation vapour pressure [kPa]
-#		eTmean <- es <- (eTmax+eTmin)/2;					# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
-		ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));				# actual vapour pressure [kPa]
-
 		# calculation of Slope of saturation vapour pressure curve
+		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;		# see {delobel_review_2009}
+		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));				# min saturation vapour pressure [kPa]
+		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));				# max saturation vapour pressure [kPa]
+		ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));							# actual vapour pressure [kPa]
+#		eTmean <- es <- (eTmax+eTmin)/2;								# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
 #		slopeVap <- 4098*eTmean/((Tmean+237.3)^2);							# slope vapour pressure curve at air temperature T [kPa.°C^(-1)] - In the FAO Penman-Monteith equation, where ∆ occurs in the numerator and denominator, the slope of the vapour pressure curve is calculated using mean air temperature - according to {richard_g._allen_crop_1998}
 		slopeVap <- 2049*((eTmin/((data$tmn[line]+237.3)^2))+(eTmax/((data$tmx[line]+237.3)^2)));	# to be favoured according to {delobel_review_2009}
 
-		# calculation of Rn
+		# calculation of net radiation
 		albedo <- 0.23;							# a green vegetation cover has an albedo of about 0.20-0.25
 		Rns <- (1-albedo)*data$sRad[line];				# net shortwave radiation [MJ.m^(-2).day^(-1)]
 		SteBolCon <- 4.903*10^(-9);					# Stefan-Boltzmann constant [4.903.10^(-9) MJ.K^(-4).m^(-2).day^(-1)]
@@ -167,11 +167,7 @@ compute_ETo <- function(data,station,inland=NULL,arid=NULL)
 		Rnl <- Rnl_1 * Rnl_2 * Rnl_3;					# net longwave radiation [MJ.m^(-2).day^(-1)]
 		Rn <- Rns -Rnl;							# net radiation at the crop surface [MJ.m^(-2).day^(-1)]
 
-		# Priestley-Taylor coefficient
-		# According to its original formulation (Priestley and Taylor, 1972), alpha is a constant term (alpha=PTc, where PTc is the dimensionless Priestley-Taylor constant). An average value of PTc=1.26 was found by the authors and theoretically explained by Lhomme (1996) for "the evapotranspiration from a horizontally uniform saturated surface", that closely resembles a surface of well-watered short grasses under humid conditions. The literature shows that PTc can vary from 1.08 to more than 1.60 as a function of the advectivity of the environment (Villalobos et al., 2002). The constant should be increased for arid and semi-arid climates up to PTc=1.70-1.75, according to ASCE (1990). Lower values are expected for wetlands.
-		# PTC, a and VPD coefficients (at least) VARY ACCORDING TO HUMID OR ARID
-#		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);# see {f._castellv_methods_1997}
-#		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
+		# Priestley-Taylor coefficient (PTc) and aridity corrections leading to alpha
 		PTc <- 1.26;							# Priestley-Taylor coefficient -  Small adjustments may be required to PTc in the range 1.2-1.3, but default is 1.26 as the overall mean
 		# a and c are arrays such that
 		# a[1] and c[1] are the set for (al)most humid conditions,
@@ -180,30 +176,32 @@ compute_ETo <- function(data,station,inland=NULL,arid=NULL)
 		a <- array(c(0,0.03,0.05,0.07,0.1),dim=5);			# a is ranging from 0 (humid) to 0.1 (arid)
 		c <- array(c(0.50,0.485,0.475,0.465,0.45),dim=5);		# c typically ranges between 0.45 and 0.50 from arid to humid
 		k <- 0;								# k=0 for daily computations
+#		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);		# see {f._castellv_methods_1997}
+#		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
 #		VPDmax_1 <- eTmax - ea;						# see {f._castellv_methods_1997}
-		VPDmax_fin <- (eTmax-eTmin)/(1-a[station$arid]*(eTmax-eTmin));
+		VPDmax_fin <- (eTmax-eTmin)/(1-a[arid]*(eTmax-eTmin));
 #		VPD_1 <- es-ea;
 #		VPD_2 <- eTc - eTmin;						# see {f._castellv_methods_1997}
-		VPD_fin <- c[station$arid]*VPDmax_fin+k;
+		VPD_fin <- c[arid]*VPDmax_fin+k;
 #		alpha_1 <- PTc;							# see {c._h._b._priestley_assessment_1972}
 #		alpha_2 <- (1+psychCon/slopeVap)/(1+0.6);			# see {c._h._b._priestley_assessment_1972}
 		alpha_fin <- 1+(PTc-1)*1*VPD_fin;				# see {j._l._steiner_lysimetric_1991}
 
-## =>		# Priestley-Taylor Potential Evapotranspiration
+## => PT	# Priestley-Taylor Potential Evapotranspiration
 		G <- 0;								# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
 		PT <- alpha_fin/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);	# mark's version improved for P, Rnl(_3) and slopeVap
 
-## =>		# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
+## => PM	# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
 #		# significant sensitivity to arid/humid condition and vegetation height through windspeed
 #		# this relation has been produced for : sub-humid, low to moderate wind speed, short vegetation
 #		windSpeed <- 2;	# wind speed at 2 m height [m.s^(-1)]  - 2 m/s is used as a temporary estimate - Due to the appearance of windSpeed in both the nominator and denominator of the FAO Penman-Monteith equation, ETo is not highly sensitive to normal ranges of wind speed - N.B. taller is the ground vegetation considered, greater is the sensitivity
 #		PM <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_x/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
 
-## =>		# Hargreaves and Samani
+## => HS	# Hargreaves and Samani
 #		a <- 0; b <- 1;		# unadjusted version
 #		HS <- a+b*0.0023/lambda*(((data$tmx[line]+data$tmn[line])/2)+17.8)*sqrt(data$tmx[line]-data$tmn[line])*data$eRad[line];
 
-## =>		mark original version
+## => ma	mark original version
 #		mark <- compute_mark(data$tmn[line],data$tmx[line],station$lat,station$alt,data$julDay[line]);
 
 		if(line==1){
@@ -218,15 +216,31 @@ compute_ETo <- function(data,station,inland=NULL,arid=NULL)
 #			ETo_ma <- array(c(ETo_ma,mark),dim=dim(ETo_ma)+1);
 		}
 	}
-
+	
 	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
-#			"ETo_PT1"=ETo_PT1,"ETo_PT2"=ETo_PT2,"ETo_PT3"=ETo_PT3,"ETo_PT4"=ETo_PT4,"ETo_PT5"=ETo_PT5,
-#			"ETo_PM1"=ETo_PM1,"ETo_PM2"=ETo_PM2,"ETo_PM3"=ETo_PM3,"ETo_PM4"=ETo_PM4,
-#			"ETo_HS"=ETo_HS,
-#			"ETo_ma"=ETo_ma,
-#			"ETo_PT61"=ETo_PT61,"ETo_PT62"=ETo_PT62,"ETo_PT63"=ETo_PT63,"ETo_PT64"=ETo_PT64,
+#			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
 			"ETo"=ETo_PT
 		);
+
+## aridity issues
+	# according to the definition provided by the United Nations Convention to Combat Desertification (UNCCD)
+	# AI = ratio of mean annual precipitation to mean annual potential evapotranspiration
+	# 	  AI < 0.05	hyper-arid
+	# 0.05 <= AI < 0.2	arid
+	# 0.20 <= AI < 0.5 	semi-arid
+	# 0.50 <= AI < 0.65	dry sub-humid
+	# 0.65 <= AI		humid or cold
+	meanAnnRain <- 0;
+	meanAnnETo <- 0;
+	for(y in as.numeric(format(fileHead$period$start,"%Y")):as.numeric(format(fileHead$period$end,"%Y"))){
+		meanAnnRain <- meanAnnRain + sum(data$ppt[data$year==y]);
+		meanAnnETo <- meanAnnETo + sum(data$ETo[data$year==y]);
+	}
+	meanAnnRain <- meanAnnRain/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
+	meanAnnETo <- meanAnnETo/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
+	AI <- meanAnnRain/meanAnnETo;
+
+browser();
 
 return(data);
 }
