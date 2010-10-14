@@ -52,8 +52,8 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
 #			list(	"temp"="0725756AW.txt",
 #				"prec"="0725756AW.txt",
-#				"arid"= 3,
-#				"inLand"=TRUE),
+#				"arid"= 5,
+#				"inLand"=TRUE)
 #			list(	"temp"="CHOKWE.txt",
 #				"prec"="CHOKWE.txt",
 #				"arid"= 3,
@@ -64,7 +64,7 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"inLand"=TRUE),
 			list(	"temp"="XAI-XAI.txt",
 				"prec"="XAI-XAI.txt",
-				"arid"= 5,
+				"arid"= 1,
 				"inLand"=FALSE)
 		);
 

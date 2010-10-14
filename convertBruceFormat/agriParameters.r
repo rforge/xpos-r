@@ -127,7 +127,7 @@ return(data);
 compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 {	
 	station <- fileHead$station;
-	if (is.null(arid) || arid < 1 || arid > 6){
+	if (is.null(arid) || arid < 1 || arid > 5){
 		print("# WARNING: wrong arid parameter -> assuming dry subhumid condition");
 		arid <- 3;
 	}
@@ -152,7 +152,7 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));				# min saturation vapour pressure [kPa]
 		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));				# max saturation vapour pressure [kPa]
 		ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));							# actual vapour pressure [kPa]
-#		eTmean <- es <- (eTmax+eTmin)/2;								# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
+		eTmean <- es <- (eTmax+eTmin)/2;								# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
 #		slopeVap <- 4098*eTmean/((Tmean+237.3)^2);							# slope vapour pressure curve at air temperature T [kPa.°C^(-1)] - In the FAO Penman-Monteith equation, where ∆ occurs in the numerator and denominator, the slope of the vapour pressure curve is calculated using mean air temperature - according to {richard_g._allen_crop_1998}
 		slopeVap <- 2049*((eTmin/((data$tmn[line]+237.3)^2))+(eTmax/((data$tmx[line]+237.3)^2)));	# to be favoured according to {delobel_review_2009}
 
@@ -173,8 +173,8 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 		# a[1] and c[1] are the set for (al)most humid conditions,
 		# a[5] and c[5] are the set for (al)most arid conditions,
 		# a[3] and c[3] are the set for default conditions.
-		a <- array(c(0,0.03,0.05,0.07,0.1),dim=5);			# a is ranging from 0 (humid) to 0.1 (arid)
-		c <- array(c(0.50,0.485,0.475,0.465,0.45),dim=5);		# c typically ranges between 0.45 and 0.50 from arid to humid
+		a <- array(c(0,0.0009,0.0041,0.0184,0.1),dim=5);		# a is ranging from 0 (humid) to 0.1 (arid)
+		c <- array(c(0.34,0.39,0.44,0.49,0.54),dim=5);			# c typically ranges between 0.45 and 0.50 from humid to arid
 		k <- 0;								# k=0 for daily computations
 #		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);		# see {f._castellv_methods_1997}
 #		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
@@ -204,12 +204,17 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 ## => ma	mark original version
 #		mark <- compute_mark(data$tmn[line],data$tmx[line],station$lat,station$alt,data$julDay[line]);
 
+## AI requirements -> Relative Humidity (RH)
+		RH <- 100 * ea / eTmean;
+
 		if(line==1){
+			RHs <- array(RH,dim=1);
 			ETo_PT <- array(PT,dim=1);
 #			ETo_PM <- array(PM,dim=1);
 #			ETo_HS <- array(HS,dim=1);
 #			ETo_ma <- array(mark,dim=1);
 		}else{
+			RHs <- array(c(RHs,RH),dim=dim(RHs)+1);
 			ETo_PT <- array(c(ETo_PT,PT),dim=dim(ETo_PT)+1);
 #			ETo_PM <- array(c(ETo_PM,PM),dim=dim(ETo_PM)+1);
 #			ETo_HS <- array(c(ETo_HS,HS),dim=dim(ETo_HS)+1);
@@ -217,12 +222,12 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 		}
 	}
 	
-	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
-#			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
-			"ETo"=ETo_PT
-		);
+## a and c aridity parameters routine
+	meanRH <- sum(RHs)/length(RHs);
+	posteriori_a <- 4.5 * exp(-0.1 * meanRH);
+	posteriori_c <- 0.724 - 0.004 * meanRH;
 
-## aridity issues
+## aridity Aridity Index (AI)
 	# according to the definition provided by the United Nations Convention to Combat Desertification (UNCCD)
 	# AI = ratio of mean annual precipitation to mean annual potential evapotranspiration
 	# 	  AI < 0.05	hyper-arid
@@ -230,18 +235,15 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 	# 0.20 <= AI < 0.5 	semi-arid
 	# 0.50 <= AI < 0.65	dry sub-humid
 	# 0.65 <= AI		humid or cold
-	meanAnnRain <- 0;
-	meanAnnETo <- 0;
-	for(y in as.numeric(format(fileHead$period$start,"%Y")):as.numeric(format(fileHead$period$end,"%Y"))){
-		meanAnnRain <- meanAnnRain + sum(data$ppt[data$year==y]);
-		meanAnnETo <- meanAnnETo + sum(data$ETo[data$year==y]);
-	}
-	meanAnnRain <- meanAnnRain/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
-	meanAnnETo <- meanAnnETo/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
+	meanAnnRain <- sum(data$ppt)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
+	meanAnnETo <- sum(ETo_PT)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
 	AI <- meanAnnRain/meanAnnETo;
 
+	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
+#			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
+			"ETo"=ETo_PT, "AI"=AI, "post_a"=posteriori_a, "post_c"=posteriori_c
+		);
 browser();
-
 return(data);
 }
 
