@@ -168,57 +168,57 @@ checkMissing <- function(data)
 # NA
 	if (any(is.na(tmn))){
 		tmn_missing<-TRUE;
-		tmn[is.na(tmn)] <- as.numeric("Na");
+		tmn[is.na(tmn)] <- NA;
 	}
 	if (any(is.na(tmx))){
 		tmx_missing<-TRUE;
-		tmx[is.na(tmx)] <- as.numeric("Na");
+		tmx[is.na(tmx)] <- NA;
 	}
 	if (any(is.na(ppt))){
 		ppt_missing<-TRUE;
-		ppt[is.na(ppt)] <- as.numeric("Na");
+		ppt[is.na(ppt)] <- NA;
 	}
 	
 # NaN
 	if (any(is.nan(tmn))){
 		tmn_missing<-TRUE;
-		tmn[is.nan(tmn)] <- as.numeric("Na");
+		tmn[is.nan(tmn)] <- NA;
 	}
 	if (any(is.nan(tmx))){
 		tmx_missing<-TRUE;
-		tmx[is.nan(tmx)] <- as.numeric("Na");
+		tmx[is.nan(tmx)] <- NA;
 	}
 	if (any(is.nan(ppt))){
 		ppt_missing<-TRUE;
-		ppt[is.nan(ppt)] <- as.numeric("Na");
+		ppt[is.nan(ppt)] <- NA;
 	}
 
 # null
 	if (any(is.null(tmn))){
 		tmn_missing<-TRUE;
-		tmn[is.null(tmn)] <- as.numeric("Na");
+		tmn[is.null(tmn)] <- NA;
 	}
 	if (any(is.null(tmx))){
 		tmx_missing<-TRUE;
-		tmx[is.null(tmx)] <- as.numeric("Na");
+		tmx[is.null(tmx)] <- NA;
 	}
 	if (any(is.null(ppt))){
 		ppt_missing<-TRUE;
-		ppt[is.null(ppt)] <- as.numeric("Na");
+		ppt[is.null(ppt)] <- NA;
 	}
 
 # -999
 	if (any(tmn==-999)){
 		tmn_missing<-TRUE;
-		tmn[tmn==-999] <- as.numeric("Na");
+		tmn[tmn==-999] <- NA;
 	}
 	if (any(tmx==-999)){
 		tmx_missing<-TRUE;
-		tmx[tmx==-999] <- as.numeric("Na");
+		tmx[tmx==-999] <- NA;
 	}
 	if (any(ppt==-999)){
 		ppt_missing<-TRUE;
-		ppt[ppt==-999] <- as.numeric("Na");
+		ppt[ppt==-999] <- NA;
 	}
 
 # WARNINGS
@@ -234,7 +234,6 @@ checkMissing <- function(data)
 		data$ppt <- ppt;
 		print("# WARNING: missing values detected in precipitation amounts",quote=FALSE);
 	}
-
 
 return(data);
 }

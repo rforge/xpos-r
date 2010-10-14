@@ -93,29 +93,29 @@ return(stations);
  ###############################################################################
 init_GCMs <- function()
 {
-GCMs <- list(	"obs"=	list(	"con"=	"obs/"),
-		"ncep"=	list(	"con"=	"ncep2.1/"),
-		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
-				"futA"=	"cccma_cgcm3_1-fa/",
-				"futB"=	"cccma_cgcm3_1-fb/"),
-		"cnrm"=	list(	"con"=	"cnrm_cm3/",
-				"futA"=	"cnrm_cm3-fa/",
-				"futB"=	"cnrm_cm3-fb/"),
-		"csiro35"=list(	"con"=	"csiro_mk3_5/",
-				"futA"=	"csiro_mk3_5-fa/",
-				"futB"=	"csiro_mk3_5-fb/"),
-		"echam"=list(	"con"=	"mpi_echam5/",
-				"futA"=	"mpi_echam5-fa/",
-				"futB"=	"mpi_echam5-fb/"),
+GCMs <- list(	"obs"=	list(	"con"=	"obs/")
+#		"ncep"=	list(	"con"=	"ncep2.1/"),
+#		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
+#				"futA"=	"cccma_cgcm3_1-fa/",
+#				"futB"=	"cccma_cgcm3_1-fb/"),
+#		"cnrm"=	list(	"con"=	"cnrm_cm3/",
+#				"futA"=	"cnrm_cm3-fa/",
+#				"futB"=	"cnrm_cm3-fb/"),
+#		"csiro35"=list(	"con"=	"csiro_mk3_5/",
+#				"futA"=	"csiro_mk3_5-fa/",
+#				"futB"=	"csiro_mk3_5-fb/"),
+#		"echam"=list(	"con"=	"mpi_echam5/",
+#				"futA"=	"mpi_echam5-fa/",
+#				"futB"=	"mpi_echam5-fb/"),
 #		"echo"=	list(	"con"=	"miub_echo_g/",
 #				"futA"=	"miub_echo_g-fa/",
 #				"futB"=	"miub_echo_g-fb/"),
-		"gfdl"=	list(	"con"=	"gfdl_cm2_0/",
-				"futA"=	"gfdl_cm2_0-fa/",
-				"futB"=	"gfdl_cm2_0-fb/"),
-		"ipsl"=	list(	"con"=	"ipsl_cm4/",
-				"futA"=	"ipsl_cm4-fa/",
-				"futB"=	"ipsl_cm4-fb/")
+#		"gfdl"=	list(	"con"=	"gfdl_cm2_0/",
+#				"futA"=	"gfdl_cm2_0-fa/",
+#				"futB"=	"gfdl_cm2_0-fb/"),
+#		"ipsl"=	list(	"con"=	"ipsl_cm4/",
+#				"futA"=	"ipsl_cm4-fa/",
+#				"futB"=	"ipsl_cm4-fb/")
 	);
 return(GCMs);
 }
