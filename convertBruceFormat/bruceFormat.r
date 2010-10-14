@@ -78,7 +78,7 @@ importData <- function(path,fileHead)
 
 # check period consistencies
 	if( dim(tmn)!=dim(tmx) || dim(tmn)!=dim(ppt) || dim(tmx)!=dim(ppt)){
-		print("# ERROR: not your fault, but the importData function (in bruceFormat.r) is failing producing files of same length :(");
+		print("# ERROR: not your fault, but the importData function (in bruceFormat.r) is failing producing files of same length :(",quote=FALSE);
 		stop();
 	}
 

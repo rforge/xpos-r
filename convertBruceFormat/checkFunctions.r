@@ -25,7 +25,7 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxLat<-max(fileHead_tmn$station$lat,fileHead_tmx$station$lat,fileHead_ppt$station$lat);
 	if(minLat!=maxLat){
 		stopProcess<-1;
-		print("# WARNING: unconsitent latitudes -> take tmn one",quote=FALSE);
+		print("# WARNING: unconsitent latitudes -> assume tmn's one",quote=FALSE);
 	}
 
 # check on longitudes
@@ -33,7 +33,7 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxLon<-max(fileHead_tmn$station$lon,fileHead_tmx$station$lon,fileHead_ppt$station$lon);
 	if(minLon!=maxLon){
 		stopProcess<-2;
-		print("# WARNING: unconsitent longitudes -> take tmn one",quote=FALSE);
+		print("# WARNING: unconsitent longitudes -> assume tmn's one",quote=FALSE);
 	}
 
 # check on altitudes
@@ -41,11 +41,11 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	maxAlt<-max(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
 	if(minAlt!=maxAlt){
 		stopProcess<-3;
-		print("# WARNING: unconsitent altitudes -> take tmn one",quote=FALSE);
+		print("# WARNING: unconsitent altitudes -> assume tmn's one",quote=FALSE);
 	}
 	if(minAlt<(-90) || maxAlt>7000){
 		stopProcess<-3;
-		print("# WARNING: unrealistic altitude -> take tmn one",quote=FALSE);
+		print("# WARNING: unrealistic altitude -> assume tmn's one",quote=FALSE);
 	}
 
 # print warnings and wait for acknowledgment
@@ -99,7 +99,7 @@ longestPeriod <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 {
 	stopProcess <- 0;
 
-# init with tmn fileHead
+# init with tmn fileHead (that's why default alt, lon, lat are tmn's ones)
 	fileHead<-fileHead_tmn;
 	fileHead$period$start<-max(fileHead_tmn$period$start,fileHead_tmx$period$start,fileHead_ppt$period$start);
 	fileHead$period$end<-min(fileHead_tmn$period$end,fileHead_tmx$period$end,fileHead_ppt$period$end);
@@ -224,15 +224,15 @@ checkMissing <- function(data)
 # WARNINGS
 	if(tmn_missing){
 		data$tmn <- tmn;
-		print("# WARNING: we detected missing values in the TEMP MIN file",quote=FALSE);
+		print("# WARNING: missing values detected in minimal temperatures",quote=FALSE);
 	}
 	if(tmx_missing){
 		data$tmx <- tmx;
-		print("# WARNING: we detected missing values in the TEMP MAX file",quote=FALSE);
+		print("# WARNING: missing values detected in maximal temperatures",quote=FALSE);
 	}
 	if(ppt_missing){
 		data$ppt <- ppt;
-		print("# WARNING: we detected missing values in the PREC file",quote=FALSE);
+		print("# WARNING: missing values detected in precipitation amounts",quote=FALSE);
 	}
 
 

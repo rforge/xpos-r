@@ -36,7 +36,7 @@
 compute_radn <- function(data,station,inland=NULL)
 {	
 	if (is.null(inland)){
-		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station");
+		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station",quote=FALSE);
 		stop();
 	}
 
@@ -218,13 +218,13 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 	}
 	
 ## a and c aridity parameters routine
-	meanRH <- sum(RHs)/length(RHs);
+	meanRH <- sum(RHs,na.rm=TRUE)/(length(RHs)-length(RHs[is.na(RHs)]));
 #	posteriori_a <- 4.5 * exp(-0.1 * meanRH);
 	posteriori_c <- 0.724 - 0.004 * meanRH;
 	doItAgain <- 0;
 	if(arid>1 && arid <5){
-		if (posteriori_c<=c[arid-1])	doItAgain <- -1;
-		if (posteriori_c>=c[arid+1])	doItAgain <- +1;
+		if (posteriori_c <= c[arid-1])	doItAgain <- -1;
+		if (posteriori_c >= c[arid+1])	doItAgain <- +1;
 	}
 
 ## aridity Aridity Index (AI)
@@ -233,12 +233,14 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 	meanAnnRain <- sum(data$ppt)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
 	meanAnnETo <- sum(ETo_PT)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
 	AI <- meanAnnRain/meanAnnETo;
-	while(TRUE){
-		if (0<=AI && AI<0.05){		AI <- "Hyper-Arid";	break;}
-		if (0.05<=AI && AI<0.2){	AI <- "Arid";		break;}
-		if (0.2<=AI && AI<0.5){		AI <- "Semi-Arid";	break;}
-		if (0.5<=AI && AI<0.65){	AI <- "Dry Sub-Humid";	break;}
-		if (0.65<=AI){			AI <- "Humid";		break;}
+	if(is.na(AI)){
+		AI <- "NA";
+	}else{
+		if (0<=AI && AI<0.05)	AI <- "Hyper-Arid";
+		if (0.05<=AI && AI<0.2)	AI <- "Arid";
+		if (0.2<=AI && AI<0.5)	AI <- "Semi-Arid";
+		if (0.5<=AI && AI<0.65)	AI <- "Dry Sub-Humid";
+		if (0.65<=AI)		AI <- "Humid";
 	}
 	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
 #			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
