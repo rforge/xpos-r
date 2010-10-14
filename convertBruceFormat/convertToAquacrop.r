@@ -88,7 +88,7 @@ formatToEToFile <- function(data,fileHead,path)
 	}
 	# head
 	file.copy(	"./aquaCropTemplates/aquaCropTemplate.ETo",	outName,overwrite=TRUE);
-	changeVar(	"DESCRIPTION",	fileHead$station$id,		outName,outName);
+	changeVar(	"DESCRIPTION",	paste(fileHead$station$id," - ",data$AI," (UNCDD): ",sep=""),outName,outName);
 	changeVar(	"FD",		format(fileHead$period$start,"%d"),	outName,outName);
 	changeVar(	"FM",		format(fileHead$period$start,"%m"),	outName,outName);
 	changeVar(	"FY",		format(fileHead$period$start,"%Y"),	outName,outName);

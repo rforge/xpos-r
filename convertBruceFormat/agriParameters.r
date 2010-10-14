@@ -125,14 +125,9 @@ return(data);
  # good summary in here: http://www.apesimulator.it/help/models/evapotranspiration/
  ###############################################################################
 compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
-{	
-	station <- fileHead$station;
-	if (is.null(arid) || arid < 1 || arid > 5){
-		print("# WARNING: wrong arid parameter -> assuming dry subhumid condition");
-		arid <- 3;
-	}
+{	station <- fileHead$station;
 
-	# compute Rs
+	# compute Rs, Ra, Tt
 	data <- compute_radn(data,station,inland);
 
 	# compute everything else
@@ -224,26 +219,32 @@ compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
 	
 ## a and c aridity parameters routine
 	meanRH <- sum(RHs)/length(RHs);
-	posteriori_a <- 4.5 * exp(-0.1 * meanRH);
+#	posteriori_a <- 4.5 * exp(-0.1 * meanRH);
 	posteriori_c <- 0.724 - 0.004 * meanRH;
+	doItAgain <- 0;
+	if(arid>1 && arid <5){
+		if (posteriori_c<=c[arid-1])	doItAgain <- -1;
+		if (posteriori_c>=c[arid+1])	doItAgain <- +1;
+	}
 
 ## aridity Aridity Index (AI)
 	# according to the definition provided by the United Nations Convention to Combat Desertification (UNCCD)
 	# AI = ratio of mean annual precipitation to mean annual potential evapotranspiration
-	# 	  AI < 0.05	hyper-arid
-	# 0.05 <= AI < 0.2	arid
-	# 0.20 <= AI < 0.5 	semi-arid
-	# 0.50 <= AI < 0.65	dry sub-humid
-	# 0.65 <= AI		humid or cold
 	meanAnnRain <- sum(data$ppt)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
 	meanAnnETo <- sum(ETo_PT)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
 	AI <- meanAnnRain/meanAnnETo;
-
+	while(TRUE){
+		if (0<=AI && AI<0.05){		AI <- "Hyper-Arid";	break;}
+		if (0.05<=AI && AI<0.2){	AI <- "Arid";		break;}
+		if (0.2<=AI && AI<0.5){		AI <- "Semi-Arid";	break;}
+		if (0.5<=AI && AI<0.65){	AI <- "Dry Sub-Humid";	break;}
+		if (0.65<=AI){			AI <- "Humid";		break;}
+	}
 	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
 #			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
-			"ETo"=ETo_PT, "AI"=AI, "post_a"=posteriori_a, "post_c"=posteriori_c
+			"ETo"=ETo_PT,
+			"AI"=AI, "doItAgain"=doItAgain, "arid"=arid
 		);
-browser();
 return(data);
 }
 

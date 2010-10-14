@@ -48,24 +48,24 @@ init_stations <- function()
 {
 stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="templateName2.txt",		# name for prec data file (could be the same)
-#				"arid"= 3,				# default=3 - humidity conditions from 1 (extremely humid: Gabon) to 6 (extremely arid: Sahara) - see aridity map here http://maps.grida.no/go/graphic/aridity_zones
+#				"arid"= 'A',				# default='A' - humidity conditions from 1 (humid) to 6 (hyper-arid)
 #				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
-#			list(	"temp"="0725756AW.txt",
-#				"prec"="0725756AW.txt",
-#				"arid"= 5,
-#				"inLand"=TRUE)
+			list(	"temp"="0725756AW.txt",
+				"prec"="0725756AW.txt",
+				"arid"= 'A',
+				"inLand"=TRUE)
 #			list(	"temp"="CHOKWE.txt",
 #				"prec"="CHOKWE.txt",
-#				"arid"= 3,
+#				"arid"= 'A',
 #				"inLand"=TRUE),
 #			list(	"temp"="SUSSUNDENGA.txt",
 #				"prec"="SUSSUNDENGA.txt",
-#				"arid"= 3,
+#				"arid"= 'A',
 #				"inLand"=TRUE),
-			list(	"temp"="XAI-XAI.txt",
-				"prec"="XAI-XAI.txt",
-				"arid"= 1,
-				"inLand"=FALSE)
+#			list(	"temp"="XAI-XAI.txt",
+#				"prec"="XAI-XAI.txt",
+#				"arid"= 0,
+#				"inLand"=FALSE)
 		);
 
 return(stations);
@@ -104,6 +104,17 @@ GCMs <- list(	"obs"=	list(	"con"=	"obs"),
 return(GCMs);
 }
 
+################################################################################
+##############################################
+#################
+####
+##	PLAY FREELY WITH WHATEVER IS ABOVE ...
+## 	BUT PLAY CAREFULLY WITH WHAT IS BELOW
+####
+#################
+##############################################
+################################################################################
+
 ##
  # CONVERSION ROUTINE FOR MULTIPLE GCMs
  ###############################################################################
@@ -137,6 +148,10 @@ convert <- function(model,manyGCMs=FALSE)
 			for (p in 1:length(gcms[[g]])){
 				print(paste(" --->  processing GCM: ",gcms[[g]][p],sep=""));
 				for (s in 1:length(stations)){
+					if (is.null(stations[[s]]$arid) || (is.numeric(stations[[s]]$arid) && (stations[[s]]$arid < 1 || stations[[s]]$arid > 5)) || (is.character(stations[[s]]$arid)&& stations[[s]]$arid!='A')){
+						print("# WARNING: wrong arid parameter -> assuming automatic condition");
+						stations[[s]]$arid <- 'A';
+					}
 					pathToStation <-	list(	"input"=paste(path$input,gcms[[g]][[p]],"/",sep=""),
 									"output"=paste(path$output,gcms[[g]][[p]],"/",sep=""),
 									"folder"=	list(	"tmn"=path$folder$tmn,
@@ -166,6 +181,10 @@ convert <- function(model,manyGCMs=FALSE)
 	}else{
 ### single GCM routine
 		for (s in 1:length(stations)){
+			if (is.null(stations[[s]]$arid) || (is.numeric(stations[[s]]$arid) && (stations[[s]]$arid < 1 || stations[[s]]$arid > 5)) || (is.character(stations[[s]]$arid)&& stations[[s]]$arid!='A')){
+				print("# WARNING: wrong arid parameter -> assuming automatic condition");
+				stations[[s]]$arid <- 'A';
+			}
 			pathToStation <-	list(	"input"=path$input,
 							"output"=path$output,
 							"folder"=	list(	"tmn"=path$folder$tmn,
@@ -212,7 +231,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
 		print("### ERROR: no station specified !!");
 		stop();
 	}
-
+pathToStation$arid
 ### target models
 	if(targetModel=="ap") targetModel <- 1;
 	if(targetModel=="aq") targetModel <- 2;
@@ -263,7 +282,20 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
 			# so far we deal only with day records
 			source('convertToAquacrop.r');
 			if(seeSteps)	print("... compute ETo ...");
-			data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
+			if(is.numeric(pathToStation$arid)){
+				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
+			}else{
+				data <- compute_ETo(data,fileHead,pathToStation$inland,3);
+				counter <- 0;					# infinite loop check
+				while(data$doItAgain!=0){
+					counter <- counter+1;
+					if( counter > 2){
+						print("ERROR: infinite loop in convertOne function, my mistake");
+						stop();
+					}
+					data <- compute_ETo(data,fileHead,pathToStation$inland,data$arid+data$doItAgain);
+				}
+			}
 			if(seeSteps)	print("... format and write data into .TMP, .PLU and .ETo files ...");
 			formatToTMPFile(data,fileHead,pathToStation);
 			formatToPLUFile(data,fileHead,pathToStation);
