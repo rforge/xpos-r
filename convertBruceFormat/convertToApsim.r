@@ -34,7 +34,6 @@ compute_tavNamp <- function(data)
 			monthlyMean[,3] <- 0;
 			monthlyMean[,4] <- 0;
 		}
-		
 		# monthly mean
 		month <- as.numeric(format(as.Date(data$julDay[line]-1,origin=paste(data$year[line],"-01-01",sep="")),"%m"));
 		monthlyMean[month,1] <- monthlyMean[month,1]+dMean[line];
@@ -49,6 +48,13 @@ compute_tavNamp <- function(data)
 
 	amp <- format(mean(yearlyAMP),digits=3);
 	tav <- format(mean(monthlyMean[,5]),digits=3);
+
+	if(amp!="NA" && (as.numeric(amp)<0 || as.numeric(amp)>50))	{
+		print("# WARNING: amp is not in the APSIM range allowed (0>amp>50)",quote=FALSE);
+	}
+	if(tav!="NA" && (as.numeric(tav)<0 || as.numeric(tav)>50))	{
+		print("# WARNING: tav is not in the APSIM range allowed (0>tav>50)",quote=FALSE);
+	}
 
 	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
 return(data);
@@ -94,10 +100,12 @@ formatToMetFile <- function(data,fileHead,path)
 	changeVar(	"period_amp",	data$amp,		outName,outName);
 	# body
 	apsim_table <- format(apsim_table,justify="right",width=7);
+	write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+
+	## to handle the linux/windows format issue
 	if(Sys.info()["sysname"]=="Linux"){
-		write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE,eol="\r\n");
-	}else{
-		write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+		tempFile <- readLines(outName,n=-1,warn=FALSE);
+		writeLines(tempFile,outName,sep="\r\n");
 	}
 }
 

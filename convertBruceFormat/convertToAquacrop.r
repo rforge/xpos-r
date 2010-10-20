@@ -95,5 +95,11 @@ formatToEToFile <- function(data,fileHead,path)
 	# body
 	table <- format(table,justify="right",width=6);
 	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+
+	## to handle the linux/windows format issue
+	if(Sys.info()["sysname"]=="Linux"){
+		tempFile <- readLines(outName,n=-1,warn=FALSE);
+		writeLines(tempFile,outName,sep="\r\n");
+	}
 }
 

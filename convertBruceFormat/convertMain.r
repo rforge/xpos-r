@@ -40,10 +40,10 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "Z:/AquaCrop/Inputs/";
+	input <- "/home/csag/crespo/Desktop/AquaCrop/Inputs/";
 
 	# in which folder to write out the data
-	output <- "Z:/AquaCrop/Outputs/"
+	output <- "/home/csag/crespo/Desktop/AquaCrop/Outputs/"
 
 	# what are the name of the data folders
 	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
@@ -113,9 +113,9 @@ GCMs <- list(	"obs"=	list(	"con"=	"obs/"),
 		"echam"=list(	"con"=	"mpi_echam5/",
 				"futA"=	"mpi_echam5-fa/",
 				"futB"=	"mpi_echam5-fb/")
-#		"echo"=	list(	"con"=	"miub_echo_g/",
-#				"futA"=	"miub_echo_g-fa/",
-#				"futB"=	"miub_echo_g-fb/"),
+##		"echo"=	list(	"con"=	"miub_echo_g/",
+##				"futA"=	"miub_echo_g-fa/",
+##				"futB"=	"miub_echo_g-fb/"),
 	);
 return(GCMs);
 }
