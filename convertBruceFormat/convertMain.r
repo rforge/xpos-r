@@ -12,16 +12,6 @@
  #	through lots of data sets and so far APSIM and AQUACROP crop models
  #
  ###############################################################################
- # N.B.:
- # if you are running the script in linux for linux use of the files, that's fine
- # if you are running the script in windows for windows use of the files, that's fine
- # BUT
- # if you are running the script in linux for windows use of the files
- # you'll face some formating problem (at least with APSIM) 
- # we thought about fixing that, but if you intend to use it on windows,
- # I guess you can afford to run the script on windows ...
- # to check if that's still true since last version .... olivier?
- ###############################################################################
 
 ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 ##									      ##
