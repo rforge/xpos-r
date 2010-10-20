@@ -40,10 +40,10 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "/home/csag/crespo/Desktop/AquaCrop/Inputs/";
+	input <- "Z:/AquaCrop/Inputs/";
 
 	# in which folder to write out the data
-	output <- "/home/csag/crespo/Desktop/AquaCrop/Outputs/"
+	output <- "Z:/AquaCrop/Outputs/"
 
 	# what are the name of the data folders
 	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures

@@ -63,7 +63,7 @@ formatToMetFile <- function(data,fileHead,path)
 # make 'year' a fake, and 'realY' the actual year
 # still one issue: 2100 is not a leap year, and any fake within the last century (allowed by APSIM so far) will be leap
 # solution so far: do not simulate 2100 with apsim !!
-	fake_year <- array(as.numeric(data$year[1])-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(data$year));
+	fake_year <- array(as.numeric(data$year)-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(data$year));
 
 # make one table from all the data
 	apsim_table <- as.numeric(fake_year);				# fake year titled	'year'
@@ -93,7 +93,11 @@ formatToMetFile <- function(data,fileHead,path)
 	changeVar(	"period_tav",	data$tav,		outName,outName);
 	changeVar(	"period_amp",	data$amp,		outName,outName);
 	# body
-	apsim_table <- format(apsim_table,justify="right",width=6);
-	write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+	apsim_table <- format(apsim_table,justify="right",width=7);
+	if(Sys.info()["sysname"]=="Linux"){
+		write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE,eol="\r\n");
+	}else{
+		write.table(apsim_table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+	}
 }
 
