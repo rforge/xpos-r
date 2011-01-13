@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wheatAtStephenFarm_base_020710.sim"
+	simTemplate <- "wheatWesternCape_template_1301111.sim"
 ##################################
 
 	#
@@ -70,7 +70,7 @@ apsim_userSettings <- function()
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "stephenFarm_mpi_echam5-fb.met";
+	metFileName <- "stephenFarmNCEP.met";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
@@ -78,18 +78,18 @@ apsim_userSettings <- function()
 	# e.g. period == means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:	period <- 2;
 ##################################
-	period <- 3;
+	period <- 2;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
 	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
 ##################################
-	1984,		# min year that you want to use as randomness
+	1982,		# min year that you want to use as randomness
 # watch out for 2100 faked as 2100...
 # 2100 is not leap, but any fitting fake year within the last century (allowed with APSIM so far)
 # will be leap. for now, do not simulate 2100
-	1999,		# max year that you want to use as randomness
+	2008,		# max year that you want to use as randomness
 ##################################
 	1		# 1: discreet for APSIM
 	),dim=3); 
@@ -127,7 +127,7 @@ apsim_userSettings <- function()
 	####	how many decisions define the decision space
 	# ex:	varNo <- 6;
 ##################################
-	varNo <- 3;
+	varNo <- 2;
 ##################################
 
 	####	how many crops per Year
@@ -142,8 +142,8 @@ apsim_userSettings <- function()
 	decNam <- array(c(
 ##################################
 	"var_sowingDate",			#1
-	"var_wheatFertAmount",		#2
-	"var_wheatIrrAmount"		#3
+	"var_wheatFertAmount"		#2
+#	"var_wheatIrrAmount"		#3
 ##################################
 	),dim=c(1,varNo));
 
@@ -166,8 +166,8 @@ apsim_userSettings <- function()
 ##################################
 	0,	length(textDec1),	1,	# start at 0 for text because I'm gonna ceil it
 #	0,	60,	6,	# min, max, minimal step of dec 1
-	0,	300,	30,	# min, max, minimal step of dec 2
-	0,	60,	6	# min, max, minimal step of dec 3
+	0,	400,	40	# min, max, minimal step of dec 2
+#	0,	60,	6	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
@@ -189,13 +189,13 @@ apsim_userSettings <- function()
 	# the criteria are defined in the "apsim_readOutputs" function
 	# ex:	criNo <- 7;
 ##################################
-	criNo <- 3;
+	criNo <- 2;
 ##################################
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
-		criS <- array(c(	0,		-6500,	# min, max cri 1
-					0,		600		# min, max cri 2
+		criS <- array(c(	0,		-5000,	# min, max cri 1
+					0,		1000		# min, max cri 2
 					),dim=c(2,2));
 	}
 	
@@ -237,28 +237,34 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	# crop type : wheat
 	col_wheatBiomass <- 4;
 	col_wheatYield <- 5;
-	col_irrigTot <- 6;
-	col_fertiliser <- 7;
+	col_cumDrainage <- 6;
+	col_cumRunoff <- 7;
+	col_cumDenit <- 8;
+	col_cumNLeached <- 9;
+	col_cumNRunoff <- 10;
+#	col_fertiliser <- 11;
+#	col_rain <- 12;
 ##################################
-#	col_sumNlosses <- 17; # sum of 11,12,13
+	col_sumNlosses <- 13; # sum of 8,9,10
 	
 	####	which ones are the criteria to optimize (both maximize and minimize)
 	criteria <- array(c(
 ##################################
 	col_wheatYield,		## crit 1
-	col_irrigTot,		## crit 2
-	col_fertiliser		## crit 3
+	col_sumNlosses		## crit 2
+#	col_irrigTot,		## crit 2
 ##################################
 	),dim=criNo);
 
 	#### read the .out apsim file
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
 	colNo <- dim(temp)[2]+1;
-
+	
 	#### opt.A : from 1 line only
 	# no rotations
 	response <- array(NA,dim=c(1,colNo));
 	response <- temp[dim(temp)[1],];
+	response[1,colNo] <- sum(temp[dim(temp)[1],8:10]);
 
 #	#### opt.B init : make 2 lines (maize + peanut) one
 #	# this is required for rotations (of 2 crops)
