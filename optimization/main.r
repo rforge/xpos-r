@@ -249,26 +249,28 @@ if (penList$itemNo==0){
 		stoppedBecauseOf <- "time over";
 }	}
 
-# if does not exists before
-if(all(is.na(criS))){
-# criS (from besList only ... compare with unbList?)
-	## find the 'criNo' bests
-	criS <- array(NA,dim=c(2,criNo));
-	criS[1,] <- apply(besList$regEva[[1]]$decEva[[1]],2,min);
-	criS[2,] <- apply(besList$regEva[[1]]$decEva[[1]],2,max);
-	for (r in 1:besList$itemNo){
-		for (d in 1:besList$regEva[[r]]$itemNo){
-			for (c in 1:criNo){
-				if(min(besList$regEva[[r]]$decEva[[d]][,c])<criS[1,c]){
-					criS[1,c] <- min(besList$regEva[[r]]$decEva[[d]][,c]);
-				}
-				if(max(besList$regEva[[r]]$decEva[[d]][,c])>criS[2,c]){
-					criS[2,c] <- max(besList$regEva[[r]]$decEva[[d]][,c]);
-				}
+##### VISUAL ###################################################################
+if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
+	last_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
+}
+
+##### FINAL OPTIMAL CRITERIA SPACE ACHIEVED ####################################
+criS <- array(NA,dim=c(2,criNo));
+criS[1,] <- apply(besList$regEva[[1]]$decEva[[1]],2,min);
+criS[2,] <- apply(besList$regEva[[1]]$decEva[[1]],2,max);
+for (r in 1:besList$itemNo){
+	for (d in 1:besList$regEva[[r]]$itemNo){
+		for (c in 1:criNo){
+			if(min(besList$regEva[[r]]$decEva[[d]][,c])<criS[1,c]){
+				criS[1,c] <- min(besList$regEva[[r]]$decEva[[d]][,c]);
+			}
+			if(max(besList$regEva[[r]]$decEva[[d]][,c])>criS[2,c]){
+				criS[2,c] <- max(besList$regEva[[r]]$decEva[[d]][,c]);
 			}
 		}
 	}
 }
+
 
 ##### write/store outputs
 outFile <- paste(apsimSpec$path2out,"listsAchieved",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep="");
@@ -276,11 +278,6 @@ save(decS,criS,unbList,penList,proList,besList,file=outFile);
 file.remove(paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 if(!is.null(apsimSpec)){
 	write.bestList(besList,apsimSpec,simNo,resolutionTime,(unbList$itemNo+penList$itemNo+proList$itemNo));
-}
-
-##### VISUAL ########################################################
-if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
-	last_visualisation(seeItThrough,scrList,proList,penList,unbList,besList);
 }
 
 print("",quote=FALSE);
