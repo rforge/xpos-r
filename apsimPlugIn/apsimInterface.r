@@ -70,7 +70,7 @@ apsim_userSettings <- function()
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "stephenFarmNCEP.met";
+	metFileName <- "0041347_A_gfdl_fb.met";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
@@ -85,11 +85,11 @@ apsim_userSettings <- function()
 	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
 ##################################
-	1982,		# min year that you want to use as randomness
+	1983,		# min year that you want to use as randomness
 # watch out for 2100 faked as 2100...
 # 2100 is not leap, but any fitting fake year within the last century (allowed with APSIM so far)
 # will be leap. for now, do not simulate 2100
-	2008,		# max year that you want to use as randomness
+	2000,		# max year that you want to use as randomness
 ##################################
 	1		# 1: discreet for APSIM
 	),dim=3); 
@@ -106,7 +106,7 @@ apsim_userSettings <- function()
 	# if your start and end Dates are in 2 != years, period = 1 will make 1 year simulation
 ##################################
 	var_startDate <-	"1/1/var_startYear";
-	var_endDate <-	"31/12/var_endYear";
+	var_endDate <-	"30/12/var_endYear";
 ##################################
 
 	####	remove everything in the working directory
@@ -194,8 +194,8 @@ apsim_userSettings <- function()
 	criS <- array(NA,dim=c(1,criNo));
 	# only if criNo == 2 (graphics purposes)
 	if (criNo==2){
-		criS <- array(c(	0,		-5000,	# min, max cri 1
-					0,		1000		# min, max cri 2
+		criS <- array(c(	0,		-4500,	# min, max cri 1
+					0,		250		# min, max cri 2
 					),dim=c(2,2));
 	}
 	
