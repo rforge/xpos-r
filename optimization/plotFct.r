@@ -374,6 +374,30 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ################################################################################
 ################################################################################
 
+## IF NEEDED
+ # compute the final criS
+ ###############################################################################
+finalCriteriaEnvelop <- function(criNo,besList)
+{
+	criS <- array(NA,dim=c(2,criNo));
+	criS[1,] <- apply(besList$regEva[[1]]$decEva[[1]],2,min);
+	criS[2,] <- apply(besList$regEva[[1]]$decEva[[1]],2,max);
+	for (r in 1:besList$itemNo){
+		for (d in 1:besList$regEva[[r]]$itemNo){
+			for (c in 1:criNo){
+				if(min(besList$regEva[[r]]$decEva[[d]][,c])<criS[1,c]){
+					criS[1,c] <- min(besList$regEva[[r]]$decEva[[d]][,c]);
+				}
+				if(max(besList$regEva[[r]]$decEva[[d]][,c])>criS[2,c]){
+					criS[2,c] <- max(besList$regEva[[r]]$decEva[[d]][,c]);
+				}
+			}
+		}
+	}
+
+return(criS);
+}
+
 ################################################################################
 ##### DECISION SPACE FUNCTIONS (start)
 #
@@ -382,7 +406,7 @@ last_visualisation <- function(seeItThrough,scrList,proList,penList,unbList,besL
 ## IN DECISION SPACE
  # show a list of regions in 2D decision space
  ###############################################################################
-showListIn2DDecisionSpace <- function(decS,besList,boxColor="gray",name1="decision 1",name2="decision 2",title="decision space")
+showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="decision 1",name2="decision 2",title="decision space")
 {
 	graphics.off();
 	plot.new();
@@ -391,22 +415,22 @@ showListIn2DDecisionSpace <- function(decS,besList,boxColor="gray",name1="decisi
 
 	watchDecSpace(besList,1,2,boxColor)
 
-	coloredPercentile<-48;
+	coloredPercentile<-1;
 	for (r in 1:besList$itemNo){
 		for (d in 1:besList$regEva[[r]]$itemNo){
-			if(all(besList$regEva[[r]]$decEva[[d]][,1]<=(criS2[1,1]+(criS2[2,1]-criS2[1,1])/100*(100-coloredPercentile)))){
+			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile))){
+				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkgreen",NA,NULL);
+			}
+			if(any(besList$regEva[[r]]$decEva[[d]][,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile))){
 ## I get confused about the percentile when the value is negated ...
 				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkred",NA,NULL);
-			}
-			if(all(besList$regEva[[r]]$decEva[[d]][,2]<=(criS2[1,2]+(criS2[2,2]-criS2[1,2])/100*coloredPercentile))){
-				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkgreen",NA,NULL);
 			}
 		}
 	}
 	legend("topleft",
 		legend=c(	"all efficient decision areas",
-				paste("all yield outcomes <= ",ceiling((criS2[1,1]+(criS2[2,1]-criS2[1,1])/100*coloredPercentile)),sep=""),
-				paste("all N losses outcomes <= ",ceiling((criS2[1,2]+(criS2[2,2]-criS2[1,2])/100*coloredPercentile)),sep="")),
+				paste("any yield outcomes <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)),sep=""),
+				paste("any N losses outcomes <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)),sep="")),
 		fill=c("gray", "darkred", "darkgreen"),
 		bty="n", cex=0.9
 	)       
@@ -467,7 +491,6 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 ## if any
 ## should remove the for p ???
 ## see above for 2D
-## how did I deal with negative value?
 					for (p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
 						if(any(besList$regEva[[r]]$decEva[[d]][p,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))){
 							if(resetGraphDev){
@@ -784,24 +807,26 @@ compareLists<-function(baseList,otherList,varX,varY,varH)
 ## IN CRITERIA SPACE
  # show a list of regions in 2D criteria space
  ###############################################################################
-showListIn2DCriteriaSpace <- function(criS,uneList,unbList,pcol="green",name1="criterion 1",name2="criterion 2",title="criteria space")
+showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",name2="criterion 2",title="criteria space")
 {
 	graphics.off();
 	plot.new();
 	plotAxes(criS,1,2,name1,name2);
 	plotRectangle(criS,1,2,"white","white",title);
+
+	coloredPercentile<-1;
 	varX<-1;varY<-2;
 
-	## explored boxes
-	for (r in 1:unbList$itemNo){
-		if(unbList$item>=r){
+	## best boxes
+	for (r in 1:uneList$itemNo){
+		if(uneList$item>=r){
 			# define criteria box bondaries
 			criDef<-array(NA,dim=c(2,2));
-			for(d in 1:unbList$regEva[[r]]$itemNo){
-				for(p in 1:dim(unbList$regEva[[r]]$decEva[[d]])[1]){
-					for (c in 1:dim(unbList$regEva[[r]]$decEva[[d]])[2]){
-						if(min(unbList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(unbList$regEva[[r]]$decEva[[d]][,c]);
-						if(max(unbList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(unbList$regEva[[r]]$decEva[[d]][,c]);
+			for(d in 1:uneList$regEva[[r]]$itemNo){
+				for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+					for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
+						if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
+						if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
 					}
 				}
 			}
@@ -811,38 +836,12 @@ showListIn2DCriteriaSpace <- function(criS,uneList,unbList,pcol="green",name1="c
 				criDef[2,varY],	# y top
 				density=0,
 				border="gray",
-				lwd=0.2,
+				lwd=1,
 				asp=1
 			);
 		}
 	}
-	## best boxes
-#	for (r in 1:uneList$itemNo){
-#		if(uneList$item>=r){
-#			# define criteria box bondaries
-#			criDef<-array(NA,dim=c(2,2));
-#			for(d in 1:uneList$regEva[[r]]$itemNo){
-#				for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
-#					for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
-#						if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
-#						if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
-#					}
-#				}
-#			}
-#			rect(	criDef[1,varX],	# x left
-#				criDef[1,varY],	# y bottom
-#				criDef[2,varX],	# x right
-#				criDef[2,varY],	# y top
-#				density=0,
-#				border="black",
-#				lwd=0.5,
-#				asp=1
-#			);
-#		}
-#	}
-	
-	
-	coloredPercentile<-48;
+
 	## only the boxes reaching one best
 	for (r in 1:uneList$itemNo){
 		if(uneList$item>=r){
@@ -856,18 +855,18 @@ showListIn2DCriteriaSpace <- function(criS,uneList,unbList,pcol="green",name1="c
 					}
 				}
 			}
-			if(criDef[1,varY]<=(criS2[1,varY]+(criS2[2,varY]-criS2[1,varY])/100*coloredPercentile)){
+			if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)){
 				rect(	criDef[1,varX],	# x left
 					criDef[1,varY],	# y bottom
 					criDef[2,varX],	# x right
 					criDef[2,varY],	# y top
 					density=0,
 					border="green",
-					lwd=2,
+					lwd=1.5,
 					asp=1
 				);
 			}
-			if(criDef[1,varX]<=(criS2[1,varX]+(criS2[2,varX]-criS2[1,varX])/100*(100-coloredPercentile))){
+			if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)){
 				rect(	criDef[1,varX],	# x left
 					criDef[1,varY],	# y bottom
 					criDef[2,varX],	# x right
@@ -880,9 +879,9 @@ showListIn2DCriteriaSpace <- function(criS,uneList,unbList,pcol="green",name1="c
 			}
 		}
 	}
-	legend("topleft",
-		legend=c(	paste("all yield optimum <= ",ceiling((criS2[1,varX]+(criS2[2,varX]-criS2[1,varX])/100*coloredPercentile)),sep=""),
-				paste("all N losses optimum <= ",ceiling((criS2[1,varY]+(criS2[2,varY]-criS2[1,varY])/100*coloredPercentile)),sep="")),
+	legend("topright",
+		legend=c(	paste("any yield optimum <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)),sep=""),
+				paste("any N losses optimum <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)),sep="")),
 		fill=c("red", "green"),
 		bty="n", cex=0.9
 	) 
@@ -1339,7 +1338,7 @@ copyDev2eps <- function(title,file)
 }
 
 ## JPG
-copyDev2jpg <- function(title,file)
+copyDev2jpg <- function(file)
 {
 	savePlot(filename=file,type="jpeg",device=dev.cur());
 }
