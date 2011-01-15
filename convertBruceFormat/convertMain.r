@@ -30,10 +30,10 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "/home/csag/crespo/Desktop/AquaCrop/Inputs/";
+	input <- "//media/E815-F933/AllData/A2.Senario.2.3/run.nigeria/FltStnData/";
 
 	# in which folder to write out the data
-	output <- "/home/csag/crespo/Desktop/AquaCrop/Outputs/"
+	output <- "/media/E815-F933/AllData/A2.Senario.2.3/APSIMformat/FltStnData/"
 
 	# what are the name of the data folders
 	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
@@ -55,20 +55,24 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="templateName2.txt",		# name for prec data file (could be the same)
 #				"arid"= 'A',				# default='A' - humidity conditions from 1 (humid) to 6 (hyper-arid)
 #				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
-			list(	"temp"="0725756AW.txt",
-				"prec"="0725756AW.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="CHOKWE.txt",
-				"prec"="CHOKWE.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="SUSSUNDENGA.txt",
-				"prec"="SUSSUNDENGA.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="XAI-XAI.txt",
-				"prec"="XAI-XAI.txt",
+#			list(	"temp"="0725756AW.txt",
+#				"prec"="0725756AW.txt",
+#				"arid"= 'A',
+#				"inLand"=TRUE),
+#			list(	"temp"="CHOKWE.txt",
+#				"prec"="CHOKWE.txt",
+#				"arid"= 'A',
+#				"inLand"=TRUE),
+#			list(	"temp"="SUSSUNDENGA.txt",
+#				"prec"="SUSSUNDENGA.txt",
+#				"arid"= 'A',
+#				"inLand"=TRUE),
+#			list(	"temp"="XAI-XAI.txt",
+#				"prec"="XAI-XAI.txt",
+#				"arid"= 'A',
+#				"inLand"=FALSE)
+			list(	"temp"="65001.txt",
+				"prec"="65001.txt",
 				"arid"= 'A',
 				"inLand"=FALSE)
 		);
@@ -83,8 +87,8 @@ return(stations);
  ###############################################################################
 init_GCMs <- function()
 {
-GCMs <- list(	"obs"=	list(	"con"=	"obs/"),
-		"ncep"=	list(	"con"=	"ncep2.1/"),
+GCMs <- list(	"obs"=	list(	"con"=	"FltStnData/"),
+		"ncep"=	list(	"con"=	"ncep2.2009/"),
 		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
 				"futA"=	"cccma_cgcm3_1-fa/",
 				"futB"=	"cccma_cgcm3_1-fb/"),
@@ -94,18 +98,27 @@ GCMs <- list(	"obs"=	list(	"con"=	"obs/"),
 		"csiro35"=list(	"con"=	"csiro_mk3_5/",
 				"futA"=	"csiro_mk3_5-fa/",
 				"futB"=	"csiro_mk3_5-fb/"),
-		"gfdl"=	list(	"con"=	"gfdl_cm2_0/",
+		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
 				"futA"=	"gfdl_cm2_0-fa/",
 				"futB"=	"gfdl_cm2_0-fb/"),
+		"gfdl1"=list(	"con"=	"gfdl_cm2_1/",
+				"futA"=	"gfdl_cm2_1-fa/",
+				"futB"=	"gfdl_cm2_1-fb/"),
+		"giss"=	list(	"con"=	"giss_model_e_r/",
+				"futA"=	"giss_model_e_r-fa/",
+				"futB"=	"giss_model_e_r-fb/"),
 		"ipsl"=	list(	"con"=	"ipsl_cm4/",
 				"futA"=	"ipsl_cm4-fa/",
 				"futB"=	"ipsl_cm4-fb/"),
 		"echam"=list(	"con"=	"mpi_echam5/",
 				"futA"=	"mpi_echam5-fa/",
-				"futB"=	"mpi_echam5-fb/")
-##		"echo"=	list(	"con"=	"miub_echo_g/",
-##				"futA"=	"miub_echo_g-fa/",
-##				"futB"=	"miub_echo_g-fb/"),
+				"futB"=	"mpi_echam5-fb/"),
+		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
+				"futA"=	"mri_cgcm2_3_2a-fa/",
+				"futB"=	"mri_cgcm2_3_2a-fb/"),
+		"echo"=	list(	"con"=	"miub_echo_g/",
+				"futA"=	"miub_echo_g-fa/",
+				"futB"=	"miub_echo_g-fb/")
 	);
 return(GCMs);
 }
