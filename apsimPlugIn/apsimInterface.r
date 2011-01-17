@@ -70,7 +70,7 @@ apsim_userSettings <- function()
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "0041347_A_gfdl_fb.met";
+	metFileName <- "0041347_A_echam_co.met";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
