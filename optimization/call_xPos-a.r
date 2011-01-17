@@ -20,7 +20,7 @@ source('main.r');
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
 #xPos(10,2,0,6,1000000,216000)
 xPos(10,2,0,6,100000,43200)
-#xPos(3,2,0,6,10000,10800,"d")
+#xPos(10,2,2,2,10,1000)
 # 302400 secs = 3.5 days
 # 216000 secs = 2.5 days
 # 172800 secs = 2 days
