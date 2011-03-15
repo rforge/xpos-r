@@ -30,14 +30,14 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "//media/E815-F933/AllData/A2.Senario.2.3/run.nigeria/FltStnData/";
+	input <- "~/Desktop/Optimisation/TemplatesGCMdata/Downscaled_StephenFarm_2011/cccma_cgcm3_1/";
 
 	# in which folder to write out the data
-	output <- "/media/E815-F933/AllData/A2.Senario.2.3/APSIMformat/FltStnData/"
+	output <- "~/Desktop/Optimisation/TemplatesGCMdata/TmpOutputs/";
 
 	# what are the name of the data folders
-	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
-				"tmx"=	"tmax/",	# folder name for maximal temperatures
+	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
+				"tmx"=	"tmx/",	# folder name for maximal temperatures
 				"ppt"=	"ppt/"		# folder name for precipitation
 			);	
 
@@ -71,8 +71,8 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="XAI-XAI.txt",
 #				"arid"= 'A',
 #				"inLand"=FALSE)
-			list(	"temp"="65001.txt",
-				"prec"="65001.txt",
+			list(	"temp"="0041347_A.txt",
+				"prec"="0041347_A.txt",
 				"arid"= 'A',
 				"inLand"=FALSE)
 		);
@@ -87,38 +87,38 @@ return(stations);
  ###############################################################################
 init_GCMs <- function()
 {
-GCMs <- list(	"obs"=	list(	"con"=	"FltStnData/"),
-		"ncep"=	list(	"con"=	"ncep2.2009/"),
+GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
+#		"ncep"=	list(	"con"=	"ncep2.2009/"),
 		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
 				"futA"=	"cccma_cgcm3_1-fa/",
-				"futB"=	"cccma_cgcm3_1-fb/"),
-		"cnrm"=	list(	"con"=	"cnrm_cm3/",
-				"futA"=	"cnrm_cm3-fa/",
-				"futB"=	"cnrm_cm3-fb/"),
-		"csiro35"=list(	"con"=	"csiro_mk3_5/",
-				"futA"=	"csiro_mk3_5-fa/",
-				"futB"=	"csiro_mk3_5-fb/"),
-		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
-				"futA"=	"gfdl_cm2_0-fa/",
-				"futB"=	"gfdl_cm2_0-fb/"),
-		"gfdl1"=list(	"con"=	"gfdl_cm2_1/",
-				"futA"=	"gfdl_cm2_1-fa/",
-				"futB"=	"gfdl_cm2_1-fb/"),
-		"giss"=	list(	"con"=	"giss_model_e_r/",
-				"futA"=	"giss_model_e_r-fa/",
-				"futB"=	"giss_model_e_r-fb/"),
-		"ipsl"=	list(	"con"=	"ipsl_cm4/",
-				"futA"=	"ipsl_cm4-fa/",
-				"futB"=	"ipsl_cm4-fb/"),
-		"echam"=list(	"con"=	"mpi_echam5/",
-				"futA"=	"mpi_echam5-fa/",
-				"futB"=	"mpi_echam5-fb/"),
-		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
-				"futA"=	"mri_cgcm2_3_2a-fa/",
-				"futB"=	"mri_cgcm2_3_2a-fb/"),
-		"echo"=	list(	"con"=	"miub_echo_g/",
-				"futA"=	"miub_echo_g-fa/",
-				"futB"=	"miub_echo_g-fb/")
+				"futB"=	"cccma_cgcm3_1-fb/")
+#		"cnrm"=	list(	"con"=	"cnrm_cm3/",
+#				"futA"=	"cnrm_cm3-fa/",
+#				"futB"=	"cnrm_cm3-fb/"),
+#		"csiro35"=list(	"con"=	"csiro_mk3_5/",
+#				"futA"=	"csiro_mk3_5-fa/",
+#				"futB"=	"csiro_mk3_5-fb/"),
+#		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
+#				"futA"=	"gfdl_cm2_0-fa/",
+#				"futB"=	"gfdl_cm2_0-fb/"),
+#		"gfdl1"=list(	"con"=	"gfdl_cm2_1/",
+#				"futA"=	"gfdl_cm2_1-fa/",
+#				"futB"=	"gfdl_cm2_1-fb/"),
+#		"giss"=	list(	"con"=	"giss_model_e_r/",
+#				"futA"=	"giss_model_e_r-fa/",
+#				"futB"=	"giss_model_e_r-fb/"),
+#		"ipsl"=	list(	"con"=	"ipsl_cm4/",
+#				"futA"=	"ipsl_cm4-fa/",
+#				"futB"=	"ipsl_cm4-fb/"),
+#		"echam"=list(	"con"=	"mpi_echam5/",
+#				"futA"=	"mpi_echam5-fa/",
+#				"futB"=	"mpi_echam5-fb/"),
+#		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
+#				"futA"=	"mri_cgcm2_3_2a-fa/",
+#				"futB"=	"mri_cgcm2_3_2a-fb/"),
+#		"echo"=	list(	"con"=	"miub_echo_g/",
+#				"futA"=	"miub_echo_g-fa/",
+#				"futB"=	"miub_echo_g-fb/")
 	);
 return(GCMs);
 }
@@ -244,8 +244,9 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
 ### sources
 	source("checkFunctions.r");
 	source("bruceFormat.r");
+	source("convertTMP.r");
 	source("agriParameters.r");
-	source("metTransformations.r");
+	source("agriParameters_loops.r");
 
 	if(is.null(pathToStation)){
 		print("### ERROR: no station specified !!",quote=FALSE);
@@ -325,19 +326,3 @@ pathToStation$arid
 
 if(seeSteps)	print("... conversion completed ...",quote=FALSE);
 }
-
-	# in which folder to read the data
-	input <- "C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/StephenFarm_GCMs/";
-
-	# in which folder to write out the data
-	output <- "C:/Documents and Settings/crespo/Desktop/Apsim/WesternCape/ApsimMetFiles/CombinedCongress/"
-
-	# what are the name of the data folders
-	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
-				"tmx"=	"tmx/",	# folder name for maximal temperatures
-				"ppt"=	"ppt/"		# folder name for precipitation
-			);	
-
-return(list("input"=input,"output"=output,"folder"=folder));
-}
-

@@ -4,7 +4,7 @@
  # https://r-forge.r-project.org/projects/xpos-r/convertBruceFormat
  ###############################################################################
  #
- # functions required for agricultural parameters
+ # functions required for agricultural/climatological parameters
  #
  ###############################################################################
 
@@ -33,46 +33,28 @@
  #	pages = {391--397}
  # },
  ###############################################################################
-compute_radn <- function(data,station,inland=NULL)
+compute_radn_1day <- function(julDay,tmx,tmn,staLat,staAlt,inland)
 {	
-	if (is.null(inland)){
-		print("missing parameter: (inland=TRUE) for inland station, inland=FALSE for coastal station",quote=FALSE);
-		stop();
-	}
+	Gsc <- 0.0820;					# solar constant = 0.0820 MJ.m^(-2).min^(-1)
+	phi <- pi*staLat/180;				# latitude [rad] (N.B. South lat shouls be negative)
+	J <- julDay;					# julian day of the year
 
-	for (line in 1:dim(data$year)){
-		Gsc <- 0.0820;					# solar constant = 0.0820 MJ.m^(-2).min^(-1)
-		phi <- pi*station$lat/180;			# latitude [rad] (N.B. South lat shouls be negative)
-		J <- data$julDay[line];				# julian day of the year
+	delta <- 0.409*sin((2*pi*J/365)-1.39);		# solar decimation [rad]
+	Dr <- 1+0.033*cos(2*pi*J/365);			# inverse relative distance Earth-Sun
+		
+	Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle [rad]
+		
+	# Extraterrestrial radiation for daily periods [MJ.m^(-2).day^(-1)]
+	Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*cos(delta)*sin(Ws));
+		
+	Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
+	# estimate of the atmospheric transmissivity
+	Tt <- Krs *(1+2.7*10^(-5)*staAlt)*sqrt(tmx-tmn);
+		
+	# Solar radiation at earth's surface [MJ.m^(-2).day^(-1)]
+	Rs <- Ra*Tt;
 
-		delta <- 0.409*sin((2*pi*J/365)-1.39);		# solar decimation [rad]
-		Dr <- 1+0.033*cos(2*pi*J/365);			# inverse relative distance Earth-Sun
-		
-		Ws <- acos(-tan(phi)*tan(delta)); 		# sunset hour angle [rad]
-		
-		# Extraterrestrial radiation for daily periods [MJ.m^(-2).day^(-1)]
-		Ra <- (24*60/pi)*Gsc*Dr*(Ws*sin(phi)*sin(delta)+cos(phi)*cos(delta)*sin(Ws));
-		
-		Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
-		# estimate of the atmospheric transmissivity
-		Tt <- Krs *(1+2.7*10^(-5)*station$alt)*sqrt(data$tmx[line]-data$tmn[line]);
-		
-		# Solar radiation at earth's surface [MJ.m^(-2).day^(-1)]
-		Rs <- Ra*Tt;
-
-		if(line==1){
-			sRad <- array(Rs,dim=1);
-			eRad <- array(Ra,dim=1);
-			aTra <- array(Tt,dim=1);
-		}else{
-			sRad <- array(c(sRad,Rs),dim=dim(sRad)+1);
-			eRad <- array(c(eRad,Ra),dim=dim(eRad)+1);
-			aTra <- array(c(aTra,Tt),dim=dim(aTra)+1);
-		}
-	}
-
-	data <- list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=sRad,"eRad"=eRad,"aTra"=aTra);
-return(data);
+return(list("solarRad"=Rs,"extraRad"=Ra,"atmosTra"=Tt));
 }
 
 ##
@@ -124,130 +106,75 @@ return(data);
  # }
  # good summary in here: http://www.apesimulator.it/help/models/evapotranspiration/
  ###############################################################################
-compute_ETo <- function(data,fileHead,inland=NULL,arid=NULL)
-{	station <- fileHead$station;
+compute_ETo_1Day <- function(tmx,tmn,staAlt,sRad,eRad,arid)
+{
+	# calculation of psychometric constant
+	Tmean <- (tmx+tmn)/2;
+	Po <- 101.3; alto <- 0; g <- 9.807; R <- 287; a1 <- 0.0065;
+	Tko <- 273.15+Tmean;
+	P <- Po*((Tko-a1*(staAlt-alto))/Tko)^(g/(a1*R));		# atmospheric pressure
+	Cp <- 0.001013;							# specific heat at constant pressure, 1.013.10^(-3) [MJ.kg^(-1).°C^(-1)]
+	epsilon <- 0.622;						# ratio molecular weight of water vapour/dry air = 0.622
+	lambda <- 2.501-(0.002361*Tmean);				# latent heat of vaporization [MJ.kg^(-1)]
+	psychCon <- Cp*P/(epsilon*lambda);				# psychrometric constant [kPa.°C^(-1)]
 
-	# compute Rs, Ra, Tt
-	data <- compute_radn(data,station,inland);
+	# calculation of Slope of saturation vapour pressure curve
+	Tdew <- (tmn*0.52) + (0.6*tmx) - (0.009*(tmx^2)) - 2;		# see {delobel_review_2009}
+	eTmin <- 0.6108*exp(17.27*tmn/(tmn+237.3));			# min saturation vapour pressure [kPa]
+	eTmax <- 0.6108*exp(17.27*tmx/(tmx+237.3));			# max saturation vapour pressure [kPa]
+	ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));			# actual vapour pressure [kPa]
+	eTmean <- es <- (eTmax+eTmin)/2;				# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
+	slopeVap <- 2049*((eTmin/((tmn+237.3)^2))+(eTmax/((tmx+237.3)^2)));	# slope vapour pressure curve at air temperature T [kPa.°C^(-1)] (to be favoured according to {delobel_review_2009}), otherwise: slopeVap <- 4098*eTmean/((Tmean+237.3)^2);	# In the FAO Penman-Monteith equation, where ∆ occurs in the numerator and denominator, the slope of the vapour pressure curve is calculated using mean air temperature {richard_g._allen_crop_1998}
 
-	# compute everything else
-	for (line in 1:dim(data$year)){
-		# calculation of psychometric constant
-		Tmean <- (data$tmx[line]+data$tmn[line])/2;
-		Po <- 101.3; alto <- 0; g <- 9.807; R <- 287; a1 <- 0.0065;
-		Tko <- 273.15+Tmean;
-		P <- Po*((Tko-a1*(station$alt-alto))/Tko)^(g/(a1*R));		# atmospheric pressure
-		Cp <- 0.001013;							# specific heat at constant pressure, 1.013.10^(-3) [MJ.kg^(-1).°C^(-1)]
-		epsilon <- 0.622;						# ratio molecular weight of water vapour/dry air = 0.622
-		lambda <- 2.501-(0.002361*Tmean);				# latent heat of vaporization [MJ.kg^(-1)]
-		psychCon <- Cp*P/(epsilon*lambda);				# psychrometric constant [kPa.°C^(-1)]
+	# calculation of net radiation
+	albedo <- 0.23;							# a green vegetation cover has an albedo of about 0.20-0.25
+	Rns <- (1-albedo)*sRad;						# net shortwave radiation [MJ.m^(-2).day^(-1)]
+	SteBolCon <- 4.903*10^(-9);					# Stefan-Boltzmann constant [4.903.10^(-9) MJ.K^(-4).m^(-2).day^(-1)]
+	Rso <- (0.75+2*10^(-5)*staAlt)*eRad;				# clear-sky solar radiation [MJ.m^(-2).day^(-1)]
+	Rnl_1 <- SteBolCon*((tmx+273.15)^4+(tmn+273.15)^4)/2;
+	Rnl_2 <- 0.34 - 0.14*sqrt(ea);
+	Rnl_3 <- (1.35*ifelse((sRad/Rso)>1,1,sRad/Rso))-0.35;
+	Rnl <- Rnl_1 * Rnl_2 * Rnl_3;					# net longwave radiation [MJ.m^(-2).day^(-1)]
+	Rn <- Rns -Rnl;							# net radiation at the crop surface [MJ.m^(-2).day^(-1)]
 
-		# calculation of Slope of saturation vapour pressure curve
-		Tdew <- (data$tmn[line]*0.52) + (0.6*data$tmx[line]) - (0.009*(data$tmx[line]^2)) - 2;		# see {delobel_review_2009}
-		eTmin <- 0.6108*exp(17.27*data$tmn[line]/(data$tmn[line]+237.3));				# min saturation vapour pressure [kPa]
-		eTmax <- 0.6108*exp(17.27*data$tmx[line]/(data$tmx[line]+237.3));				# max saturation vapour pressure [kPa]
-		ea <- 0.6108*exp(17.27*Tdew/(Tdew+237.3));							# actual vapour pressure [kPa]
-		eTmean <- es <- (eTmax+eTmin)/2;								# mean saturation vapour pressure [kPa] - Using mean air temperature instead of daily minimum and maximum temperatures results in lower estimates for the mean saturation vapour pressure. The corresponding vapour pressure deficit (a parameter expressing the evaporating power of the atmosphere) will also be smaller and the result will be some underestimation of the reference crop evapotranspiration. Therefore, the mean saturation vapour pressure should be calculated as the mean between the saturation vapour pressure at both the daily maximum and minimum air temperature.
-#		slopeVap <- 4098*eTmean/((Tmean+237.3)^2);							# slope vapour pressure curve at air temperature T [kPa.°C^(-1)] - In the FAO Penman-Monteith equation, where ∆ occurs in the numerator and denominator, the slope of the vapour pressure curve is calculated using mean air temperature - according to {richard_g._allen_crop_1998}
-		slopeVap <- 2049*((eTmin/((data$tmn[line]+237.3)^2))+(eTmax/((data$tmx[line]+237.3)^2)));	# to be favoured according to {delobel_review_2009}
+	# Priestley-Taylor coefficient (PTc) and aridity corrections leading to alpha
+	PTc <- 1.26;							# Priestley-Taylor coefficient: Small adjustments may be required to PTc in the range 1.2-1.3, but default is 1.26 as the overall mean
+	# a and c are arrays such that
+	# a[1] and c[1] are the set for (al)most humid conditions,
+	# a[5] and c[5] are the set for (al)most arid conditions,
+	# a[3] and c[3] are the set for default conditions.
+	a <- array(c(0,0.0009,0.0041,0.0184,0.1),dim=5);		# a is ranging from 0 (humid) to 0.1 (arid)
+	c <- array(c(0.34,0.39,0.44,0.49,0.54),dim=5);			# c typically ranges between 0.45 and 0.50 from humid to arid
+	k <- 0;								# k=0 for daily computations
+#	Tc <- 2.24+0.49*(tmx+tmn);					# see {f._castellv_methods_1997}
+#	eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
+#	VPDmax_1 <- eTmax - ea;						# see {f._castellv_methods_1997}
+	VPDmax_fin <- (eTmax-eTmin)/(1-a[arid]*(eTmax-eTmin));
+#	VPD_1 <- es-ea;
+#	VPD_2 <- eTc - eTmin;						# see {f._castellv_methods_1997}
+	VPD_fin <- c[arid]*VPDmax_fin+k;
+#	alpha_1 <- PTc;							# see {c._h._b._priestley_assessment_1972}
+#	alpha_2 <- (1+psychCon/slopeVap)/(1+0.6);			# see {c._h._b._priestley_assessment_1972}
+	alpha_fin <- 1+(PTc-1)*1*VPD_fin;				# see {j._l._steiner_lysimetric_1991}
 
-		# calculation of net radiation
-		albedo <- 0.23;							# a green vegetation cover has an albedo of about 0.20-0.25
-		Rns <- (1-albedo)*data$sRad[line];				# net shortwave radiation [MJ.m^(-2).day^(-1)]
-		SteBolCon <- 4.903*10^(-9);					# Stefan-Boltzmann constant [4.903.10^(-9) MJ.K^(-4).m^(-2).day^(-1)]
-		Rso <- (0.75+2*10^(-5)*station$alt)*data$eRad[line];		# clear-sky solar radiation [MJ.m^(-2).day^(-1)]
-		Rnl_1 <- SteBolCon*((data$tmx[line]+273.15)^4+(data$tmn[line]+273.15)^4)/2;
-		Rnl_2 <- 0.34 - 0.14*sqrt(ea);
-		Rnl_3 <- (1.35*ifelse((data$sRad[line]/Rso)>1,1,data$sRad[line]/Rso))-0.35;
-		Rnl <- Rnl_1 * Rnl_2 * Rnl_3;					# net longwave radiation [MJ.m^(-2).day^(-1)]
-		Rn <- Rns -Rnl;							# net radiation at the crop surface [MJ.m^(-2).day^(-1)]
+#=> PT	# Priestley-Taylor Potential Evapotranspiration
+	G <- 0;								# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
+	PT <- alpha_fin/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);	# mark's version improved for P, Rnl(_3) and slopeVap
 
-		# Priestley-Taylor coefficient (PTc) and aridity corrections leading to alpha
-		PTc <- 1.26;							# Priestley-Taylor coefficient -  Small adjustments may be required to PTc in the range 1.2-1.3, but default is 1.26 as the overall mean
-		# a and c are arrays such that
-		# a[1] and c[1] are the set for (al)most humid conditions,
-		# a[5] and c[5] are the set for (al)most arid conditions,
-		# a[3] and c[3] are the set for default conditions.
-		a <- array(c(0,0.0009,0.0041,0.0184,0.1),dim=5);		# a is ranging from 0 (humid) to 0.1 (arid)
-		c <- array(c(0.34,0.39,0.44,0.49,0.54),dim=5);			# c typically ranges between 0.45 and 0.50 from humid to arid
-		k <- 0;								# k=0 for daily computations
-#		Tc <- 2.24+0.49*(data$tmx[line]+data$tmn[line]);		# see {f._castellv_methods_1997}
-#		eTc <- 0.6108*exp(17.27*Tc/(Tc+237.3));
-#		VPDmax_1 <- eTmax - ea;						# see {f._castellv_methods_1997}
-		VPDmax_fin <- (eTmax-eTmin)/(1-a[arid]*(eTmax-eTmin));
-#		VPD_1 <- es-ea;
-#		VPD_2 <- eTc - eTmin;						# see {f._castellv_methods_1997}
-		VPD_fin <- c[arid]*VPDmax_fin+k;
-#		alpha_1 <- PTc;							# see {c._h._b._priestley_assessment_1972}
-#		alpha_2 <- (1+psychCon/slopeVap)/(1+0.6);			# see {c._h._b._priestley_assessment_1972}
-		alpha_fin <- 1+(PTc-1)*1*VPD_fin;				# see {j._l._steiner_lysimetric_1991}
+#=> PM	# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
+#	# significant sensitivity to arid/humid condition and vegetation height through windspeed
+#	# this relation has been produced for : sub-humid, low to moderate wind speed, short vegetation
+#	windSpeed <- 2;							# wind speed at 2 m height [m.s^(-1)]  - 2 m/s is used as a temporary estimate - Due to the appearance of windSpeed in both the nominator and denominator of the FAO Penman-Monteith equation, ETo is not highly sensitive to normal ranges of wind speed - N.B. taller is the ground vegetation considered, greater is the sensitivity
+#	PM <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_x/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
 
-## => PT	# Priestley-Taylor Potential Evapotranspiration
-		G <- 0;								# soil heat flux density [MJ.m^(-2).day^(-1)] - As the magnitude of the day is relatively small, it may be ignored
-		PT <- alpha_fin/lambda*slopeVap*(Rn-G)/(slopeVap+psychCon);	# mark's version improved for P, Rnl(_3) and slopeVap
-
-## => PM	# FAO Penman-Monteith equation for reference evapotranspiration [mm.day^(-1)]
-#		# significant sensitivity to arid/humid condition and vegetation height through windspeed
-#		# this relation has been produced for : sub-humid, low to moderate wind speed, short vegetation
-#		windSpeed <- 2;	# wind speed at 2 m height [m.s^(-1)]  - 2 m/s is used as a temporary estimate - Due to the appearance of windSpeed in both the nominator and denominator of the FAO Penman-Monteith equation, ETo is not highly sensitive to normal ranges of wind speed - N.B. taller is the ground vegetation considered, greater is the sensitivity
-#		PM <- (slopeVap*(Rn-G)/lambda+(900*psychCon*windSpeed*VPD_x/(Tmean+273)))/(slopeVap+psychCon*(1+0.34*windSpeed));		
-
-## => HS	# Hargreaves and Samani
-#		a <- 0; b <- 1;		# unadjusted version
-#		HS <- a+b*0.0023/lambda*(((data$tmx[line]+data$tmn[line])/2)+17.8)*sqrt(data$tmx[line]-data$tmn[line])*data$eRad[line];
-
-## => ma	mark original version
-#		mark <- compute_mark(data$tmn[line],data$tmx[line],station$lat,station$alt,data$julDay[line]);
+#=> HS	# Hargreaves and Samani
+#	a <- 0; b <- 1;							# unadjusted version
+#	HS <- a+b*0.0023/lambda*(((tmx+tmn)/2)+17.8)*sqrt(tmx-tmn)*eRad;
 
 ## AI requirements -> Relative Humidity (RH)
-		RH <- 100 * ea / eTmean;
+	RH <- 100 * ea / eTmean;
 
-		if(line==1){
-			RHs <- array(RH,dim=1);
-			ETo_PT <- array(PT,dim=1);
-#			ETo_PM <- array(PM,dim=1);
-#			ETo_HS <- array(HS,dim=1);
-#			ETo_ma <- array(mark,dim=1);
-		}else{
-			RHs <- array(c(RHs,RH),dim=dim(RHs)+1);
-			ETo_PT <- array(c(ETo_PT,PT),dim=dim(ETo_PT)+1);
-#			ETo_PM <- array(c(ETo_PM,PM),dim=dim(ETo_PM)+1);
-#			ETo_HS <- array(c(ETo_HS,HS),dim=dim(ETo_HS)+1);
-#			ETo_ma <- array(c(ETo_ma,mark),dim=dim(ETo_ma)+1);
-		}
-	}
-	
-## a and c aridity parameters routine
-	meanRH <- sum(RHs,na.rm=TRUE)/(length(RHs)-length(RHs[is.na(RHs)]));
-#	posteriori_a <- 4.5 * exp(-0.1 * meanRH);
-	posteriori_c <- 0.724 - 0.004 * meanRH;
-	doItAgain <- 0;
-	if(arid>1 && arid <5){
-		if (posteriori_c <= c[arid-1])	doItAgain <- -1;
-		if (posteriori_c >= c[arid+1])	doItAgain <- +1;
-	}
-
-## aridity Aridity Index (AI)
-	# according to the definition provided by the United Nations Convention to Combat Desertification (UNCCD)
-	# AI = ratio of mean annual precipitation to mean annual potential evapotranspiration
-	meanAnnRain <- sum(data$ppt)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
-	meanAnnETo <- sum(ETo_PT)/(as.numeric(format(fileHead$period$end,"%Y"))-as.numeric(format(fileHead$period$start,"%Y")));
-	AI <- meanAnnRain/meanAnnETo;
-	if(is.na(AI)){
-		AI <- "NA";
-	}else{
-		if (0<=AI && AI<0.05)	AI <- "Hyper-Arid";
-		if (0.05<=AI && AI<0.2)	AI <- "Arid";
-		if (0.2<=AI && AI<0.5)	AI <- "Semi-Arid";
-		if (0.5<=AI && AI<0.65)	AI <- "Dry Sub-Humid";
-		if (0.65<=AI)		AI <- "Humid";
-	}
-	data <- list(	"tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"julDay"=data$julDay,"year"=data$year,
-#			"ETo_PT"=ETo_PT,"ETo_PM"=ETo_PM,"ETo_HS"=ETo_HS,"ETo_ma"=ETo_ma,
-			"ETo"=ETo_PT,
-			"AI"=AI, "doItAgain"=doItAgain, "arid"=arid
-		);
-return(data);
+return(list("ETo"=PT,"RelHum"=RH,"cArray"=c));
 }
 
 ##
