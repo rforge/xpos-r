@@ -53,7 +53,7 @@ is.leapYear <- function(year)
 	dayNo <- end-start +1;
 	switch(dayNo-364,
 		leap <- FALSE,
-		leap <- TRUE,
+		leap <- TRUE
 	);
 return(leap);
 }
@@ -61,7 +61,10 @@ return(leap);
 ##
  # TRANSFORM 365 DAYS A YEAR INTO 366
  ###############################################################################
-transform_365into366 <- function(oldYear)
+ # WARNING : if you change the day added
+ # go and check in "removeAddedDays" fct as well
+ ###############################################################################
+transform_365into366 <- function(oldYear,fillIn)
 {
      ## my guess
 	# 365 days is for real years without leap years
@@ -83,7 +86,7 @@ transform_365into366 <- function(oldYear)
 	# 15-02 is new
 	# 01-01 +45 starts the 16-02 
 	newYear <- oldYear[1:44,1:dim(oldYear)[2]];
-	newYear <- rbind(newYear,c(new1,new2,new3));
+	ifelse(fillIn,newYear <- rbind(newYear,c(new1,new2,new3)),newYear <- rbind(newYear,c(NA,NA,NA)));
 	newYear <- rbind(newYear,oldYear[45:dim(oldYear)[1],1:dim(oldYear)[2]]);
 
 return(newYear);
@@ -92,7 +95,7 @@ return(newYear);
 ##
  # TRANSFORM 360 DAYS A YEAR INTO REAL DAYS No
  ###############################################################################
-transform_360intoREAL <- function(oldYear,year)
+transform_360intoREAL <- function(oldYear,year,fillIn)
 {
      ## leap year: add 1 day in the middle of jan, mar, may, jul, sep, nov
      ## non leap year: add 1 day in the middle of mar, may, jul, sep, nov
@@ -108,7 +111,7 @@ transform_360intoREAL <- function(oldYear,year)
 		new3 <- 0;
 
 		newYear <- oldYear[1:d,1:dim(oldYear)[2]];
-		newYear <- rbind(newYear,c(new1,new2,new3));
+		ifelse(fillIn,newYear <- rbind(newYear,c(new1,new2,new3)),newYear <- rbind(newYear,c(NA,NA,NA)));
 		newYear <- rbind(newYear,oldYear[(d+1):dim(oldYear)[1],1:dim(oldYear)[2]]);
 		oldYear <- newYear;
 
@@ -132,7 +135,7 @@ check_dayVSdim <- function(sDate,eDate,linNo)
 ##
  # TRANSFORM DAY No OVER A PERIOD TO REAL _ type 365 days
  ###############################################################################
-transform_type1 <- function(data,head)
+transform_type1 <- function(data,head,fillIn)
 {
 	table <- data$tmn;
 	table <- cbind(table,data$tmx);
@@ -156,8 +159,9 @@ transform_type1 <- function(data,head)
 				table_aft <- NULL;
 			}
 			# transform
-			newSection <- transform_365into366(oldSection);
-			# paste
+			newSection <- transform_365into366(oldSection,fillIn);
+			# paste				if(data$julDay[line]==4*step) removeTheLine();
+
 			table <- table_bef;
 			table <- rbind(table,newSection);
 			table <- rbind(table,table_aft);
@@ -174,7 +178,7 @@ return(data);
 ##
  # TRANSFORM DAY No OVER A PERIOD TO REAL _ type 360 days
  ###############################################################################
-transform_type2 <- function(data,head)
+transform_type2 <- function(data,head,fillIn)
 {
 	table <- data$tmn;
 	table <- cbind(table,data$tmx);
@@ -197,7 +201,7 @@ transform_type2 <- function(data,head)
 			table_aft <- NULL;
 		}
 		# transform
-		newSection <- transform_360intoREAL(oldSection,y);
+		newSection <- transform_360intoREAL(oldSection,y,fillIn);
 		# paste
 		table <- table_bef;
 		table <- rbind(table,newSection);
@@ -208,6 +212,95 @@ transform_type2 <- function(data,head)
 	data$tmn <- as.array(table[,1],dim=dim(table)[1]);
 	data$tmx <- as.array(table[,2],dim=dim(table)[1]);
 	data$ppt <- as.array(table[,3],dim=dim(table)[1]);
+return(data);
+}
+
+##
+ # REMOVE days added earlier for radn and ETo estimation
+ ###############################################################################
+ # julian day is required for radn and ETo computation
+ # I decided to first make real years, compute those and then remove the added days
+ #
+ # looking for NA is not satifying as there might be others or even none of fillIn wasn't specified
+ # depending on type, look for days above 360 or leap year's day=366
+ ###############################################################################
+removeTheLine <- function(data,line)
+{
+	prior <- NULL; post <- NULL;
+
+	att <- 0;
+	while(att < length(data)){
+		att <- att+1;
+		if (is.null(dim(data[[att]])))	next;
+		# cut down
+		if(line>1)
+			prior <- array(data[[att]][1:(line-1)],dim=(line-1));
+		if(line<(dim(data[[att]])-1))
+			post <- array(data[[att]][(line+1):dim(data[[att]])],dim=(dim(data[[att]])-line));
+		
+		# paste
+		if(is.null(prior)){
+			data[[att]] <- array(post,dim=dim(post)); next;
+		}
+		if(is.null(post)){
+			data[[att]] <- array(prior,dim=dim(prior)); next;
+		}
+		data[[att]] <- array(c(prior,post),dim=(dim(prior)+dim(post)));
+	}
+
+	data <- list(	"tmn"=data$tmn,
+			"tmx"=data$tmx,
+			"ppt"=data$ppt,
+			"julDay"=data$julDay,
+			"year"=data$year,
+			"sRad"=data$sRad,
+			"ETo"=data$ETo,
+			"AI"=data$AI,
+			"doItAgain"=data$doItAgain,
+			"arid"=data$arid
+		);
+
+return(data);
+}
+removeAddedDays <- function(data,head)
+{
+	# so far I'm using that only for csag format, which does not include year and julDay
+	# so I do not really care of the consistence of my julian Day...
+	# yet you might!
+	type <- head$period$type+1;
+	line <- 0;
+	while (line < dim(data$year)){
+		line <- line+1;
+		switch(type,
+			{	# 0: real
+			},{	# 1: 365
+				if(is.leapYear(data$year[line]) && data$julDay[line]==45)
+					data<-removeTheLine(data,line);
+			},{	# 2: 360
+##
+## never checked so far
+##				ifelse (is.leapYear(data$year[line]),step<-52,step<-60);
+				if(data$julDay[line]==step) data<-removeTheLine(data,line);
+				if(data$julDay[line]==2*step) data<-removeTheLine(data,line);
+				if(data$julDay[line]==3*step) data<-removeTheLine(data,line);
+				if(data$julDay[line]==4*step) data<-removeTheLine(data,line);
+				if(data$julDay[line]==5*step) data<-removeTheLine(data,line);
+				if(is.leapYear(data$year[line]) && data$julDay[line]==6*step) data<-removeTheLine(data,line);
+			}
+		);
+	}
+	data <- list(	"tmn"=data$tmn,
+			"tmx"=data$tmx,
+			"ppt"=data$ppt,
+			"julDay"=data$julDay,
+			"year"=data$year,
+			"sRad"=data$sRad,
+			"ETo"=data$ETo,
+			"AI"=data$AI,
+			"doItAgain"=data$doItAgain,
+			"arid"=data$arid
+		);
+
 return(data);
 }
 

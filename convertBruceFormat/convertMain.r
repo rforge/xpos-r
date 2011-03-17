@@ -135,6 +135,7 @@ return(GCMs);
  # CONVERSION ROUTINE FOR MULTIPLE GCMs
  ###############################################################################
  # > model
+ #	"br" for bruce format like
  # 	"ap" for APSIM
  #	"aq" for AQUACROP
  #	"all" for both
@@ -145,15 +146,16 @@ return(GCMs);
  # 	init_paths and init_stations anyway,
  #	+ init_GCMs if manyGCMs is TRUE
  ###############################################################################
-convert <- function(model,manyGCMs=FALSE)
+convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 {
 ### crop models
 	if(model=="all") model <- 1;
 	if(model=="ap") model <- 2;
 	if(model=="aq") model <- 3;
+	if(model=="cs") model <- 4;
 	if (!is.numeric(model)){
 		print("### ERROR: unknown target model");
-		print("### targetModel available so far: 'ap' (APSIM), 'aq' (AQUACROP) or 'all' (both)");
+		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'");
 		stop();
 	}
 
@@ -187,12 +189,15 @@ convert <- function(model,manyGCMs=FALSE)
 					print(paste(" ---------->  station: ",stations[[s]]$temp,sep=""),quote=FALSE);
 					switch(model,
 						{	# all
-							convertOne("ap",pathToStation,FALSE);
-							convertOne("aq",pathToStation,FALSE);
+							convertOne("ap",pathToStation,seeSteps,fillIn);
+							convertOne("aq",pathToStation,seeSteps,fillIn);
+							convertOne("cs",pathToStation,seeSteps,fillIn);
 						},{	# apsim only
-							convertOne("ap",pathToStation,FALSE);
+							convertOne("ap",pathToStation,seeSteps,fillIn);
 						},{	# aquacrop only
-							convertOne("aq",pathToStation,FALSE);
+							convertOne("aq",pathToStation,seeSteps,fillIn);
+						},{	# csag like only
+							convertOne("cs",pathToStation,seeSteps,fillIn);
 						}
 					);
 				}
@@ -220,12 +225,15 @@ convert <- function(model,manyGCMs=FALSE)
 			print(paste(" ---------->  station: ",stations[[s]]$temp,sep=""),quote=FALSE);
 			switch(model,
 				{	# all
-					convertOne("ap",pathToStation,FALSE);
-					convertOne("aq",pathToStation,FALSE);
+					convertOne("ap",pathToStation,seeSteps,fillIn);
+					convertOne("aq",pathToStation,seeSteps,fillIn);
+					convertOne("cs",pathToStation,seeSteps,fillIn);
 				},{	# apsim only
-					convertOne("ap",pathToStation,FALSE);
+					convertOne("ap",pathToStation,seeSteps,fillIn);
 				},{	# aquacrop only
-					convertOne("aq",pathToStation,FALSE);
+					convertOne("aq",pathToStation,seeSteps,fillIn);
+				},{	# csag like only
+					convertOne("cs",pathToStation,seeSteps,fillIn);
 				}
 			);
 		}
@@ -239,12 +247,12 @@ print(" ... process completed ...");
  # is the function to be called for any conversion
  # leave pathToStation NULL for one station
  # ##############################################################################
-convertOne <- function(targetModel,pathToStation=NULL,seeSteps=FALSE)
+convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 {
 ### sources
 	source("checkFunctions.r");
 	source("bruceFormat.r");
-	source("convertTMP.r");
+	source("metTransformations.r");
 	source("agriParameters.r");
 	source("agriParameters_loops.r");
 
@@ -256,9 +264,10 @@ pathToStation$arid
 ### target models
 	if(targetModel=="ap") targetModel <- 1;
 	if(targetModel=="aq") targetModel <- 2;
+	if(targetModel=="cs") targetModel <- 3;
 	if (!is.numeric(targetModel)){
 		print("### ERROR: unknown target model",quote=FALSE);
-		print("### targetModel available so far: 'APSIM' or 'AQUACROP'",quote=FALSE);
+		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'",quote=FALSE);
 		stop();
 	}
 
@@ -278,9 +287,9 @@ pathToStation$arid
 	switch(fileHead$period$type+1,
 		{	# 0 is for real
 		},{	# 1 is for 365
-			data <- transform_type1(data,fileHead);
+			data <- transform_type1(data,fileHead,fillIn);
 		},{	# 2 is for 360
-			data <- transform_type2(data,fileHead);
+			data <- transform_type2(data,fileHead,fillIn);
 		}
 	);
 
@@ -321,7 +330,30 @@ pathToStation$arid
 			formatToTMPFile(data,fileHead,pathToStation);
 			formatToPLUFile(data,fileHead,pathToStation);
 			formatToEToFile(data,fileHead,pathToStation);
-		}	# AQUACROP #################
+		},	# AQUACROP ####################
+		{	                            ################# CSAG #
+			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
+			if(is.numeric(pathToStation$arid)){
+				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
+			}else{
+				data <- compute_ETo(data,fileHead,pathToStation$inland,3);
+				counter <- 0;					# infinite loop check
+				while(data$doItAgain!=0){
+					counter <- counter+1;
+					if( counter > 2){
+						print("ERROR: infinite loop in convertOne function, my mistake",quote=FALSE);
+						stop();
+					}
+					data <- compute_ETo(data,fileHead,pathToStation$inland,data$arid+data$doItAgain);
+				}
+			}
+			if(seeSteps)	print("... remove added data ...",quote=FALSE);
+			data <- removeAddedDays(data,fileHead);
+			if(seeSteps)	print("... format and write data into .rdn and .eto files ...",quote=FALSE);
+			formatToEToCSAG(data,fileHead,pathToStation);
+			formatToRdnCSAG(data,fileHead,pathToStation);
+			# formatToTmnCSAG(data,fileHead,pathToStation);
+		}	# CSAG #################
 	);
 
 if(seeSteps)	print("... conversion completed ...",quote=FALSE);

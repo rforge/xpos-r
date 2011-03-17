@@ -21,12 +21,13 @@ read_bruceHeadFile <- function(path2file)
 	## second line
 	temp <- scan(path2file,what="character",sep=" ",skip=1,nlines=1,quiet=TRUE);
 	temp <- temp[temp!=""];
-	period <- list("start"=as.Date(temp[1],"%Y%m%d"),"end"=as.Date(temp[2],"%Y%m%d"),"type"=as.numeric(temp[3]));
+	ss <- strsplit(temp,"");
+	period <- list("start"=as.Date(temp[1],"%Y%m%d"),"end"=as.Date(temp[2],"%Y%m%d"),"type"=as.numeric(temp[3]),"startH"=paste(ss[[1]][9],ss[[1]][10],sep=""),"endH"=paste(ss[[2]][9],ss[[2]][10],sep=""));
 	## for info
 	# year	=	format(date,"%Y")
 	# month	=	format(date,"%m")
 	# day	=	format(date,"%d")
-
+	
 	## third line
 	temp <- scan(path2file,what="character",sep=" ",skip=2,nlines=1,quiet=TRUE);
 	temp <- temp[temp!=""];
@@ -85,4 +86,93 @@ importData <- function(path,fileHead)
 return(list("tmn"=tmn,"tmx"=tmx,"ppt"=ppt));
 }
 
+##
+ # FORMAT AND WRITE DATA INTO OUTPUT .eto CSAG LIKE FILE
+ ###############################################################################
+formatToEToCSAG <- function(data,head,path)
+{
+# make one table from all the data
+	table <- array(as.numeric(data$ETo),dim=dim(data$ETo));
+	table <- format(table,digits=1,nsmall=2);
+
+# write it into a .eto file
+	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".eto",sep="");
+	if(!file.exists(path$output)){	# create output dir if does not exists
+		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
+	}else{				# remove output file if does exists
+		if(file.exists(outName))	file.remove(outName);
+	}
+	# head
+	file.copy(	"./csagTemplates/csagTemplate",	outName,overwrite=TRUE);
+	changeVar(	"ID",		head$station$id,outName,outName);
+	changeVar(	"LAT",		format(head$station$lat,nsmall=2),outName,outName);
+	changeVar(	"LON",		format(head$station$lon,nsmall=2),outName,outName);
+	changeVar(	"ALT",		format(head$station$alt,nsmall=2),outName,outName);
+	changeVar(	"START",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
+	changeVar(	"END",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
+	changeVar(	"TYPE",		head$period$type,outName,outName);
+	changeVar(	"DESCRIPTION",	"ETo_ESTIMATION(TMN,TMX,PPT)",outName,outName);
+	# body
+	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+}
+
+##
+ # FORMAT AND WRITE DATA INTO OUTPUT .rdn CSAG LIKE FILE
+ ###############################################################################
+formatToRdnCSAG <- function(data,head,path)
+{
+# make one table from all the data
+	table <- array(as.numeric(data$sRad),dim=dim(data$sRad));
+	table <- format(table,digits=1,nsmall=2);
+
+# write it into a .rdn file
+	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".rdn",sep="");
+	if(!file.exists(path$output)){	# create output dir if does not exists
+		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
+	}else{				# remove output file if does exists
+		if(file.exists(outName))	file.remove(outName);
+	}
+	# head
+	file.copy(	"./csagTemplates/csagTemplate",	outName,overwrite=TRUE);
+	changeVar(	"ID",		head$station$id,outName,outName);
+	changeVar(	"LAT",		format(head$station$lat,nsmall=2),outName,outName);
+	changeVar(	"LON",		format(head$station$lon,nsmall=2),outName,outName);
+	changeVar(	"ALT",		format(head$station$alt,nsmall=2),outName,outName);
+	changeVar(	"START",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
+	changeVar(	"END",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
+	changeVar(	"TYPE",		head$period$type,outName,outName);
+	changeVar(	"DESCRIPTION",	"Rdn_ESTIMATION(TMN,TMX,PPT)",outName,outName);
+	# body
+	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+}
+
+##
+ # FOR CHECK ONLY
+ ###############################################################################
+formatToTmnCSAG <- function(data,head,path)
+{
+# make one table from all the data
+	table <- array(as.numeric(data$tmn),dim=dim(data$tmn));
+	table <- format(table,digits=1,nsmall=2);
+
+# write it into a .eto file
+	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".tmn.check",sep="");
+	if(!file.exists(path$output)){	# create output dir if does not exists
+		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
+	}else{				# remove output file if does exists
+		if(file.exists(outName))	file.remove(outName);
+	}
+	# head
+	file.copy(	"./csagTemplates/csagTemplate",	outName,overwrite=TRUE);
+	changeVar(	"ID",		head$station$id,outName,outName);
+	changeVar(	"LAT",		format(head$station$lat,nsmall=2),outName,outName);
+	changeVar(	"LON",		format(head$station$lon,nsmall=2),outName,outName);
+	changeVar(	"ALT",		format(head$station$alt,nsmall=2),outName,outName);
+	changeVar(	"START",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
+	changeVar(	"END",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
+	changeVar(	"TYPE",		head$period$type,outName,outName);
+	changeVar(	"DESCRIPTION",	"TMN_FOR_CHECK_ONLY",outName,outName);
+	# body
+	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+}
 

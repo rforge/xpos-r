@@ -4,12 +4,17 @@
  # https://r-forge.r-project.org/projects/xpos-r/convertBruceFormat
  ###############################################################################
  #
- # functions required for agricultural/climatological parameters
+ # FOR ONE DAY ONLY, loops are available in agriParameters_loops.r
+ #
+ # 1. SOLAR RADIATION ESTIMATION (+ EXTRATERRESTRIAL RADIATION + ATMOSPHERIC TRANSMISSIVITY)
+ # 2. ETo ESTIMATION (+ RELATIVE HUMIDITY)
+ # supp. RADIATION AND ETo ESTIMATION original mark's code 
  #
  ###############################################################################
 
 ##
  # SOLAR RADIATION ESTIMATION
+ # (+ EXTRATERRESTRIAL RADIATION + ATMOSPHERIC TRANSMISSIVITY)
  ###############################################################################
  # > see for most of the calculations
  # @article{richard_g._allen_crop_1998,
@@ -58,7 +63,7 @@ return(list("solarRad"=Rs,"extraRad"=Ra,"atmosTra"=Tt));
 }
 
 ##
- # ETo ESTIMATION
+ # ETo ESTIMATION (+ RELATIVE HUMIDITY)
  ###############################################################################
  # > see for most of the calculations
  # @article{richard_g._allen_crop_1998,
