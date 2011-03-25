@@ -49,6 +49,8 @@ return(list("input"=input,"output"=output,"folder"=folder));
  ###############################################################################
  # temp and prec names are separated because they are different in some cases
  ###############################################################################
+ # CAN USE list.files(".") TO LOAD THE FILE NAMES ...
+ ###############################################################################
 init_stations <- function()
 {
 stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
