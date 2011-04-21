@@ -14,7 +14,7 @@
  # annual amplitude in mean monthly temperature (AMP)
  ###############################################################################
  # > ref
- # http://www.apsim.info/apsim/Products/tav_amp.pdf
+ # http://www.apsim.info/Wiki/public/Upload/OtherProducts/tav_amp.pdf
  # results confirmed in face of the tav_amp.exe dos application
  ###############################################################################
 compute_tavNamp <- function(data)
