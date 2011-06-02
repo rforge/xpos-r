@@ -60,10 +60,13 @@ if(mod==1 || mod==2 || mod==3 || mod==4){
 		},{	criS <- matrix(c(0,4,0,4),2);		# Deb functions 4
 	});
 }
-if(mod==10){
-	# APSIM
-	# GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
-	source("../apsimPlugIn/apsimInterface.r");
+if(mod>=10){
+	if(mod==10){# APSIM for Katherine case study, GO AND MODIFY apsimInKatherine.r TO ADAPT AT WILL
+		source("../apsimPlugIn/apsimInKatherine.r");
+	}
+	if(mod==11){# APSIM (somewhere else so far), GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
+		source("../apsimPlugIn/apsimInterface.r");
+	}
 	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
 	decS <- apsimSpec$decS;
