@@ -439,6 +439,8 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
+ # all param from best[Base-2050-2070-etc].rData
+ ###############################################################################
 showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
 	coloredPercentile<-3;
@@ -467,7 +469,9 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
 		par(mfg=screen);
-		par(mar=c(4,2,1,0));
+		if(screen[2]==1){	par(mar=c(3,3,1,0));
+		}else{	par(mar=c(3,2,1,0));
+		}
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
 			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -476,8 +480,16 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
 			pty="s"
 		);
-		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.7);
-		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.7);
+#specific
+		title(  main=NULL,line=2,
+			if(screen[1]==2) {xlab="peanut irrigation (mm)"},
+			ylab="N fertilisation (kg/ha)"
+		);
+		mtext(	paste(layer-(decS[3,varH]/2),"...maize irr.(mm)...",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.75,font=2);
+#generic
+#		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.7);
+#		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.7);
+
 		for (r in 1:besList$itemNo){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
 				## all efficient decisions
@@ -530,15 +542,26 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 #		if(all(screen==c(linNo,colNo))){
 #			legend("bottomleft",
 		if(all(screen==c(1,1))){
-			legend("topleft",
-				legend=c(	"all efficient decision areas",
-						paste("best crit.1 achieved <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)),sep=""),
-						paste("best crit.2 achieved <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)),sep=""),
-						paste("best crit.3 achieved <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile)),sep=""),
-						paste("reach an optimal outcome",sep="")),
-				fill=c("gray", "darkblue", "darkgreen", "purple", "red"),
+			legend(-3,312,
+				legend=c(	"all efficient decision areas"),
+				fill=c("gray"),
+				border=c(NA),
 				bty="n", cex=0.9
-				)       
+				);
+			legend(-7,285,
+				legend=c(	"overwritten by those that",
+						"lead to at least one:"),
+				bty="n", cex=0.9
+				);
+			legend(-3,240,
+				legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+						paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+						paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep=""),
+						paste("multiobjective optimal",sep="")),
+				fill=c("darkblue", "darkgreen", "purple", "red"),
+				border=c(NA,NA,NA,NA),
+				bty="n", cex=0.9
+				);
 		}
 		screen<-screen+c(0,1);
 	}
@@ -916,7 +939,9 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
 		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
 		par(mfg=screen);
-		par(mar=c(4,2,1,0));
+		if(screen[2]==1){	par(mar=c(3,3,1,0));
+		}else{	par(mar=c(3,2,1,0));
+		}
 		plot(	seq(criS[1,varX],criS[2,varX],(criS[2,varX]-criS[1,varX])/10),	# non plotted
 			seq(criS[1,varY],criS[2,varY],(criS[2,varY]-criS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -925,8 +950,15 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			ylim=c(criS[1,varY],criS[2,varY]),	# Y limit
 			pty="s"
 		);
-		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.7);
-		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.7);
+#specific
+		title(  main=NULL,line=2,
+			if(screen[1]==2) {xlab="maize yield (kg/ha)"},
+			ylab="N losses (kg/ha)"
+		);
+		mtext(	paste(-(trunc(layerMin/100))/10,"...peanut yield (t/ha)...",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.75,font=2);
+#generic
+#		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.7);
+#		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.7);
 		## all boxes
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
@@ -1026,14 +1058,26 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			}
 		}
 		if(all(screen==c(linNo,colNo))){
-			legend("topleft",
-				legend=c(	"all non dominated groups",
-						paste("best crit.",varX," included <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)),sep=""),
-						paste("best crit.",varY," included <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)),sep=""),
-						paste("include an optimal outcome",sep="")),
-				fill=c("gray", "darkblue", "darkgreen", "red"),
+			legend(-12500,1250,
+				legend=c(	"all non dominated groups"),
+				fill=c("gray"),
+				border=c(NA),
 				bty="n", cex=0.9
-				)       
+				);
+			legend(-12500,1150,
+				legend=c(	"overwritten by those that",
+						"lead to at least one:"),
+				bty="n", cex=0.9
+				);
+			legend(-12500,980,
+				legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+						paste("maize yield >= ",-(ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+						paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep=""),
+						paste("multiobjective optimal",sep="")),
+				fill=c("darkblue", "darkgreen", "purple", "red"),
+				border=c(NA,NA,NA,NA),
+				bty="n", cex=0.9
+				);
 		}
 		screen<-screen+c(0,1);
 	}
