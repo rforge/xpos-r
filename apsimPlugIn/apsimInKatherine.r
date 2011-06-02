@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC2100.sim"
+	simTemplate <- "katherine_wet-peanut_dry-maize_rotation.sim"
 ##################################
 
 	#
