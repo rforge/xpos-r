@@ -286,6 +286,10 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 		)){	response[,col] <- -response[,col];
 	}
 
+	### N losses are the cumul over the years
+	### I want the last year N losse only
+	response[dim(response)[1],9:13] <- response[dim(response)[1],9:13]- response[((dim(response)[1])-1),9:13];
+
 	####	only the last year is extracted
 	criteria_vect <- array(NA,dim=c(1,criNo));
 	for (c in 1:criNo){
