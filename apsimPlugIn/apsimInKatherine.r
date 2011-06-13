@@ -402,18 +402,18 @@ options(warn=0);	# enable warnings
 	}
 
 ### RUN SIM FILES
-print(paste(Sys.time(),"run file",sep=""));
+print(paste(Sys.time(),"run apsim file (mem=",mem.size(),")",sep=""));
 	for (p in 1:perNo){
 		## run simulation
 		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);	# one simulation happens in the R windows
 		#sequencial<-FALSE;							# none happens in the R windows, but get over my time limits regularly
-print(paste("sim starts at : ",Sys.time()," (p=",p,",seq=",sequencial),sep=""));
+print(paste("sim starts at (mem=",mem.size(),"): ",Sys.time()," (p=",p,",seq=",sequencial),sep=""));
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
-print(paste("sim ends at : ",Sys.time()," (p=",p,",seq=",sequencial),sep=""));
+print(paste("sim ends at (mem=",mem.size(),"): ",Sys.time()," (p=",p,",seq=",sequencial),sep=""));
 	}
 	
 ### CHECK ON OUT FILES CREATION
-print(paste(Sys.time(),"   :     wait out files creation",sep=""));# potential infinite loop
+print(paste(Sys.time(),"(mem=",mem.size(),")   :     wait out files creation",sep=""));# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		outFileCreated <-  array(FALSE,dim=perNo);
@@ -434,7 +434,7 @@ print(paste(Sys.time(),"   :     wait out files creation",sep=""));# potential i
 	}
 
 ### CHECK ON OUT FILES DATA STORAGE
-print(paste(Sys.time(),"   :     wait files are not empty",sep=""));	# potential infinite loop
+print(paste(Sys.time(),"(mem=",mem.size(),")   :     wait files are not empty",sep=""));	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
@@ -455,7 +455,7 @@ print(paste(Sys.time(),"   :     wait files are not empty",sep=""));	# potential
 	}
 
 ### CHECK ON OUT FILES COMPLETION
-print(paste(Sys.time(),"   :     wait files completion",sep=""));	# potential infinite loop
+print(paste(Sys.time(),"(mem=",mem.size(),")   :     wait files completion",sep=""));	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
@@ -477,7 +477,7 @@ print(paste(Sys.time(),"   :     wait files completion",sep=""));	# potential in
 	}
 
 ### READ OUTPUTS
-print(paste(Sys.time(),"read files",sep=""));
+print(paste(Sys.time(),"(mem=",mem.size(),")  :  read files",sep=""));
 	for (p in 1:perNo){
 		## read outputs from .out files
 		# take out only the last year results
