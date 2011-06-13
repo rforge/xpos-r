@@ -402,7 +402,7 @@ options(warn=0);	# enable warnings
 	}
 
 ### RUN SIM FILES
-#print("run file");
+print(paste(Sys.time(),"run file",sep=""));
 	for (p in 1:perNo){
 		## run simulation
 		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);	# one simulation happens in the R windows
