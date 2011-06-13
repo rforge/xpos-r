@@ -20,6 +20,7 @@ xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functi
 			simLimit,	## simulation number limit
 			timLimit,	## time limit in sec
 		      seeItThrough=NULL,## for graphics {"g","d"}
+			log=FALSE,  ## if TRUE, then create a log file with basic info
 			seed=NULL)	## if needed (integer)
 {
 
@@ -73,6 +74,23 @@ if(mod>=10){
 	criS <- apsimSpec$criS;
 }
 
+##### log file
+if(log){
+	logFile=paste(apsimSpec$path2out,"seed",seed,"-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".log",sep="");
+	save(.Random.seed,file=paste(apsimSpec$path2out,"randomSeed.RData",sep=""));
+	write(paste("## x-Pos LOG FILE",
+			paste("## starts : ",Sys.time(),sep=""),
+			paste("## mem limit (if windows): ",memory.limit(size=NA),sep=""),
+			paste("## mem size : ",memory.size(),sep=""),
+			paste("## seed : ",seed,sep=""),
+			paste("## .Random.seed saved in: ",apsimSpec$path2out,"randomSeed.RData",sep=""),
+			"##################################################\n",
+			paste("Sys.time()","memory.size()","comment",sep=", "),
+			sep="\n"
+		),file=logFile,append=FALSE
+	);
+}
+
 # decision space validity check
 if (!is.decSpaceValid(decS)) {
 	print(	"##########################################",quote=FALSE);
@@ -115,6 +133,8 @@ if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 	scrList <- init_visualisation(seeItThrough,decS,criS);
 }
 repeat{
+if(log){	write(paste(Sys.time(),memory.size(),"(re-)starts main loop",sep=", "),file=logFile,append=TRUE);}
+
 	##### divide every of the promising regions (i.e. proList)
 #print("   divide");
 	proList <- divide_List(proList,partNo);
@@ -140,7 +160,7 @@ repeat{
 	}
 
 	##### simulate every of the promising regions (i.e. proList)
-#print("   simulate");
+if(log){	write(paste(Sys.time(),", ",memory.size(),", ","launch simulations (reg=1:",proList$itemNo,",per=",perNo,")",sep=""),file=logFile,append=TRUE);}
 	for (reg in 1:proList$itemNo){
 print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
@@ -149,6 +169,8 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		proList$regEva[[reg]] <- temp$eva;
 		simNo <- simNo + temp$simNo;
 	}
+if(log){	write(paste(Sys.time(),", ",memory.size(),", ","simulations completed (reg=1:",proList$itemNo,",per=",perNo,")",sep=""),file=logFile,append=TRUE);}
+
 
 	##### MULTICRITERIA
 	##### keep only the best decisions
@@ -180,6 +202,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
+if(log){	write(paste(Sys.time(),memory.size(),"update lists (pen,unb,pro)",sep=", "),file=logFile,append=TRUE);}
 	##### update lists
 #print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
@@ -191,6 +214,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 	save(decS,unbList,penList,proList,file=paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 
 #browser();
+if(log){	write(paste(Sys.time(),memory.size(),"check stopping criteria",sep=", "),file=logFile,append=TRUE);}
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
 	 	|| simNo>=simLimit	# simulation number limit
@@ -230,6 +254,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 }
 ##### DEBUGGING OBSERVATIONS ########################################
 ##### EXIT ##########################################################
+if(log){	write(paste(Sys.time(),memory.size(),"exit main loop",sep=", "),file=logFile,append=TRUE);}
 print("   optimisation is done - final update in process");
 
 ##### update unbreakable, then unb + last pending list evaluations
@@ -298,4 +323,6 @@ print(paste("# have been stored in here :",sep=""),quote=FALSE);
 print(paste("# ",outFile,sep=""),quote=FALSE);
 #print(paste("# use the fct ShowListInDecSpace to visualise those lists",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
+
+if(log){	write(paste(Sys.time(),memory.size(),"process complete",sep=", "),file=logFile,append=TRUE);}
 }
