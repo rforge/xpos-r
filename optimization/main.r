@@ -81,11 +81,10 @@ if(log){
 	write(paste("## x-Pos LOG FILE",
 			paste("## starts : ",Sys.time(),sep=""),
 			paste("## mem limit (if windows): ",memory.limit(size=NA),sep=""),
-			paste("## mem size : ",memory.size(),sep=""),
 			paste("## seed : ",seed,sep=""),
 			paste("## .Random.seed saved in: ",apsimSpec$path2out,"randomSeed.RData",sep=""),
 			"##################################################\n",
-			paste("Sys.time()","memory.size()","comment",sep=", "),
+			paste("Sys.time()","memory.size()","simulation no","comment",sep=", "),
 			sep="\n"
 		),file=logFile,append=FALSE
 	);
@@ -133,7 +132,7 @@ if (!is.null(seeItThrough) && (varNo==2 || criNo==2)){
 	scrList <- init_visualisation(seeItThrough,decS,criS);
 }
 repeat{
-if(log){	write(paste(Sys.time(),memory.size(),"(re-)starts main loop",sep=", "),file=logFile,append=TRUE);}
+if(log){	write(paste(Sys.time(),memory.size(),simNo,"(re-)starts main loop",sep=", "),file=logFile,append=TRUE);}
 
 	##### divide every of the promising regions (i.e. proList)
 #print("   divide");
@@ -202,7 +201,7 @@ if(log){	write(paste(Sys.time(),", ",memory.size(),", ","simulations completed (
 		penList <- temp$pen;
 	} # has to be after evaluation and before updatelists
 
-if(log){	write(paste(Sys.time(),memory.size(),"update lists (pen,unb,pro)",sep=", "),file=logFile,append=TRUE);}
+if(log){	write(paste(Sys.time(),memory.size(),simNo,"update lists (pen,unb,pro)",sep=", "),file=logFile,append=TRUE);}
 	##### update lists
 #print("   update");
 	temp <- mergeBreakable(penList,unbList,proList,varNo);
@@ -214,7 +213,7 @@ if(log){	write(paste(Sys.time(),memory.size(),"update lists (pen,unb,pro)",sep="
 	save(decS,unbList,penList,proList,file=paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 
 #browser();
-if(log){	write(paste(Sys.time(),memory.size(),"check stopping criteria",sep=", "),file=logFile,append=TRUE);}
+if(log){	write(paste(Sys.time(),memory.size(),simNo,"check stopping criteria",sep=", "),file=logFile,append=TRUE);}
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
 	 	|| simNo>=simLimit	# simulation number limit
@@ -254,7 +253,7 @@ if(log){	write(paste(Sys.time(),memory.size(),"check stopping criteria",sep=", "
 }
 ##### DEBUGGING OBSERVATIONS ########################################
 ##### EXIT ##########################################################
-if(log){	write(paste(Sys.time(),memory.size(),"exit main loop",sep=", "),file=logFile,append=TRUE);}
+if(log){	write(paste(Sys.time(),memory.size(),simNo,"exit main loop",sep=", "),file=logFile,append=TRUE);}
 print("   optimisation is done - final update in process");
 
 ##### update unbreakable, then unb + last pending list evaluations
@@ -324,5 +323,5 @@ print(paste("# ",outFile,sep=""),quote=FALSE);
 #print(paste("# use the fct ShowListInDecSpace to visualise those lists",sep=""),quote=FALSE);
 print(	"##########################################",quote=FALSE);
 
-if(log){	write(paste(Sys.time(),memory.size(),"process complete",sep=", "),file=logFile,append=TRUE);}
+if(log){	write(paste(Sys.time(),memory.size(),simNo,"process complete",sep=", "),file=logFile,append=TRUE);}
 }
