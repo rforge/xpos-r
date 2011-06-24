@@ -402,7 +402,7 @@ options(warn=0);	# enable warnings
 	}
 
 ### RUN SIM FILES
-print(paste(Sys.time()," (mem=",memory.size(),")   :     run apsim file",sep=""));
+#print(paste(Sys.time()," (mem=",memory.size(),")   :     run apsim file",sep=""));
 	for (p in 1:perNo){
 		## run simulation
 		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);	# one simulation happens in the R windows
@@ -411,7 +411,7 @@ print(paste(Sys.time()," (mem=",memory.size(),")   :     run apsim file",sep="")
 	}
 	
 ### CHECK ON OUT FILES CREATION
-print(paste(Sys.time()," (mem=",memory.size(),")   :     wait out files creation",sep=""));# potential infinite loop
+#print(paste(Sys.time()," (mem=",memory.size(),")   :     wait out files creation",sep=""));# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		outFileCreated <-  array(FALSE,dim=perNo);
@@ -432,7 +432,7 @@ print(paste(Sys.time()," (mem=",memory.size(),")   :     wait out files creation
 	}
 
 ### CHECK ON OUT FILES DATA STORAGE
-print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files are not empty",sep=""));	# potential infinite loop
+#print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files are not empty",sep=""));	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		fileEmpty <-  array(TRUE,dim=perNo);
@@ -453,7 +453,7 @@ print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files are not empt
 	}
 
 ### CHECK ON OUT FILES COMPLETION
-print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files completion",sep=""));	# potential infinite loop
+#print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files completion",sep=""));	# potential infinite loop
 	enterLoop <- Sys.time();
 	repeat{
 		fileCompleted <-  array(FALSE,dim=perNo);
@@ -475,7 +475,7 @@ print(paste(Sys.time()," (mem=",memory.size(),")   :     wait files completion",
 	}
 
 ### READ OUTPUTS
-print(paste(Sys.time()," (mem=",memory.size(),")   :     read files",sep=""));
+#print(paste(Sys.time()," (mem=",memory.size(),")   :     read files",sep=""));
 	for (p in 1:perNo){
 		## read outputs from .out files
 		# take out only the last year results
