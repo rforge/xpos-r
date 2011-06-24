@@ -64,9 +64,11 @@ if(mod==1 || mod==2 || mod==3 || mod==4){
 if(mod>=10){
 	if(mod==10){# APSIM for Katherine case study, GO AND MODIFY apsimInKatherine.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInKatherine.r");
+		file.copy("../apsimPlugIn/apsimInKatherine.r",paste(apsimSpec$path2out,"apsimInKatherine-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 	if(mod==11){# APSIM (somewhere else so far), GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInterface.r");
+		file.copy("../apsimPlugIn/apsimInterface.r",paste(apsimSpec$path2out,"apsimInterface-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
@@ -75,9 +77,9 @@ if(mod>=10){
 }
 
 ##### log file
+save(.Random.seed,file=paste(apsimSpec$path2out,"randomSeed-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".RData",sep=""));
 if(log){
 	logFile=paste(apsimSpec$path2out,"seed",seed,"-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".log",sep="");
-	save(.Random.seed,file=paste(apsimSpec$path2out,"randomSeed.RData",sep=""));
 	write(paste("## x-Pos LOG FILE",
 			paste("## starts : ",Sys.time(),sep=""),
 			paste("## mem limit (if windows): ",memory.limit(size=NA),sep=""),
