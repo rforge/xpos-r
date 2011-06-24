@@ -64,16 +64,20 @@ if(mod==1 || mod==2 || mod==3 || mod==4){
 if(mod>=10){
 	if(mod==10){# APSIM for Katherine case study, GO AND MODIFY apsimInKatherine.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInKatherine.r");
-		file.copy("../apsimPlugIn/apsimInKatherine.r",paste(apsimSpec$path2out,"apsimInKatherine-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 	if(mod==11){# APSIM (somewhere else so far), GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInterface.r");
-		file.copy("../apsimPlugIn/apsimInterface.r",paste(apsimSpec$path2out,"apsimInterface-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
 	decS <- apsimSpec$decS;
 	criS <- apsimSpec$criS;
+	if(mod==10){
+		file.copy("../apsimPlugIn/apsimInKatherine.r",paste(apsimSpec$path2out,"apsimInKatherine-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+	}
+	if(mod==11){
+		file.copy("../apsimPlugIn/apsimInterface.r",paste(apsimSpec$path2out,"apsimInterface-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+	}
 }
 
 ##### log file
