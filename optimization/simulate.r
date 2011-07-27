@@ -134,11 +134,11 @@ print(paste("   #           dec ",d," in ",decNo,sep=""));
 				temp <- rbind(temp,tmp);
 			}
 			# APSIM
-			if(mod==10){
+			if(mod==10 || mod==11){
 				# trying to paralelise
 				temp <- simulateApsim(apsimSpec,regEva$decDef[[d]],per,criNo);
 			}	
-		
+	
 			simNo <- simNo + perNo;
 			regEva$decEva[[d]] <- temp;
 		}
