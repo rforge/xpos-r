@@ -171,6 +171,7 @@ print(paste("   ###   reg ",reg," in ",proList$itemNo,sep=""));
 		simTime <- Sys.time();
 		temp <- simulateModel(mod,apsimSpec,proList$regEva[[reg]],perNo,criNo);
 		simulationTime <- simulationTime+difftime(Sys.time(),simTime);
+#print(temp);
 		proList$regEva[[reg]] <- temp$eva;
 		simNo <- simNo + temp$simNo;
 	}
@@ -218,7 +219,6 @@ if(log){	write(paste(Sys.time(),memory.size(),simNo,"update lists (pen,unb,pro)"
 	## partial storage
 	save(decS,unbList,penList,proList,file=paste(apsimSpec$path2out,"partialLists.rData",sep=""));
 
-#browser();
 if(log){	write(paste(Sys.time(),memory.size(),simNo,"check stopping criteria",sep=", "),file=logFile,append=TRUE);}
 	## stopping criteria
 	if(	Sys.time()>=endingTime	# time limit
