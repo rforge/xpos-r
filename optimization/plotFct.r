@@ -439,7 +439,7 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 ## IN DECISION SPACE
  # show a list of regions in the multiple 2D layers in decision space
  ###############################################################################
- # all param from best[Base-2050-2070-etc].rData
+ # all param from listAchieved[].rData and criBest from computeFrontierIn3dCriteriaSpace below
  ###############################################################################
 showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
@@ -662,10 +662,10 @@ computeFrontierIn3dDecisionSpace <- function(besList,dec1,dec2,dec3)
 
 #write.table(front,file="front.txt",row.names=FALSE,col.names=FALSE);
 #write.table(body,file="body.txt",row.names=FALSE,col.names=FALSE);
-result<-list("allBest"=frontiere,"front"=front,"body"=body);
+decBest<-list("allBest"=frontiere,"front"=front,"body"=body);
 #save(result,file="frontiere.Rdata");
 
-return(result);
+return(decBest);
 }
 
 ## IN DECISION SPACE
@@ -1285,8 +1285,8 @@ print("frontXZ");
 		}
 	}
 
-result<-list("all"=frontiere,"front"=front,"frontXY"=frontXY,"frontYZ"=frontYZ,"frontXZ"=frontXZ);
-return(result);
+criBest<-list("all"=frontiere,"front"=front,"frontXY"=frontXY,"frontYZ"=frontYZ,"frontXZ"=frontXZ);
+return(criBest);
 }
 
 ## IN CRITERIA SPACE
