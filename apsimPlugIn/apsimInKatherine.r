@@ -23,7 +23,7 @@ apsim_userSettings <- function()
 	# specify the number of processors you're allowed to use
 	# until now: multi processors are used only for perturbation simulation of the same decision
 ##################################
-	proNo <- 2;
+	proNo <- 4;
 ##################################
 
 	####	PATH of the folder used as writing/readind folder for apsim .sim, .out, .sum working files
@@ -243,42 +243,80 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	temp <- read.table(paste(path2Outputs,fileName,".out",sep=""),skip=4,sep=",");
 	colNo <- dim(temp)[2]+1;
 
-	#### make 2 lines (maize + peanut) one
-	# this is required for rotations (of 2 crops)
-	lin_temp <- 1; lin_res <- 1;	res1 <- temp[lin_temp,];
-	lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
+#	#### make 2 lines (maize + peanut) one
+#	# this is required for rotations (of 2 crops)
+#	lin_temp <- 1; lin_res <- 1;	res1 <- temp[lin_temp,];
+#	lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
+#	response <- array(NA,dim=c(1,colNo));
+#	for(col in 1:(colNo-1)){
+#		if (col==2) next;
+#		if(col==1 || col==3 || col==6){
+#			if(res1[1,col]!=res2[1,col]){
+#				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
+#			}; next;
+#		}; response[1,col] <- res1[1,col]+res2[1,col];
+#	}
+#	response[1,colNo] <- sum(response[1,11:13]);
+#	repeat{
+#		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
+#		lin_res <- lin_res +1;		res1 <- temp[lin_temp,];
+#		lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
+#		res <- array(NA,dim=c(1,colNo));
+#		for(col in 1:(colNo-1)){
+#			if (col==2) next;
+#			if(col==1 || col==3 || col==6){
+#				if(res1[1,col]!=res2[1,col]){
+#					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
+#				}; next;
+#			}; res[1,col] <- res1[1,col]+res2[1,col];
+#		};
+#		res[1,colNo] <- sum(res[1,11:13]);
+#		response <- rbind(response,res);
+#	}
+
 	response <- array(NA,dim=c(1,colNo));
-	for(col in 1:(colNo-1)){
-		if (col==2) next;
-		if(col==1 || col==3 || col==6){
-			if(res1[1,col]!=res2[1,col]){
-				print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
-			}; next;
-		}; response[1,col] <- res1[1,col]+res2[1,col];
+	####	before rotations you need to deal with the last n lines
+	#########################################################
+
+	## by default response is the last line of temp
+	for (col in 1:(colNo-1)){
+		if (col==2 || col==3 || col==6) next; # for numerics only
+		response[1,col] <- temp[dim(temp)[1],col];
 	}
-	response[1,colNo] <- sum(response[1,11:13]);
-	repeat{
-		lin_temp <- lin_temp +1;	if (lin_temp>dim(temp)[1]) break;
-		lin_res <- lin_res +1;		res1 <- temp[lin_temp,];
-		lin_temp <- lin_temp +1;	res2 <- temp[lin_temp,];
-		res <- array(NA,dim=c(1,colNo));
-		for(col in 1:(colNo-1)){
-			if (col==2) next;
-			if(col==1 || col==3 || col==6){
-				if(res1[1,col]!=res2[1,col]){
-					print("apsim_readOutputs incorrect settings (\"apsimInterface.r\")");	stop();
-				}; next;
-			}; res[1,col] <- res1[1,col]+res2[1,col];
-		};
-		res[1,colNo] <- sum(res[1,11:13]);
-		response <- rbind(response,res);
+
+	## those you sum : last + one before last (rotation of 2)
+	for (col in c(
+##################################
+	col_maizeBiomass,
+	col_maizeYield,
+	col_peanutBiomass,
+	col_peanutYield
+##################################
+		)){	response[1,col] <- temp[dim(temp)[1],col] + temp[(dim(temp)[1]-1),col];
+	}
+
+	## those you did not initialise and you want the last season only: last - 2 before last (rotation of 2)
+	for (col in c(
+##################################
+	col_cumDrainage,
+	col_cumRunoff,
+	col_cumDenit,
+	col_cumNLeached,
+	col_cumNRunoff
+##################################
+		)){	response[1,col] <- temp[dim(temp)[1],col] - temp[(dim(temp)[1]-2),col];
+	}
+
+	## N losses are the sum of cumDenit, cumNLeached, cumNRunoff
+	for (col in colNo){
+		response[1,col] <- sum(response[1,col_cumDenit:col_cumNRunoff]);
 	}
 
 	####	is optimization a maximization or minimization?
 	# every value is going to be minimize, so you need to negate the one you want to maximize
 	for (col in c(
 ##################################
-	col_maizeBiomass,	# to maximize
+	col_maizeBiomass,		# to maximize
 	col_maizeYield,		# to maximize
 	col_peanutBiomass,	# to maximize
 	col_peanutYield		# to maximize
@@ -286,14 +324,11 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 		)){	response[,col] <- -response[,col];
 	}
 
-	### N losses are the cumul over the years
-	### I want the last year N losse only
-	response[dim(response)[1],9:13] <- response[dim(response)[1],9:13]- response[((dim(response)[1])-1),9:13];
-
+	#### THEN
 	####	only the last year is extracted
 	criteria_vect <- array(NA,dim=c(1,criNo));
 	for (c in 1:criNo){
-		criteria_vect[1,c] <- response[dim(response)[1],criteria[c]]
+		criteria_vect[1,c] <- response[1,criteria[c]]
 	}
 
 return(criteria_vect);
