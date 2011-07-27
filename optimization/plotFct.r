@@ -920,26 +920,28 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
  ###############################################################################
 showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 {
+
 	graphics.off();
 	linNo<-2;
-	layerNo<-10;
+	layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]); #10
 	colNo<-layerNo/linNo;
 	coloredPercentile<-3;
 #	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
 #	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
 #	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
 	localFront<-criBest$front;
-
-	mfcol=c(linNo,colNo);
 	screen <- c(1,1);
 	if(.Platform$OS.type=="unix"){
 		## LINUX
-		x11(title=" *** xPos-a : criteria space visulalisation (2D) ***",width=2*colNo,height=2.4*linNo);
+		x11(title=" *** xPos-a : criteria space visulalisation (2D) ***",width=2*colNo,height=2.35*linNo);
 	}else{	## WINDOWS
 		windows(title=" *** xPos-a : criteria space visulalisation (2D) ***");
 	}
 	plot.new();
-	par(mfcol=mfcol);
+	par(mfcol=c(linNo,colNo));
+	par(mar=c(2,2,2,0));
+	par(oma=c(2,2,0,0));
+
 	for (layerMin in seq(criS[1,varH],criS[2,varH]-(criS[2,varH]-criS[1,varH])/layerNo,(criS[2,varH]-criS[1,varH])/layerNo)){	
 		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
 		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
@@ -955,15 +957,14 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			ylim=c(criS[1,varY],criS[2,varY]),	# Y limit
 			pty="s"
 		);
-#specific
-		title(  main=NULL,line=2,
-			if(screen[1]==2) {xlab="maize yield (kg/ha)"},
-			ylab="N losses (kg/ha)"
-		);
-		mtext(	paste(-(trunc(layerMin/100))/10,"...peanut yield (t/ha)...",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.75,font=2);
-#generic
-#		mtext(paste("cri ",varX," vs. cri ",varY,sep=""),side=1,line=2,cex=.7);
-#		mtext(paste(round(layerMin),"~ cri ",varH," ~",round(layerMax),sep=""),side=1,line=3,cex=.7);
+
+		## single plot labels
+		if (varX==2 && varY==3 && varH==1){
+			mtext(	paste(-(trunc(layerMin/100))/10," < maize (t/ha) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
+		}else{
+			mtext(	paste(-(trunc(layerMin/100))/10," < dec. ",varH," (1/100) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
+		}
+
 		## all boxes
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
@@ -1085,6 +1086,14 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				);
 		}
 		screen<-screen+c(0,1);
+	}
+	## outer margin label
+	if (varX==2 && varY==3 && varH==1){
+		mtext("N potential losses (kg)", side=2, line=1, font=2, outer=TRUE);
+		mtext("maize potential yield (kg/ha)", side=1, line=1, font=2, outer=TRUE);
+	}else{
+		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
+		mtext(paste("dec.",varY,sep=""), side=1, line=1, font=2, outer=TRUE);
 	}
 }
 

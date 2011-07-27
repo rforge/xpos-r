@@ -278,7 +278,7 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 	# every value is going to be minimize, so you need to negate the one you want to maximize
 	for (col in c(
 ##################################
-	col_maizeBiomass,		# to maximize
+	col_maizeBiomass,	# to maximize
 	col_maizeYield,		# to maximize
 	col_peanutBiomass,	# to maximize
 	col_peanutYield		# to maximize

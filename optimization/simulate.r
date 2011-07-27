@@ -103,7 +103,7 @@ simulateModel <- function(mod,apsimSpec,regEva,perNo,criNo)
 
 	staSimAtDec <- 1;
 	if(!is.null(regEva$decEva)){						# if not the first evaluation of the region
-		while (!is.na(regEva$decEva[[staSimAtDec]][1,1])){	# do not resimulate
+		while (!is.na(regEva$decEva[[staSimAtDec]][1,1])){		# do not resimulate
 			staSimAtDec <- staSimAtDec+1;
 			if(staSimAtDec>decNo){					# break if reach the end
 				break;
