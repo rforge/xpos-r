@@ -451,17 +451,18 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 		linNo<-2;
 		layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]);
 		colNo<-layerNo/linNo;
-		mfcol=c(linNo,colNo);
 		screen <- c(1,1);
 		if(.Platform$OS.type=="unix"){
 			## LINUX
 			# /2 so it can fit into a a4, which is required to copy into a fig format
-			x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=2*colNo,height=2.4*linNo);
+			x11(title=" *** xPos-a : decision space visulalisation (2D) ***",width=2*colNo,height=2.35*linNo);
 		}else{	## WINDOWS
 			windows(title=" *** xPos-a : decision space visulalisation (2D) ***");
 		}
 		plot.new();
-		par(mfcol=mfcol);
+		par(mfcol=c(linNo,colNo));
+		par(mar=c(2,2,2,0));
+		par(oma=c(2,2,0,0));
 	}else{
 		screen <- c(1,1);
 	}
@@ -469,9 +470,6 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 	for (layer in seq(decS[1,varH]+(decS[3,varH]/2),decS[2,varH]-(decS[3,varH]/2),decS[3,varH])){	
 		if(layer==((decS[1,varH]+(decS[2,varH]-decS[1,varH]))/2)+decS[3,varH]/2) screen<-c(2,1);
 		par(mfg=screen);
-		if(screen[2]==1){	par(mar=c(3,3,1,0));
-		}else{	par(mar=c(3,2,1,0));
-		}
 		plot(	seq(decS[1,varX],decS[2,varX],(decS[2,varX]-decS[1,varX])/10),	# non plotted
 			seq(decS[1,varY],decS[2,varY],(decS[2,varY]-decS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
@@ -480,15 +478,13 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 			ylim=c(decS[1,varY],decS[2,varY]),	# Y limit
 			pty="s"
 		);
-#specific
-		title(  main=NULL,line=2,
-			if(screen[1]==2) {xlab="peanut irrigation (mm)"},
-			ylab="N fertilisation (kg/ha)"
-		);
-		mtext(	paste(layer-(decS[3,varH]/2),"...maize irr.(mm)...",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.75,font=2);
-#generic
-#		mtext(paste("dec ",varX," vs. dec ",varY,sep=""),side=1,line=2,cex=.7);
-#		mtext(paste("dec ",varH," = ",layer,sep=""),side=1,line=3,cex=.7);
+
+		## single plot labels
+		if (varX==1 && varY==3 && varH==2){
+			mtext(	paste(layer-(decS[3,varH]/2)," < maize irr. (mm) < ",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.8,font=2);				
+		}else{
+			mtext(	paste(layer-(decS[3,varH]/2)," < dec ",varH," < ",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.8,font=2);				
+		}
 
 		for (r in 1:besList$itemNo){
 			if(besList$item>=r && besList$regEva[[r]]$regDef[1,varH]<=layer && besList$regEva[[r]]$regDef[2,varH]>layer){
@@ -564,6 +560,15 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 				);
 		}
 		screen<-screen+c(0,1);
+	}
+
+	## outer margin label
+	if (varX==1 && varY==3 && varH==2){
+		mtext("maize N fertilisation amount (kg)", side=2, line=1, font=2, outer=TRUE);
+		mtext("peanut irrigation amount (mm)", side=1, line=1, font=2, outer=TRUE);
+	}else{
+		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
+		mtext(paste("dec.",varY,sep=""), side=1, line=1, font=2, outer=TRUE);
 	}
 }
 
