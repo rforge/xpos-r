@@ -81,14 +81,14 @@ if(mod>=10){
 }
 
 ##### log file
-save(.Random.seed,file=paste(apsimSpec$path2out,"randomSeed-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".RData",sep=""));
+save(.Random.seed,file=paste(apsimSpec$path2out,"randomSeed-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".rData",sep=""));
 if(log){
 	logFile=paste(apsimSpec$path2out,"seed",seed,"-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".log",sep="");
 	write(paste("## x-Pos LOG FILE",
 			paste("## starts : ",Sys.time(),sep=""),
 			paste("## mem limit (if windows): ",memory.limit(size=NA),sep=""),
 			paste("## seed : ",seed,sep=""),
-			paste("## .Random.seed saved in: ",apsimSpec$path2out,"randomSeed.RData",sep=""),
+			paste("## .Random.seed saved in: ",apsimSpec$path2out,"randomSeed.rData",sep=""),
 			"##################################################\n",
 			paste("Sys.time()","memory.size()","simulation no","comment",sep=", "),
 			sep="\n"
