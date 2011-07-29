@@ -461,7 +461,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to create output files");
-				print("simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
+				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
 				browser();
 			}
 		}
@@ -483,6 +483,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to write output files");
+				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
 				browser();
 			}
 		}
@@ -505,6 +506,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to fill in output files");
+				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
 				browser();
 			}
 		}
