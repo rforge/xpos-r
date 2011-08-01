@@ -17,6 +17,8 @@
  # http://www.apsim.info/Wiki/public/Upload/OtherProducts/tav_amp.pdf
  # results confirmed in face of the tav_amp.exe dos application
  ###############################################################################
+ # you need daily data for (tmn,tmx,year,julDay), here in the 'data' list
+ ###############################################################################
 compute_tavNamp <- function(data)
 {
 	# daily mean
@@ -67,7 +69,7 @@ formatToMetFile <- function(data,fileHead,path)
 {
 # waiting for a nicer solution within apsim ( at least necessary until apsim 7.0 )
 # make 'year' a fake, and 'realY' the actual year
-# still one issue: 2100 is not a leap year, and any fake within the last century (allowed by APSIM so far) will be leap
+# still one issue: 2100 is not a leap year, and any fake within the last century (with my handmade solution) will be leap
 # solution so far: do not simulate 2100 with apsim !!
 	fake_year <- array(as.numeric(data$year)-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(data$year));
 
