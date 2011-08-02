@@ -350,7 +350,9 @@ evaluate_proList <- function(uneList,evalMeth,criterion=NULL)
 		uneList$regEva[[reg]]$selCri <- array(0,dim=c(2,2));
 	}
 
+print("evaluate list of promising candidates");
 	for (reg in 1:uneList$itemNo){
+print(paste(reg,"/",uneList$itemNo,sep=""));
 		switch(	evalMeth,
 			# mean evaluation
 			{	uneList$regEva[[reg]]$selCri[1,3] <- eval_mean(uneList$regEva[[reg]],criterion);
@@ -416,7 +418,9 @@ evaluate_penPLUSproList <- function(proList,penList,evalMeth)
 		return(list("pro"=proList,"pen"=penList));
 	}
 
+print("evaluate list of pending PLUS promising candidates");
 	for (reg in 1:proList$itemNo){
+print(paste(reg,"/",proList$itemNo,sep=""));
 		switch(	evalMeth,
 			# mean evaluation
 			{	print("should not come through here, look at \"evaluation.r\" function evaluate_penPLUSproList!");
