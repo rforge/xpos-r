@@ -51,7 +51,7 @@ apsim_userSettings <- function()
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "katherine_wet-peanut_dry-maize_rotation.sim"
+	simTemplate <- "katherine_wet-peanut_dry-maize_rotation_CC2070.sim"
 ##################################
 
 	#
@@ -461,7 +461,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to create output files");
-				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
+				print(">>>> TRY: simulate the failing '.sim' manually, then you can resume the optimisation (push 'Enter')");
 				browser();
 			}
 		}
@@ -483,7 +483,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to write output files");
-				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
+				print(">>>> TRY: simulate the failing '.sim' manually, then you can resume the optimisation (push 'Enter')");
 				browser();
 			}
 		}
@@ -506,7 +506,7 @@ options(warn=0);	# enable warnings
 			# because crop might fail to germinate and never creat harvest report
 			if(a<-difftime(Sys.time(),enterLoop,units="mins") > (perNo*period)){
 				print("failing to fill in output files");
-				print(">>>> TRY: simulate the failing ".sim" manually, then you can resume the optimisation (push "Enter")");
+				print(">>>> TRY: simulate the failing '.sim' manually, then you can resume the optimisation (push 'Enter')");
 				browser();
 			}
 		}
