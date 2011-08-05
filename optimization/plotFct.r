@@ -1184,10 +1184,6 @@ showListIn3dCriteriaSpace <- function(proList,penList,unbList,besList,criS,criX,
  # compute a front and body of non dominated groups achieved
  # NB. I did not embeded them into the graphical functions
  #	as the computation might be (IS) quite time consumming
- #
- # !! the process definitely stops unexpectedly, you just need to focus on the
- # processing windows to make it start again
- # and I have no idea why !!
  ###############################################################################
 computeFrontierIn3dCriteriaSpace <- function(besList,cri1,cri2,cri3)
 {
