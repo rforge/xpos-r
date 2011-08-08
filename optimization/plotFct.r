@@ -443,7 +443,7 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
  ###############################################################################
 showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
-	coloredPercentile<-3;
+	coloredPercentile<-2;
 	localFront<-criBest$front;
 
 	if(resetGraphDev){
@@ -545,8 +545,8 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 				bty="n", cex=0.9
 				);
 			legend(-7,285,
-				legend=c(	"overwritten by those that",
-						"lead to at least one:"),
+				legend=c(	"overwritten by those which outcomes",
+						paste("are among the ",coloredPercentile,"* best percentile",sep="")),
 				bty="n", cex=0.9
 				);
 			legend(-3,240,
@@ -925,7 +925,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	linNo<-2;
 	layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]); #10
 	colNo<-layerNo/linNo;
-	coloredPercentile<-3;
+	coloredPercentile<-2;
 #	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
 #	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
 #	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
@@ -960,7 +960,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 
 		## single plot labels
 		if (varX==2 && varY==3 && varH==1){
-			mtext(	paste(-(trunc(layerMin/100))/10," < maize (t/ha) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
+			mtext(	paste(-(trunc(layerMin/100))/10," < peanut (t/ha) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
 		}else{
 			mtext(	paste(-(trunc(layerMin/100))/10," < dec. ",varH," (1/100) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
 		}
@@ -1064,18 +1064,18 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			}
 		}
 		if(all(screen==c(linNo,colNo))){
-			legend(-12500,1250,
+			legend(-13500,350,
 				legend=c(	"all non dominated groups"),
 				fill=c("gray"),
 				border=c(NA),
 				bty="n", cex=0.9
 				);
-			legend(-12500,1150,
-				legend=c(	"overwritten by those that",
-						"lead to at least one:"),
+			legend(-13500,320,
+				legend=c(	"overwritten by those which include",
+						paste("one outcome within the ",coloredPercentile,"* best percentile",sep="")),
 				bty="n", cex=0.9
 				);
-			legend(-12500,980,
+			legend(-13500,270,
 				legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
 						paste("maize yield >= ",-(ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
 						paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep=""),
@@ -1089,8 +1089,8 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	}
 	## outer margin label
 	if (varX==2 && varY==3 && varH==1){
+		mtext("(negated) maize potential yield (kg/ha)", side=1, line=1, font=2, outer=TRUE);
 		mtext("N potential losses (kg)", side=2, line=1, font=2, outer=TRUE);
-		mtext("maize potential yield (kg/ha)", side=1, line=1, font=2, outer=TRUE);
 	}else{
 		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
 		mtext(paste("dec.",varY,sep=""), side=1, line=1, font=2, outer=TRUE);
