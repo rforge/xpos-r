@@ -535,29 +535,40 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 #				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
 			}
 		}
-#		if(all(screen==c(linNo,colNo))){
-#			legend("bottomleft",
-		if(all(screen==c(1,1))){
-			legend(-3,312,
-				legend=c(	"all efficient decision areas"),
-				fill=c("gray"),
-				border=c(NA),
-				bty="n", cex=0.9
-				);
-			legend(-7,285,
-				legend=c(	"overwritten by those which outcomes",
-						paste("are among the ",coloredPercentile,"* best percentile",sep="")),
-				bty="n", cex=0.9
-				);
-			legend(-3,240,
-				legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-						paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-						paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep=""),
-						paste("multiobjective optimal",sep="")),
-				fill=c("darkblue", "darkgreen", "purple", "red"),
-				border=c(NA,NA,NA,NA),
-				bty="n", cex=0.9
-				);
+		if (varX==1 && varY==3 && varH==2){
+	#		if(all(screen==c(linNo,colNo))){
+	#			legend("bottomleft",
+			if(all(screen==c(1,1))){
+				legend(-3,321,
+					legend=c(	"all efficient decision areas"),
+					fill=c("gray"),
+					border=c(NA),
+					bty="n", cex=0.9
+					);
+				legend(-7,297,
+					legend=c(	"including those with one outcome",
+							paste("within the ",coloredPercentile,"* best percentile, i.e.",sep="")),
+					bty="n", cex=0.9
+					);
+				legend(-3,255,
+					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+							paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+							paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep="")),
+					fill=c("darkblue", "darkgreen", "purple"),
+					border=c(NA,NA,NA),
+					bty="n", cex=0.9
+					);
+				legend(-7,182,
+					legend=c(	"and those with one outcome being"),
+					bty="n", cex=0.9
+					);
+				legend(-3,160,
+					legend=c(	paste("multiobjective optimal",sep="")),
+					fill=c("red"),
+					border=c(NA),
+					bty="n", cex=0.9
+					);
+			}
 		}
 		screen<-screen+c(0,1);
 	}
@@ -946,17 +957,25 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
 		layerMax<-layerMin+(criS[2,varH]-criS[1,varH])/layerNo;
 		par(mfg=screen);
-		if(screen[2]==1){	par(mar=c(3,3,1,0));
-		}else{	par(mar=c(3,2,1,0));
-		}
+#		if(screen[2]==1){	par(mar=c(3,3,1,0));
+#		}else{	par(mar=c(3,2,1,0));
+#		}
 		plot(	seq(criS[1,varX],criS[2,varX],(criS[2,varX]-criS[1,varX])/10),	# non plotted
 			seq(criS[1,varY],criS[2,varY],(criS[2,varY]-criS[1,varY])/10),	# non plotted
 			type="n",				# do not plot
 			ann=FALSE,
 			xlim=c(criS[1,varX],criS[2,varX]),	# X limit
 			ylim=c(criS[1,varY],criS[2,varY]),	# Y limit
+			axes=FALSE,
 			pty="s"
 		);
+		if (varX==2 && varY==3 && varH==1){
+			axis(1,label=FALSE);mtext(side=1,line=1,cex=.8, adj=0,"14      10   8    6    4   2    0");
+			axis(2,label=FALSE);mtext(side=2,line=1,cex=.8, adj=0," 0        100       200       300");
+			box();
+		}else{
+		axis(1); axis(2); box();		
+		}
 
 		## single plot labels
 		if (varX==2 && varY==3 && varH==1){
@@ -1063,33 +1082,44 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				}
 			}
 		}
-		if(all(screen==c(linNo,colNo))){
-			legend(-13500,350,
-				legend=c(	"all non dominated groups"),
-				fill=c("gray"),
-				border=c(NA),
-				bty="n", cex=0.9
-				);
-			legend(-13500,320,
-				legend=c(	"overwritten by those which include",
-						paste("one outcome within the ",coloredPercentile,"* best percentile",sep="")),
-				bty="n", cex=0.9
-				);
-			legend(-13500,270,
-				legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-						paste("maize yield >= ",-(ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-						paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep=""),
-						paste("multiobjective optimal",sep="")),
-				fill=c("darkblue", "darkgreen", "purple", "red"),
-				border=c(NA,NA,NA,NA),
-				bty="n", cex=0.9
-				);
+		if (varX==2 && varY==3 && varH==1){
+			if(all(screen==c(linNo,colNo))){
+				legend(-14000,338,
+					legend=c(	"all non dominated groups"),
+					fill=c(NA),
+					border=c("gray"),
+					bty="n", cex=0.9
+					);
+				legend(-15000,310,
+					legend=c(	"including those with one outcome",
+							paste("within the ",coloredPercentile,"* best percentile, i.e.:",sep="")),
+					bty="n", cex=0.9
+					);
+				legend(-14000,265,
+					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,varH]+(criS[2,varH]-criS[1,varH])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+							paste("maize yield >= ",- (ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
+							paste("N losses <= ",ceiling(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)," kg/ha",sep="")),
+					fill=c(NA,NA,NA),
+					border=c("darkblue", "darkgreen", "purple"),
+					bty="n", cex=0.9
+					);
+				legend(-15000,195,
+					legend=c(	"and those with one outcome being"),
+					bty="n", cex=0.9
+					);
+				legend(-14000,173,
+					legend=c(	paste("multiobjective optimal",sep="")),
+					fill=c(NA),
+					border=c("red"),
+					bty="n", cex=0.9
+					);
+			}
 		}
 		screen<-screen+c(0,1);
 	}
 	## outer margin label
 	if (varX==2 && varY==3 && varH==1){
-		mtext("(negated) maize potential yield (kg/ha)", side=1, line=1, font=2, outer=TRUE);
+		mtext("maize potential yield (t/ha)", side=1, line=1, font=2, outer=TRUE);
 		mtext("N potential losses (kg)", side=2, line=1, font=2, outer=TRUE);
 	}else{
 		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
