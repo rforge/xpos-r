@@ -415,13 +415,13 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 
 	watchDecSpace(besList,1,2,boxColor)
 
-	coloredPercentile<-1;
+	coloredPercent<-1;
 	for (r in 1:besList$itemNo){
 		for (d in 1:besList$regEva[[r]]$itemNo){
-			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile))){
+			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent))){
 				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkgreen",NA,NULL);
 			}
-			if(any(besList$regEva[[r]]$decEva[[d]][,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile))){
+			if(any(besList$regEva[[r]]$decEva[[d]][,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent))){
 ## I get confused about the percentile when the value is negated ...
 				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkred",NA,NULL);
 			}
@@ -429,8 +429,8 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 	}
 	legend("topleft",
 		legend=c(	"all efficient decision areas",
-				paste("any yield outcomes <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)),sep=""),
-				paste("any N losses outcomes <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)),sep="")),
+				paste("any yield outcomes <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)),sep=""),
+				paste("any N losses outcomes <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)),sep="")),
 		fill=c("gray", "darkred", "darkgreen"),
 		bty="n", cex=0.9
 	)       
@@ -443,7 +443,7 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
  ###############################################################################
 showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
-	coloredPercentile<-2;
+	coloredPercent<-1.5;
 	localFront<-criBest$front;
 
 	if(resetGraphDev){
@@ -500,21 +500,21 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 ## should remove the for p ???
 ## see above for 2D
 					for (p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
-						if(any(besList$regEva[[r]]$decEva[[d]][p,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))){
+						if(any(besList$regEva[[r]]$decEva[[d]][p,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent))){
 							if(resetGraphDev){
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"purple",NA,NULL);
 							}else{
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"purple","black",NULL);
 							}
 						}
-						if(any(besList$regEva[[r]]$decEva[[d]][p,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile))){
+						if(any(besList$regEva[[r]]$decEva[[d]][p,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent))){
 							if(resetGraphDev){
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkblue",NA,NULL);
 							}else{
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkblue","black",NULL);
 							}
 						}
-						if(any(besList$regEva[[r]]$decEva[[d]][p,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile))){
+						if(any(besList$regEva[[r]]$decEva[[d]][p,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent))){
 							if(resetGraphDev){
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkgreen",NA,NULL);
 							}else{
@@ -547,13 +547,13 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 					);
 				legend(-7,297,
 					legend=c(	"including those with one outcome",
-							paste("within the ",coloredPercentile,"* best percentile, i.e.",sep="")),
+							paste("within the best ",coloredPercent,"%, i.e.",sep="")),
 					bty="n", cex=0.9
 					);
 				legend(-3,255,
-					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-							paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-							paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercentile))," kg/ha",sep="")),
+					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)/100)/10)," t/ha",sep=""),
+							paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)/100)/10)," t/ha",sep=""),
+							paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent))," kg/ha",sep="")),
 					fill=c("darkblue", "darkgreen", "purple"),
 					border=c(NA,NA,NA),
 					bty="n", cex=0.9
@@ -853,7 +853,7 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 	plotAxes(criS,1,2,name1,name2);
 	plotRectangle(criS,1,2,"white","white",title);
 
-	coloredPercentile<-1;
+	coloredPercent<-1;
 	varX<-1;varY<-2;
 
 	## best boxes
@@ -894,7 +894,7 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 					}
 				}
 			}
-			if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)){
+			if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)){
 				rect(	criDef[1,varX],	# x left
 					criDef[1,varY],	# y bottom
 					criDef[2,varX],	# x right
@@ -905,7 +905,7 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 					asp=1
 				);
 			}
-			if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)){
+			if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercent)){
 				rect(	criDef[1,varX],	# x left
 					criDef[1,varY],	# y bottom
 					criDef[2,varX],	# x right
@@ -919,8 +919,8 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 		}
 	}
 	legend("topright",
-		legend=c(	paste("any yield optimum <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)),sep=""),
-				paste("any N losses optimum <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)),sep="")),
+		legend=c(	paste("any yield optimum <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercent)),sep=""),
+				paste("any N losses optimum <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)),sep="")),
 		fill=c("red", "green"),
 		bty="n", cex=0.9
 	) 
@@ -936,7 +936,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	linNo<-2;
 	layerNo<-floor((decS[2,varH]-decS[1,varH])/decS[3,varH]); #10
 	colNo<-layerNo/linNo;
-	coloredPercentile<-2;
+	coloredPercent<-1.5;
 #	if(varX==1&&varY==2)	localFront<-criBest$frontXY;
 #	if(varX==1&&varY==3)	localFront<-criBest$frontXZ;
 #	if(varX==2&&varY==3)	localFront<-criBest$frontYZ;
@@ -1026,25 +1026,36 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 					}
 				}
 				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
-					if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)){
+					if(criDef[1,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)){
 						rect(	criDef[1,varX],	# x left
 							criDef[1,varY],	# y bottom
 							criDef[2,varX],	# x right
 							criDef[2,varY],	# y top
 							density=0,
 							border="darkblue",
-							lwd=0.1,
+							lwd=0.1,lty="51",
 							asp=1
 						);
 					}
-					if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)){
+					if(criDef[1,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="purple",
+							lwd=0.1,lty="43",
+							asp=1
+						);
+					}
+					if(criDef[1,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)){
 						rect(	criDef[1,varX],	# x left
 							criDef[1,varY],	# y bottom
 							criDef[2,varX],	# x right
 							criDef[2,varY],	# y top
 							density=0,
 							border="darkgreen",
-							lwd=0.1,
+							lwd=0.1,lty="51",
 							asp=1
 						);
 					}
@@ -1092,13 +1103,13 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 					);
 				legend(-15000,310,
 					legend=c(	"including those with one outcome",
-							paste("within the ",coloredPercentile,"* best percentile, i.e.:",sep="")),
+							paste("within the best ",coloredPercent,"%, i.e.:",sep="")),
 					bty="n", cex=0.9
 					);
 				legend(-14000,265,
-					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,varH]+(criS[2,varH]-criS[1,varH])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-							paste("maize yield >= ",- (ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercentile)/100)/10)," t/ha",sep=""),
-							paste("N losses <= ",ceiling(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercentile)," kg/ha",sep="")),
+					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)/100)/10)," t/ha",sep=""),
+							paste("maize yield >= ",- (ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)/100)/10)," t/ha",sep=""),
+							paste("N losses <= ",ceiling(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent)," kg/ha",sep="")),
 					fill=c(NA,NA,NA),
 					border=c("darkblue", "darkgreen", "purple"),
 					bty="n", cex=0.9
