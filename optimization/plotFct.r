@@ -481,9 +481,9 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 
 		## single plot labels
 		if (varX==1 && varY==3 && varH==2){
-			mtext(	paste(layer-(decS[3,varH]/2)," < maize irr. (mm) < ",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.8,font=2);				
+			mtext(	paste(layer-(decS[3,varH]/2)," < maize irr. (mm) < ",layer+(decS[3,varH]/2),sep=""), side=3, line=1, padj=1, cex=.8, font=2);				
 		}else{
-			mtext(	paste(layer-(decS[3,varH]/2)," < dec ",varH," < ",layer+(decS[3,varH]/2),sep=""),side=3,line=0,cex=.8,font=2);				
+			mtext(	paste(layer-(decS[3,varH]/2)," < dec ",varH," < ",layer+(decS[3,varH]/2),sep=""), side=3, line=0, cex=.8, font=2);				
 		}
 
 		for (r in 1:besList$itemNo){
@@ -575,8 +575,8 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 
 	## outer margin label
 	if (varX==1 && varY==3 && varH==2){
-		mtext("maize N fertilisation amount (kg)", side=2, line=1, font=2, outer=TRUE);
-		mtext("peanut irrigation amount (mm)", side=1, line=1, font=2, outer=TRUE);
+		mtext("maize N fertilisation amount (kg)", side=2, line=1, padj=.5, font=2, outer=TRUE);
+		mtext("peanut irrigation amount (mm)", side=1, line=0, padj=.5, font=2, outer=TRUE);
 	}else{
 		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
 		mtext(paste("dec.",varY,sep=""), side=1, line=1, font=2, outer=TRUE);
@@ -950,8 +950,8 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	}
 	plot.new();
 	par(mfcol=c(linNo,colNo));
-	par(mar=c(2,2,2,0));
-	par(oma=c(2,2,0,0));
+	par(mar=c(2,0,2,2));
+	par(oma=c(2,0,0,2));
 
 	for (layerMin in seq(criS[1,varH],criS[2,varH]-(criS[2,varH]-criS[1,varH])/layerNo,(criS[2,varH]-criS[1,varH])/layerNo)){	
 		if(floor(layerMin)==floor(criS[1,varH]+colNo*(criS[2,varH]-criS[1,varH])/layerNo)) screen<-c(2,1);
@@ -970,8 +970,8 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			pty="s"
 		);
 		if (varX==2 && varY==3 && varH==1){
-			axis(1,label=FALSE);mtext(side=1,line=1,cex=.8, adj=0,"14      10   8    6    4   2    0");
-			axis(2,label=FALSE);mtext(side=2,line=1,cex=.8, adj=0," 0        100       200       300");
+			axis(1,label=FALSE);mtext(side=1,line=0,cex=.8, adj=0, padj=1, "14      10   8    6    4    2    0");
+			axis(4,label=FALSE);mtext(side=4,line=0,cex=.8, adj=0, padj=1, " 0        100       200       300");
 			box();
 		}else{
 		axis(1); axis(2); box();		
@@ -979,9 +979,9 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 
 		## single plot labels
 		if (varX==2 && varY==3 && varH==1){
-			mtext(	paste(-(trunc(layerMin/100))/10," < peanut (t/ha) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
+			mtext(	paste(-(trunc(layerMin/100))/10," < peanut (t/ha) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=1, padj=1, cex=.8,font=2);				
 		}else{
-			mtext(	paste(-(trunc(layerMin/100))/10," < dec. ",varH," (1/100) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=0,cex=.8,font=2);				
+			mtext(	paste(-(trunc(layerMin/100))/10," < dec. ",varH," (1/100) < ",-(trunc(layerMax/100))/10,sep=""),side=3,line=1, padj=1,cex=.8,font=2);				
 		}
 
 		## all boxes
@@ -1130,11 +1130,11 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	}
 	## outer margin label
 	if (varX==2 && varY==3 && varH==1){
-		mtext("maize potential yield (t/ha)", side=1, line=1, font=2, outer=TRUE);
-		mtext("N potential losses (kg)", side=2, line=1, font=2, outer=TRUE);
+		mtext("maize potential yield (t/ha)", side=1, line=0, padj=.5, font=2, outer=TRUE);
+		mtext("N potential losses (kg)", side=4, line=0, padj=.5, font=2, outer=TRUE);
 	}else{
-		mtext(paste("dec.",varX,sep=""), side=2, line=1, font=2, outer=TRUE);
-		mtext(paste("dec.",varY,sep=""), side=1, line=1, font=2, outer=TRUE);
+		mtext(paste("dec.",varX,sep=""), side=2, line=0, padj=.5, font=2, outer=TRUE);
+		mtext(paste("dec.",varY,sep=""), side=1, line=0, padj=.5, font=2, outer=TRUE);
 	}
 }
 
