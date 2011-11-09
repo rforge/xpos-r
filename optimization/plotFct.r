@@ -415,7 +415,7 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 
 	watchDecSpace(besList,1,2,boxColor)
 
-	coloredPercent<-1;
+	coloredPercent<-0.1;
 	for (r in 1:besList$itemNo){
 		for (d in 1:besList$regEva[[r]]$itemNo){
 			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent))){
@@ -443,7 +443,7 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
  ###############################################################################
 showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgCol,resetGraphDev=TRUE)
 {
-	coloredPercent<-1.5;
+	coloredPercent<-2;
 	localFront<-criBest$front;
 
 	if(resetGraphDev){
@@ -500,6 +500,15 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 ## should remove the for p ???
 ## see above for 2D
 					for (p in 1:dim(besList$regEva[[r]]$decEva[[d]])[1]){
+						if(	any(besList$regEva[[r]]$decEva[[d]][p,1]==localFront[,1]) &&
+							any(besList$regEva[[r]]$decEva[[d]][p,2]==localFront[,2]) &&
+							any(besList$regEva[[r]]$decEva[[d]][p,3]==localFront[,3])){
+							if(resetGraphDev){
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red",NA,NULL);
+							}else{
+								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
+							}
+						}
 						if(any(besList$regEva[[r]]$decEva[[d]][p,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent))){
 							if(resetGraphDev){
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"purple",NA,NULL);
@@ -521,15 +530,6 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"darkgreen","black",NULL);
 							}
 						}
-						if(	any(besList$regEva[[r]]$decEva[[d]][p,1]==localFront[,1]) &&
-							any(besList$regEva[[r]]$decEva[[d]][p,2]==localFront[,2]) &&
-							any(besList$regEva[[r]]$decEva[[d]][p,3]==localFront[,3])){
-							if(resetGraphDev){
-								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red",NA,NULL);
-							}else{
-								plotRectangle(besList$regEva[[r]]$regDef,varX,varY,"red","black",NULL);
-							}
-						}
 					}
 				}
 #				plotDecDef(besList$regEva[[r]]$itemNo,besList$regEva[[r]]$decDef,varX,varY,"+","black");
@@ -540,17 +540,20 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 	#			legend("bottomleft",
 			if(all(screen==c(1,1))){
 				legend(-3,321,
+#				legend(5,321,
 					legend=c(	"all efficient decision areas"),
 					fill=c("gray"),
 					border=c(NA),
 					bty="n", cex=0.9
 					);
 				legend(-7,297,
+#				legend(1,297,
 					legend=c(	"including those with one outcome",
 							paste("within the best ",coloredPercent,"%, i.e.",sep="")),
 					bty="n", cex=0.9
 					);
 				legend(-3,255,
+#				legend(5,255,
 					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)/100)/10)," t/ha",sep=""),
 							paste("maize yield >= ",-(ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)/100)/10)," t/ha",sep=""),
 							paste("N losses <= ",ceiling((criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent))," kg/ha",sep="")),
@@ -559,10 +562,12 @@ showListInDecisionSpace <- function(criBest,criS,besList,decS,varX,varY,varH,bgC
 					bty="n", cex=0.9
 					);
 				legend(-7,182,
-					legend=c(	"and those with one outcome being"),
+#				legend(1,182,
+					legend=c(	"those with one outcome being"),
 					bty="n", cex=0.9
 					);
 				legend(-3,160,
+#				legend(5,160,
 					legend=c(	paste("multiobjective optimal",sep="")),
 					fill=c("red"),
 					border=c(NA),
@@ -970,8 +975,10 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 			pty="s"
 		);
 		if (varX==2 && varY==3 && varH==1){
-			axis(1,label=FALSE);mtext(side=1,line=0,cex=.8, adj=0, padj=1, "14      10   8    6    4    2    0");
-			axis(4,label=FALSE);mtext(side=4,line=0,cex=.8, adj=0, padj=1, " 0        100       200       300");
+#			axis(1,label=FALSE);mtext(side=1,line=0,cex=.8, adj=0, padj=1, "14      10   8    6    4    2    0");
+			axis(1,label=FALSE);mtext(side=1,line=0,cex=.8, adj=0, padj=1, "12  10    8     6    4    2     0");
+#			axis(4,label=FALSE);mtext(side=4,line=0,cex=.8, adj=0, padj=1, " 0        100       200       300");
+			axis(4,label=FALSE);mtext(side=4,line=0,cex=.8, adj=0, padj=1, " 0      100     200      300");
 			box();
 		}else{
 		axis(1); axis(2); box();		
@@ -1012,57 +1019,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				}
 			}
 		}
-		## only the boxes reaching one best
-		for (r in 1:uneList$itemNo){
-			if(uneList$item>=r){
-				# define criteria box bondaries
-				criDef<-array(NA,dim=c(2,3));
-				for(d in 1:uneList$regEva[[r]]$itemNo){
-					for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
-						for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
-							if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
-							if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
-						}
-					}
-				}
-				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
-					if(criDef[1,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)){
-						rect(	criDef[1,varX],	# x left
-							criDef[1,varY],	# y bottom
-							criDef[2,varX],	# x right
-							criDef[2,varY],	# y top
-							density=0,
-							border="darkblue",
-							lwd=0.1,lty="51",
-							asp=1
-						);
-					}
-					if(criDef[1,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent)){
-						rect(	criDef[1,varX],	# x left
-							criDef[1,varY],	# y bottom
-							criDef[2,varX],	# x right
-							criDef[2,varY],	# y top
-							density=0,
-							border="purple",
-							lwd=0.1,lty="43",
-							asp=1
-						);
-					}
-					if(criDef[1,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)){
-						rect(	criDef[1,varX],	# x left
-							criDef[1,varY],	# y bottom
-							criDef[2,varX],	# x right
-							criDef[2,varY],	# y top
-							density=0,
-							border="darkgreen",
-							lwd=0.1,lty="51",
-							asp=1
-						);
-					}
-				}
-			}
-		}
-		## only the boxes reaching one optimal
+## only the boxes reaching one optimal
 		for (r in 1:uneList$itemNo){
 			if(uneList$item>=r){
 				# define criteria box bondaries
@@ -1093,20 +1050,75 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 				}
 			}
 		}
+## only the boxes reaching one best
+		for (r in 1:uneList$itemNo){
+			if(uneList$item>=r){
+				# define criteria box bondaries
+				criDef<-array(NA,dim=c(2,3));
+				for(d in 1:uneList$regEva[[r]]$itemNo){
+					for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
+						for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
+							if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
+							if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
+						}
+					}
+				}
+				if(criDef[1,varH]<layerMax && criDef[2,varH]>=layerMin){
+					if(criDef[1,3]<=(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="purple",
+							lwd=0.1,lty="43",
+							asp=1
+						);
+					}
+					if(criDef[1,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="darkblue",
+							lwd=0.1,lty="51",
+							asp=1
+						);
+					}
+					if(criDef[1,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)){
+						rect(	criDef[1,varX],	# x left
+							criDef[1,varY],	# y bottom
+							criDef[2,varX],	# x right
+							criDef[2,varY],	# y top
+							density=0,
+							border="darkgreen",
+							lwd=0.1,lty="51",
+							asp=1
+						);
+					}
+				}
+			}
+		}
+
+#legend
 		if (varX==2 && varY==3 && varH==1){
 			if(all(screen==c(linNo,colNo))){
-				legend(-14000,338,
+#				legend(-14000,338,
+				legend(-12500,375,
 					legend=c(	"all non dominated groups"),
 					fill=c(NA),
 					border=c("gray"),
 					bty="n", cex=0.9
 					);
-				legend(-15000,310,
+#				legend(-15000,310,
+				legend(-13000,344,
 					legend=c(	"including those with one outcome",
 							paste("within the best ",coloredPercent,"%, i.e.:",sep="")),
 					bty="n", cex=0.9
 					);
-				legend(-14000,265,
+#				legend(-14000,265,
+				legend(-12500,290,
 					legend=c(	paste("peanut yield >= ",-(ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)/100)/10)," t/ha",sep=""),
 							paste("maize yield >= ",- (ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)/100)/10)," t/ha",sep=""),
 							paste("N losses <= ",ceiling(criS[1,3]+(criS[2,3]-criS[1,3])/100*coloredPercent)," kg/ha",sep="")),
@@ -1114,11 +1126,13 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 					border=c("darkblue", "darkgreen", "purple"),
 					bty="n", cex=0.9
 					);
-				legend(-15000,195,
+#				legend(-15000,195,
+				legend(-13000,211,
 					legend=c(	"and those with one outcome being"),
 					bty="n", cex=0.9
 					);
-				legend(-14000,173,
+#				legend(-14000,173,
+				legend(-12500,180,
 					legend=c(	paste("multiobjective optimal",sep="")),
 					fill=c(NA),
 					border=c("red"),
@@ -1131,7 +1145,7 @@ showListInCriteriaSpace <- function(uneList,criBest,criS,varX,varY,varH)
 	## outer margin label
 	if (varX==2 && varY==3 && varH==1){
 		mtext("maize potential yield (t/ha)", side=1, line=0, padj=.5, font=2, outer=TRUE);
-		mtext("N potential losses (kg)", side=4, line=0, padj=.5, font=2, outer=TRUE);
+		mtext("N potential losses (kg/ha)", side=4, line=0, padj=.5, font=2, outer=TRUE);
 	}else{
 		mtext(paste("dec.",varX,sep=""), side=2, line=0, padj=.5, font=2, outer=TRUE);
 		mtext(paste("dec.",varY,sep=""), side=1, line=0, padj=.5, font=2, outer=TRUE);
@@ -1427,7 +1441,7 @@ graphics.off();
 ################################################################################
 
 ## EPS
-copyDev2eps <- function(title,file)
+copyDev2eps <- function(title="title",file)
 {
 	dev.print(device=postscript,title=title,paper="special",horizontal=FALSE,file=file);
 }
