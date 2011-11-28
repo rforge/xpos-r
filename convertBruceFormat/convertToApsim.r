@@ -8,6 +8,7 @@
  #
  ###############################################################################
 
+# NOW IN METTRANSFORMATIONS.R
 ##
  # COMPUTE tav AND amp APSIM CONSTANTS
  # annual average ambient temperature (TAV)
@@ -19,48 +20,48 @@
  ###############################################################################
  # you need daily data for (tmn,tmx,year,julDay), here in the 'data' list
  ###############################################################################
-compute_tavNamp <- function(data)
-{
-	# daily mean
-	dMean <- (data$tmn+data$tmx)/2;
-
-	firstYear <- as.numeric(data$year[1]);
-	yearlyAMP <- array(NA,dim=(as.numeric(data$year[dim(data$year)])-as.numeric(data$year[1])+1));
-	monthlyMean <- array(0,dim=c(12,5));
-	year <- firstYear;
-	for (line in 1:dim(data$year)){
-		# yearly AMP
-		if (data$year[line]!=year){
-			yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
-			year <- as.numeric(data$year[line]);
-			monthlyMean[,3] <- 0;
-			monthlyMean[,4] <- 0;
-		}
-		# monthly mean
-		month <- as.numeric(format(as.Date(data$julDay[line]-1,origin=paste(data$year[line],"-01-01",sep="")),"%m"));
-		monthlyMean[month,1] <- monthlyMean[month,1]+dMean[line];
-		monthlyMean[month,2] <- monthlyMean[month,2]+1;
-		monthlyMean[month,3] <- monthlyMean[month,3]+dMean[line];
-		monthlyMean[month,4] <- monthlyMean[month,4]+1;
-	}
-	
-	# complete
-	yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
-	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2];
-
-	amp <- format(mean(yearlyAMP),digits=3);
-	tav <- format(mean(monthlyMean[,5]),digits=3);
-
-	if(amp!="NA" && (as.numeric(amp)<0 || as.numeric(amp)>50))	{
-		print("# WARNING: amp is not in the APSIM range allowed (0>amp>50)",quote=FALSE);
-	}
-	if(tav!="NA" && (as.numeric(tav)<0 || as.numeric(tav)>50))	{
-		print("# WARNING: tav is not in the APSIM range allowed (0>tav>50)",quote=FALSE);
-	}
-
-	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
-return(data);
-}
+#compute_tavNamp <- function(data)
+#{
+#	# daily mean
+#	dMean <- (data$tmn+data$tmx)/2;
+#
+#	firstYear <- as.numeric(data$year[1]);
+#	yearlyAMP <- array(NA,dim=(as.numeric(data$year[dim(data$year)])-as.numeric(data$year[1])+1));
+#	monthlyMean <- array(0,dim=c(12,5));
+#	year <- firstYear;
+#	for (line in 1:dim(data$year)){
+#		# yearly AMP
+#		if (data$year[line]!=year){
+#			yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
+#			year <- as.numeric(data$year[line]);
+#			monthlyMean[,3] <- 0;
+#			monthlyMean[,4] <- 0;
+#		}
+#		# monthly mean
+#		month <- as.numeric(format(as.Date(data$julDay[line]-1,origin=paste(data$year[line],"-01-01",sep="")),"%m"));
+#		monthlyMean[month,1] <- monthlyMean[month,1]+dMean[line];
+#		monthlyMean[month,2] <- monthlyMean[month,2]+1;
+#		monthlyMean[month,3] <- monthlyMean[month,3]+dMean[line];
+#		monthlyMean[month,4] <- monthlyMean[month,4]+1;
+#	}
+#	
+#	# complete
+#	yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
+#	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2];
+#
+#	amp <- format(mean(yearlyAMP),digits=3);
+#	tav <- format(mean(monthlyMean[,5]),digits=3);
+#
+#	if(amp!="NA" && (as.numeric(amp)<0 || as.numeric(amp)>50))	{
+#		print("# WARNING: amp is not in the APSIM range allowed (0>amp>50)",quote=FALSE);
+#	}
+#	if(tav!="NA" && (as.numeric(tav)<0 || as.numeric(tav)>50))	{
+#		print("# WARNING: tav is not in the APSIM range allowed (0>tav>50)",quote=FALSE);
+#	}
+#
+#	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
+#return(data);
+#}
 
 ##
  # FORMAT AND WRITE DATA INTO OUTPUT .met APSIM FILE

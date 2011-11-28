@@ -30,14 +30,14 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "~/Desktop/Optimisation/TemplatesGCMdata/Downscaled_StephenFarm_2011/cccma_cgcm3_1/";
+	input <- "~/Desktop/DSSAT/FormatTest/cccma_cgcm3_1/";
 
 	# in which folder to write out the data
-	output <- "~/Desktop/Optimisation/TemplatesGCMdata/TmpOutputs/";
+	output <- "~/Desktop/DSSAT/FormatTest/";
 
 	# what are the name of the data folders
-	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
-				"tmx"=	"tmx/",	# folder name for maximal temperatures
+	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
+				"tmx"=	"tmax/",	# folder name for maximal temperatures
 				"ppt"=	"ppt/"		# folder name for precipitation
 			);	
 
@@ -73,8 +73,8 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="XAI-XAI.txt",
 #				"arid"= 'A',
 #				"inLand"=FALSE)
-			list(	"temp"="0041347_A.txt",
-				"prec"="0041347_A.txt",
+			list(	"temp"="0408704_W.txt",
+				"prec"="0408704_W.txt",
 				"arid"= 'A',
 				"inLand"=FALSE)
 		);
@@ -140,6 +140,8 @@ return(GCMs);
  #	"br" for bruce format like
  # 	"ap" for APSIM
  #	"aq" for AQUACROP
+ #	"cs" for CSAG (basically you want to compute ETo)
+ #	"ds" for DSSAT
  #	"all" for both
  # > manyGCMs
  #	FALSE (default) plays only with stations list (defined in init_stations)
@@ -155,9 +157,10 @@ convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 	if(model=="ap") model <- 2;
 	if(model=="aq") model <- 3;
 	if(model=="cs") model <- 4;
+	if(model=="ds") model <- 5;
 	if (!is.numeric(model)){
 		print("### ERROR: unknown target model");
-		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'");
+		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP), 'cs' (CSAG), 'ds' (DSSAT) or 'all'");
 		stop();
 	}
 
@@ -194,12 +197,15 @@ convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 							convertOne("ap",pathToStation,seeSteps,fillIn);
 							convertOne("aq",pathToStation,seeSteps,fillIn);
 							convertOne("cs",pathToStation,seeSteps,fillIn);
+							convertOne("ds",pathToStation,seeSteps,fillIn);
 						},{	# apsim only
 							convertOne("ap",pathToStation,seeSteps,fillIn);
 						},{	# aquacrop only
 							convertOne("aq",pathToStation,seeSteps,fillIn);
 						},{	# csag like only
 							convertOne("cs",pathToStation,seeSteps,fillIn);
+						},{	# dssat only
+							convertOne("ds",pathToStation,seeSteps,fillIn);
 						}
 					);
 				}
@@ -236,6 +242,8 @@ convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 					convertOne("aq",pathToStation,seeSteps,fillIn);
 				},{	# csag like only
 					convertOne("cs",pathToStation,seeSteps,fillIn);
+				},{	# dssat only
+					convertOne("ds",pathToStation,seeSteps,fillIn);
 				}
 			);
 		}
@@ -262,14 +270,16 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 		print("### ERROR: no station specified !!",quote=FALSE);
 		stop();
 	}
-pathToStation$arid
+
+#?? pathToStation$arid
 ### target models
 	if(targetModel=="ap") targetModel <- 1;
 	if(targetModel=="aq") targetModel <- 2;
 	if(targetModel=="cs") targetModel <- 3;
+	if(targetModel=="ds") targetModel <- 4;
 	if (!is.numeric(targetModel)){
 		print("### ERROR: unknown target model",quote=FALSE);
-		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'",quote=FALSE);
+		print("### targetModel available so far: 'ds' (DSSAT), 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'",quote=FALSE);
 		stop();
 	}
 
@@ -300,7 +310,7 @@ pathToStation$arid
 
 ## then starts the crop model related operations
 	switch(targetModel,
-		{	                            #################### APSIM #
+		{	#################### APSIM #
 			source('convertToApsim.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
@@ -309,7 +319,7 @@ pathToStation$arid
 			if(seeSteps)	print("... format and write data into .met file ...",quote=FALSE);
 			formatToMetFile(data,fileHead,pathToStation);
 		},	# APSIM ####################
-		{	                            ################# AQUACROP #
+		{	################# AQUACROP #
 			# aquacrop deals with day, 10-days and monthly records
 			# so far we deal only with day records
 			source('convertToAquacrop.r');
@@ -333,7 +343,7 @@ pathToStation$arid
 			formatToPLUFile(data,fileHead,pathToStation);
 			formatToEToFile(data,fileHead,pathToStation);
 		},	# AQUACROP ####################
-		{	                            ################# CSAG #
+		{	######################## CSAG #
 			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
 			if(is.numeric(pathToStation$arid)){
 				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
@@ -355,7 +365,29 @@ pathToStation$arid
 			formatToEToCSAG(data,fileHead,pathToStation);
 			formatToRdnCSAG(data,fileHead,pathToStation);
 			# formatToTmnCSAG(data,fileHead,pathToStation);
-		}	# CSAG #################
+		},	# CSAG ########################
+		{	####################### DSSAT #
+			source('convertToDssat.r');
+			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
+			if(is.numeric(pathToStation$arid)){
+				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
+			}else{
+				data <- compute_ETo(data,fileHead,pathToStation$inland,3);
+				counter <- 0;					# infinite loop check
+				while(data$doItAgain!=0){
+					counter <- counter+1;
+					if( counter > 2){
+						print("ERROR: infinite loop in convertOne function, my mistake",quote=FALSE);
+						stop();
+					}
+					data <- compute_ETo(data,fileHead,pathToStation$inland,data$arid+data$doItAgain);
+				}
+			}
+			if(seeSteps)	print("... remove added data ...",quote=FALSE);
+			data <- removeAddedDays(data,fileHead);
+			if(seeSteps)	print("... format and write data into .rdn and .eto files ...",quote=FALSE);
+			formatToWTHfile(data,fileHead,pathToStation);
+		}	# DSSAT #########################
 	);
 
 if(seeSteps)	print("... conversion completed ...",quote=FALSE);
