@@ -8,10 +8,9 @@
 * freely available here
 * https://r-forge.r-project.org/projects/xpos-r/
 *
-* Krs in [0.1,1.2], inLand was used for radn computation
+* Krs in [0.1,1.2], inLand was used for SRAD computation
 *
  
-@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT
-  station_id  stat_lat  stat_lon  stat_alt  period_tav   period_amp  ????  ????
+@INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT
+ CSAG  stat_lat   stat_lon  stat_alt  period_tav  period_amp     2    NA
 @DATE  SRAD  TMAX  TMIN  RAIN
-

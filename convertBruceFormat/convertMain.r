@@ -76,7 +76,7 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 			list(	"temp"="0408704_W.txt",
 				"prec"="0408704_W.txt",
 				"arid"= 'A',
-				"inLand"=FALSE)
+				"inLand"=TRUE)
 		);
 
 return(stations);
@@ -368,24 +368,11 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 		},	# CSAG ########################
 		{	####################### DSSAT #
 			source('convertToDssat.r');
-			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
-			if(is.numeric(pathToStation$arid)){
-				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
-			}else{
-				data <- compute_ETo(data,fileHead,pathToStation$inland,3);
-				counter <- 0;					# infinite loop check
-				while(data$doItAgain!=0){
-					counter <- counter+1;
-					if( counter > 2){
-						print("ERROR: infinite loop in convertOne function, my mistake",quote=FALSE);
-						stop();
-					}
-					data <- compute_ETo(data,fileHead,pathToStation$inland,data$arid+data$doItAgain);
-				}
-			}
-			if(seeSteps)	print("... remove added data ...",quote=FALSE);
-			data <- removeAddedDays(data,fileHead);
-			if(seeSteps)	print("... format and write data into .rdn and .eto files ...",quote=FALSE);
+			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
+			data <- compute_radn(data,fileHead$station,pathToStation$inland);
+			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
+			data <- compute_tavNamp(data);
+			if(seeSteps)	print("... format and write data into .WTH file ...",quote=FALSE);
 			formatToWTHfile(data,fileHead,pathToStation);
 		}	# DSSAT #########################
 	);
