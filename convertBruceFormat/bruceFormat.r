@@ -29,9 +29,8 @@ read_bruceHeadFile <- function(path2file)
 	# day	=	format(date,"%d")
 	
 	## third line
-	temp <- scan(path2file,what="character",sep=" ",skip=2,nlines=1,quiet=TRUE);
-	temp <- temp[temp!=""];
-	comm <- temp[1];
+	temp <- readLines(path2file,n=3);
+	comm <- temp[3];
 
 return(list("station"=station,"period"=period,"comment"=comm));
 }
