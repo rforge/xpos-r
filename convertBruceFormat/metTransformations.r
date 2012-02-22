@@ -21,6 +21,9 @@
  ###############################################################################
 compute_tavNamp <- function(data)
 {
+
+### needs to limit that to COMPLETE years only
+###
 	# daily mean
 	dMean <- (data$tmn+data$tmx)/2;
 
