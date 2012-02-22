@@ -30,10 +30,10 @@
 init_paths <- function()
 {
 	# in which folder to read the data
-	input <- "~/Desktop/DSSAT/FormatTest/cccma_cgcm3_1/";
+	input <- "~/Desktop/Optimisation/Test/MixedSRESb1/";
 
 	# in which folder to write out the data
-	output <- "~/Desktop/DSSAT/FormatTest/";
+	output <- "~//Desktop/Optimisation/Test/OlivierOut/";
 
 	# what are the name of the data folders
 	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
@@ -73,8 +73,8 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="XAI-XAI.txt",
 #				"arid"= 'A',
 #				"inLand"=FALSE)
-			list(	"temp"="0408704_W.txt",
-				"prec"="0408704_W.txt",
+			list(	"temp"="68396.txt",
+				"prec"="68396.txt",
 				"arid"= 'A',
 				"inLand"=TRUE)
 		);
@@ -143,14 +143,14 @@ return(GCMs);
  #	"cs" for CSAG (basically you want to compute ETo)
  #	"ds" for DSSAT
  #	"all" for both
- # > manyGCMs
+ # > initGCMs
  #	FALSE (default) plays only with stations list (defined in init_stations)
  #	TRUE plays also with GCMs list (defined in init_GCMs) 
  # > requires
  # 	init_paths and init_stations anyway,
- #	+ init_GCMs if manyGCMs is TRUE
+ #	+ init_GCMs if initGCMs is TRUE
  ###############################################################################
-convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
+convert <- function(model,initGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 {
 ### crop models
 	if(model=="all") model <- 1;
@@ -166,11 +166,11 @@ convert <- function(model,manyGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 
 ### initialisation
 	path <- init_paths();
-	if (manyGCMs)	gcms <- init_GCMs();
+	if (initGCMs)	gcms <- init_GCMs();
 	stations <- init_stations();
 
 ### multiple GCMs routine
-	if(manyGCMs){
+	if(initGCMs){
 		for (g in 1:length(gcms)){
 			for (p in 1:length(gcms[[g]])){
 				print(paste(" > GCM : ",gcms[[g]][p],sep=""),quote=FALSE);
