@@ -6,7 +6,7 @@
  ####################################################################
 
 #xPos <- function(
-#			mod,			## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsimInKatherine{10}, apsim{11}
+#			mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}, apsimInKatherine{11}, apsimInUFS{12}
 #			partNo,		## No of divided parts per region {2,3}
 #			decNo,		## decision number per region {0:automatic, 1...n }
 #			perNo,		## perturbation param number (no of random occurences to test uncertainty)
@@ -19,8 +19,8 @@
 source('main.r');
 ## CALL EXAMPLE
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
-xPos(10,2,0,8,1000000,1000000,log=FALSE,seed=NULL)
-#xPos(10,2,2,4,100,300,log=FALSE,seed=NULL)
+xPos(11,2,0,8,1000000,1000000,log=FALSE,seed=NULL)
+#xPos(11,2,2,4,100,300,log=FALSE,seed=NULL)
 # 604800 secs = 1 week
 # 302400 secs = 3.5 days
 # 216000 secs = 2.5 days

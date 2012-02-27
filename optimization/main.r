@@ -62,21 +62,28 @@ if(mod==1 || mod==2 || mod==3 || mod==4){
 	});
 }
 if(mod>=10){
-	if(mod==10){# APSIM for Katherine case study, GO AND MODIFY apsimInKatherine.r TO ADAPT AT WILL
-		source("../apsimPlugIn/apsimInKatherine.r");
-	}
-	if(mod==11){# APSIM (somewhere else so far), GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
+	if(mod==10){# APSIM (somewhere else so far), GO AND MODIFY apsimInterface.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInterface.r");
 	}
+	if(mod==11){# APSIM for Katherine case study, GO AND MODIFY apsimInKatherine.r TO ADAPT AT WILL
+		source("../apsimPlugIn/apsimInKatherine.r");
+	}
+	if(mod==12){# APSIM for START-UFS case study, GO AND MODIFY apsimInUFS.r TO ADAPT AT WILL
+		source("../apsimPlugIn/apsimInUFS.r");
+	}
+
 	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
 	decS <- apsimSpec$decS;
 	criS <- apsimSpec$criS;
 	if(mod==10){
-		file.copy("../apsimPlugIn/apsimInKatherine.r",paste(apsimSpec$path2out,"apsimInKatherine-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+		file.copy("../apsimPlugIn/apsimInterface.r",paste(apsimSpec$path2out,"apsimInterface-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 	if(mod==11){
-		file.copy("../apsimPlugIn/apsimInterface.r",paste(apsimSpec$path2out,"apsimInterface-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+		file.copy("../apsimPlugIn/apsimInKatherine.r",paste(apsimSpec$path2out,"apsimInKatherine-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+	}
+	if(mod==12){
+		file.copy("../apsimPlugIn/apsimInUFS.r",paste(apsimSpec$path2out,"apsimInUFS-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 }
 
