@@ -21,7 +21,10 @@ is.modelValid <- function(model)
 		valid <- TRUE,	# 3: Mathematical model based on Deb nonConvexity test fct
 		valid <- TRUE,	# 4: Mathematical model based on Deb convexNonConvexity test fct
 		{},{},{},{},{},
-		valid <- TRUE	# 10: Apsim
+		valid <- TRUE,	# 10: Apsim
+		valid <- TRUE,	# 11: ApsimInKatherine
+		valid <- TRUE,	# 12: ApsimInUFS
+		valid <- TRUE	# 13: ApsimInWC
 	);
 return(valid);
 }

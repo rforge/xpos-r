@@ -142,7 +142,7 @@ apsim_userSettings <- function()
 	decNam <- array(c(
 ##################################
 	"var_sowingDate",			#1
-	"var_ferAmount"			#2
+	"var_ferAmount",			#2
 	"var_irrAmount"			#3
 ##################################
 	),dim=c(1,varNo));
@@ -167,7 +167,7 @@ apsim_userSettings <- function()
 	0,	length(textDec1),	1,	# start at 0 for text because I'm gonna ceil it
 #	0,	60,	6,	# min, max, minimal step of dec 1
 	0,	450,	75,	# min, max, minimal step of dec 2
-	0,	60,	20,	# min, max, minimal step of dec 3
+	0,	60,	20	# min, max, minimal step of dec 3
 ##################################
 	),3);
 
@@ -260,10 +260,11 @@ apsim_readOutputs <- function(path2Outputs, fileName, criNo)
 
 	#### transform ddmmyyyy in julDay
 	dmyy <- as.Date(response[1,col_ddmmyy],"%d/%m/%Y");
-	orig <- format(dmyy,"%Y");
-	julDay <- julian(dmyy,origin=orig);
-	response[1,col_ddmmyy]<-julDay
-browser();
+	oriY <- format(dmyy,"%Y");
+	oriDate <- as.Date(paste("01","01",oriY,sep="/"),"%d/%m/%Y");
+	julDay <- as.numeric(julian(dmyy,origin=oriDate))+1;
+	response<-array(as.numeric(response),dim=c(1,colNo));	
+	response[1,col_ddmmyy]<-julDay;
 
 	####	is optimization a maximization or minimization?
 	# every value is going to be minimize, so you need to negate the one you want to maximize

@@ -13,7 +13,7 @@
 # > reduce multicriteria comparison redondancy
 # > make it work with th R GUI
 
-xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10}
+xPos <- function(	mod,		## model to be simulated for evaluation: Deb test functions{1,2,3,4}, apsim{10,11,12,13}
 			partNo,	## No of divided parts per region {2,3}
 			decNo,	## decision number per region
 			perNo,	## perturbation param number
@@ -71,6 +71,9 @@ if(mod>=10){
 	if(mod==12){# APSIM for START-UFS case study, GO AND MODIFY apsimInUFS.r TO ADAPT AT WILL
 		source("../apsimPlugIn/apsimInUFS.r");
 	}
+	if(mod==13){# APSIM for WRC-WC case study, GO AND MODIFY apsimInWC.r TO ADAPT AT WILL
+		source("../apsimPlugIn/apsimInWC.r");
+	}
 
 	source("../apsimPlugIn/rwfileOp.r");
 	apsimSpec <- apsim_userSettings();
@@ -84,6 +87,9 @@ if(mod>=10){
 	}
 	if(mod==12){
 		file.copy("../apsimPlugIn/apsimInUFS.r",paste(apsimSpec$path2out,"apsimInUFS-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
+	}
+	if(mod==13){
+		file.copy("../apsimPlugIn/apsimInWC.r",paste(apsimSpec$path2out,"apsimInWC-launched",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".r",sep=""),overwrite=TRUE);
 	}
 }
 
