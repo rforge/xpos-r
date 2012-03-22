@@ -31,7 +31,7 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2workingDir <- "../../ApsimOptInBergRiver/WorkingDir/";
+	path2workingDir <- "../../WorkingDir/";
 ##################################
 
 	#
@@ -44,14 +44,14 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2template <- "../../ApsimOptInBergRiver/Templates/";
+path2template <- "../../APSIM Sim 5 Sites/";
 ##################################
 
 
 	####	NAME of the actual template .sim file
 	# ex:	simTemplate <- "wet-peanut_dry-maize_rotation-template220909.sim"
 ##################################
-	simTemplate <- "wheatWesternCape_template_1301111.sim"
+	simTemplate <- "Bothaville_template.sim"
 ##################################
 
 	#
@@ -62,7 +62,7 @@ apsim_userSettings <- function()
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "../../ApsimOptInBergRiver/Met/";
+	path2MetFiles <- "C:/APSwork_M/FS met files/";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -70,7 +70,7 @@ apsim_userSettings <- function()
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "0041347_A_echam_co.met";
+	metFileName <- "C52BO_header.MET";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
@@ -85,11 +85,11 @@ apsim_userSettings <- function()
 	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
 ##################################
-	1983,		# min year that you want to use as randomness
+	1953,		# min year that you want to use as randomness
 # watch out for 2100 faked as 2100...
 # 2100 is not leap, but any fitting fake year within the last century (allowed with APSIM so far)
 # will be leap. for now, do not simulate 2100
-	2000,		# max year that you want to use as randomness
+	1999,		# max year that you want to use as randomness
 ##################################
 	1		# 1: discreet for APSIM
 	),dim=3); 
@@ -105,8 +105,8 @@ apsim_userSettings <- function()
 	# if your start and end Dates are in the same year, period = 1 will make 2 year simulation
 	# if your start and end Dates are in 2 != years, period = 1 will make 1 year simulation
 ##################################
-	var_startDate <-	"1/1/var_startYear";
-	var_endDate <-	"31/12/var_endYear";
+	var_startDate <-	"1/10/var_startYear";
+	var_endDate <-	"30/09/var_endYear";
 ##################################
 
 	####	remove everything in the working directory
@@ -443,12 +443,13 @@ options(warn=0);	# enable warnings
 		for (p in 1:perNo){
 			lastYear <- read.table(paste(path2apsimOutputs,"optimization_",p,".out",sep=""),skip=4,sep=",");
 # if start and end date are in different years
-#			if( dim(lastYear)[1]==(cropPerYear*period)){
+			if( dim(lastYear)[1]==(cropPerYear*period)){
 # otherwise
-			if( dim(lastYear)[1]==(cropPerYear*period+1)){
+#			if( dim(lastYear)[1]==(cropPerYear*period+1)){
 				fileCompleted[p] <- TRUE;
 			}
 		}
+
 		if(sum(fileCompleted)==perNo){
 			break;
 		}else{
