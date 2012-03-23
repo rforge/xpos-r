@@ -23,7 +23,7 @@ apsim_userSettings <- function()
 	# specify the number of processors you're allowed to use
 	# until now: multi processors are used only for perturbation simulation of the same decision
 ##################################
-	proNo <- 2;
+	proNo <- 4;
 ##################################
 
 	####	PATH of the folder used as writing/readind folder for apsim .sim, .out, .sum working files
@@ -31,7 +31,7 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-	path2workingDir <- "../../WorkingDir/";
+	path2workingDir <- "../../ApsimOptInUFS/WorkingDir/";
 ##################################
 
 	#
@@ -44,7 +44,7 @@ apsim_userSettings <- function()
 	# use UNIX separator ("/" instead of windows "\"), finish the path with a separator
 	# ex:	path2workDir <- "../../ApsimOptimization/";
 ##################################
-path2template <- "../../APSIM Sim 5 Sites/";
+path2template <- "../../ApsimOptInUFS/Template/";
 ##################################
 
 
@@ -62,7 +62,7 @@ path2template <- "../../APSIM Sim 5 Sites/";
 	# use "\\\\" separator (to be improved, but until then ...), finish the path with a separator
 	# ex:	path2MetFiles <- "C:\\\\Desktop\\\\MetFiles\\\\";
 ##################################
-	path2MetFiles <- "C:/APSwork_M/FS met files/";
+	path2MetFiles <- "../../ApsimOptInUFS/Met/";
 ##################################
 	
 	####	NAME of the actual .met file
@@ -70,7 +70,7 @@ path2template <- "../../APSIM Sim 5 Sites/";
 	# however the uncertainty of the process is simulated by using one or an other "random" weather of this data set
 	# ex:	metFileName <- "stephenFarmNCEP.met";
 ##################################
-	metFileName <- "C52BO_header.MET";
+	metFileName <- "seasonal_test_10.met";
 ##################################
 	var_metFile <- paste(path2MetFiles,metFileName,sep="");
 
@@ -78,18 +78,18 @@ path2template <- "../../APSIM Sim 5 Sites/";
 	# e.g. period == 6 means that the process will simulate apsim for 1950->1955 to evaluate year 1955
 	# ex:   period <- 2;
 ##################################
-	period <- 2;
+	period <- 3;
 ##################################
 
 	####	definition of min and max year that you want to use within the .met file
 	# WARNING: according to the "period" above, the .met file has to include "period"-1 year(s) prior to your min year
 	perDef <- array(c(
 ##################################
-	1953,		# min year that you want to use as randomness
+	1989,		# min year that you want to use as randomness
 # watch out for 2100 faked as 2100...
 # 2100 is not leap, but any fitting fake year within the last century (allowed with APSIM so far)
 # will be leap. for now, do not simulate 2100
-	1999,		# max year that you want to use as randomness
+	1998,		# max year that you want to use as randomness
 ##################################
 	1		# 1: discreet for APSIM
 	),dim=3); 
@@ -340,7 +340,7 @@ options(warn=0);	# enable warnings
 		if (perDef[3]==1){
 			year[p] <- round(year[p]);
 		}
-	
+
 		# to reduce rw operations
 		## change decision variables in .sim
 		if(p==1){
