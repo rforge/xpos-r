@@ -121,8 +121,14 @@ print(paste("   #           dec ",d," in ",decNo,sep=""));
 			}
 
 			# new 'per' sequence everytime
-			per <- runif(perNo);	#array(0,dim=perNo);
-		
+# only woth it for UFS season at this stage
+			if(mod==12 && perNo ==10){ # in UFS I do seasonal, I want to try them all in sequence, if per < max number of seasonal alternatives (today=10)
+				# make sure it takes exactly the 10 alternatives
+				per <- seq(0,perNo,(perNo/(perNo-1)))/perNo;
+			}else{	
+				per <- runif(perNo);	#array(0,dim=perNo);
+			}
+	
 			# Deb test functions
 			if (mod==1 || mod==2 || mod==3 || mod==4){
 				temp <- NULL;
