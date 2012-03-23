@@ -19,8 +19,8 @@
 source('main.r');
 ## CALL EXAMPLE
 #xPos(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough=NULL,seed=NULL)
-#xPos(13,2,0,6,1000000,1000000,log=FALSE,seed=NULL)
-xPos(12,2,2,2,100,300,log=FALSE,seed=NULL)
+xPos(12,2,0,10,40000,1000000,log=TRUE,seed=NULL)
+#xPos(12,2,2,2,100,300,log=FALSE,seed=NULL)
 # 604800 secs = 1 week
 # 302400 secs = 3.5 days
 # 216000 secs = 2.5 days
