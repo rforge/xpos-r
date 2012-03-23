@@ -400,6 +400,8 @@ options(warn=0);	# enable warnings
 #print("run file");
 	for (p in 1:perNo){
 		## run simulation
+print(p%%proNo);
+#browser()
 		ifelse(p%%proNo==0,sequencial<-TRUE,sequencial<-FALSE);	# one simulation happens in the R windows
 		#sequencial<-FALSE;							# none happens in the R windows, but get over my time limits regularly
 		apsim_simulate(path2apsimOutputs,paste("fileToSimulate_",p,sep=""),sequencial);
