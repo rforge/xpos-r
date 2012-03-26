@@ -126,9 +126,93 @@ checkInputs <- function(mod,partNo,decNo,perNo,simLimit,timLimit,seeItThrough,se
 
 ##
  # LAST ACTION: WRITE THE LIST OF THE BEST REGIONS FOUND
+ # CSV format for excel
+ ####################################################################
+ # 	  		  DECISIONS				||	OUTCOMES
+ # 	    Dec 1		|	   Dec 2 ...	||	
+ # minReg maxReg simDec	| minReg maxReg simDec	|| Cri1 Cri2 ...
  ####################################################################
 write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime,totalNoOfSimu)
 {
+	#
+	#	WRITE all in a *.csv
+	#
+	#### file name
+	csvFile <- paste(apsimSpec$path2out,"resultsAchievedThe",format(Sys.time(),"_%d-%m-%Y_%H-%M-%S"),".csv",sep="");
+	#### file head
+	write(	paste(	paste("file name",csvFile,sep=","),
+					paste("creation date",date(),sep=","),
+					paste("time spent",format(fullTime),sep=","),
+					paste("simulation No",fullSimNo,sep=","),
+					paste("decomp No",totalNoOfSimu,sep=","),
+					paste("optimal No",besList$itemNo,sep=","),
+					paste("mc rank",sum(besList$regEva[[1]]$selCri[1,]),sep=","),
+					paste("per No",dim(besList$regEva[[1]]$decEva[[1]])[1],sep=","),
+					"",
+					paste("initialy","explored",sep=","),
+					sep="\n")
+			,csvFile,append=FALSE
+	);
+	#### col names
+	decNo <- dim(apsimSpec$decS)[2];
+	criNo <- dim(apsimSpec$criS)[2];
+	colNames <- array("",dim=c(2,(3*decNo+5*criNo)));
+	col <- 1;
+	for(d in 1:decNo){
+		colNames[1,col] <- apsimSpec$decS[1,d]; 	
+		colNames[1,col+1] <- apsimSpec$decS[2,d]; 	
+		colNames[2,col:(col+2)] <- paste("decision",d,sep="");
+		col <- col+3;
+	}
+	for(c in 1:criNo){
+		colNames[2,col:(col+4)] <- paste("criterion",c,sep="");
+		col <- col+5;
+	}
+	write.table(colNames,csvFile,col.names=F,row.names=F,quote=F,sep=",",append=TRUE);
+	colNames <- array(NA,dim=c(1,(3*decNo+5*criNo)));
+	col <- 1;
+	for(d in 1:decNo){
+		colNames[1,col] <- "min"
+		colNames[1,col+1] <- "max"
+		colNames[1,col+2] <- "sim"
+		col <- col+3;
+	}
+	for(c in 1:criNo){
+		colNames[1,col] <- "min"
+		colNames[1,col+1] <- "max"
+		colNames[1,col+2] <- "mean"
+		colNames[1,col+3] <- "median"
+		colNames[1,col+4] <- "stdev"
+		col <- col+5;
+	}
+	write.table(colNames,csvFile,col.names=F,row.names=F,quote=F,sep=",",append=TRUE);
+
+	#### equally optimal region achieved (besList$regEva[[r]]$regDef)
+	for(r in 1:besList$itemNo){
+		for(s in 1:besList$regEva[[r]]$itemNo){
+			oneDec <- array(NA,dim=c(1,(3*decNo+5*criNo)));
+			for (d in 1:decNo){
+				# reg definition
+				oneDec[1,(d-1)*3+1] <- besList$regEva[[r]]$regDef[1,d];
+				oneDec[1,(d-1)*3+2] <- besList$regEva[[r]]$regDef[2,d];
+				# dec definition
+				oneDec[1,(d-1)*3+3] <- besList$regEva[[r]]$decDef[[s]][d];
+			}
+			for (c in 1:criNo){
+				oneDec[1,(decNo*3+(c-1)*5+1)] <- min(besList$regEva[[r]]$decEva[[s]][,c]);
+				oneDec[1,(decNo*3+(c-1)*5+2)] <- max(besList$regEva[[r]]$decEva[[s]][,c]);
+				oneDec[1,(decNo*3+(c-1)*5+3)] <- mean(besList$regEva[[r]]$decEva[[s]][,c]);
+				oneDec[1,(decNo*3+(c-1)*5+4)] <- median(besList$regEva[[r]]$decEva[[s]][,c]);
+				oneDec[1,(decNo*3+(c-1)*5+5)] <- sd(besList$regEva[[r]]$decEva[[s]][,c]);
+			}
+			write.table(oneDec,csvFile,col.names=F,row.names=F,quote=F,sep=",",append=TRUE);
+		}
+	}
+
+browser();
+
+
+#### original version
 	#
 	#	WRITE DECISION SPACE RESULTS
 	#
