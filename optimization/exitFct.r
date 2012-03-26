@@ -209,9 +209,6 @@ write.bestList <- function(besList,apsimSpec,fullSimNo,fullTime,totalNoOfSimu)
 		}
 	}
 
-browser();
-
-
 #### original version
 	#
 	#	WRITE DECISION SPACE RESULTS
