@@ -22,7 +22,7 @@
 compute_tavNamp <- function(data)
 {
 
-### needs to limit that to COMPLETE years only
+### AMP is limited to complete year only since for uncomplete ones yearlyAMP will have NA values, then mean is processed with na.rm=T
 ###
 	# daily mean
 	dMean <- (data$tmn+data$tmx)/2;
@@ -31,7 +31,7 @@ compute_tavNamp <- function(data)
 	yearlyAMP <- array(NA,dim=(as.numeric(data$year[dim(data$year)])-as.numeric(data$year[1])+1));
 	monthlyMean <- array(0,dim=c(12,5));
 	year <- firstYear;
-	for (line in 1:dim(data$year)){
+	for (line in 1:length(data$year)){
 		# yearly AMP
 		if (data$year[line]!=year){
 			yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
@@ -51,7 +51,7 @@ compute_tavNamp <- function(data)
 	yearlyAMP[year-firstYear+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4]);
 	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2];
 
-	amp <- format(mean(yearlyAMP),digits=3);
+	amp <- format(mean(yearlyAMP,na.rm=T),digits=3);
 	tav <- format(mean(monthlyMean[,5]),digits=3);
 
 	if(amp!="NA" && (as.numeric(amp)<0 || as.numeric(amp)>50))	{
@@ -185,7 +185,7 @@ check_dayVSdim <- function(sDate,eDate,linNo)
 {
 	dayNo <- eDate-sDate +1;
 	if (dayNo != linNo){
-		stop("*** wrong number of Days: check_dayVSdim (bruceFormat.r)");
+		stop("*** wrong number of Days: check_dayVSdim (metTransformation.r)");
 	}
 }
 
@@ -241,6 +241,7 @@ transform_type2 <- function(data,head,fillIn)
 	table <- cbind(table,data$tmx);
 	table <- cbind(table,data$ppt);
 
+#browser();
 	for(y in format(head$period$start,"%Y"):format(head$period$end,"%Y")){
 		# cut before
 		dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
