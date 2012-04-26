@@ -122,7 +122,7 @@ print(paste("   #           dec ",d," in ",decNo,sep=""));
 
 			# new 'per' sequence everytime
 # only woth it for UFS season at this stage
-			if(mod==12 && perNo ==10){ # in UFS I do seasonal, I want to try them all in sequence, if per < max number of seasonal alternatives (today=10)
+			if(mod==12 && perNo ==9){ # in UFS I do seasonal, I want to try them all in sequence, if per < max number of seasonal alternatives (today=9)
 				# make sure it takes exactly the 10 alternatives
 				per <- seq(0,perNo,(perNo/(perNo-1)))/perNo;
 			}else{	
