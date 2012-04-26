@@ -21,24 +21,31 @@
 ##									      ##
 ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 
+loop_on_paths <- function()
+{
+	for (it in 2:10){
+		convert("ap",initGCMs=T,iteration=it);
+	}
+}
 ##
  # INITIALISE YOUR DATA PATHS AND NAMES
  ###############################################################################
  # separated folders with "/" even for windows
  # finish all paths and folder name with "/"
  ###############################################################################
-init_paths <- function()
+init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "~/Desktop/Optimisation/Test/MixedSRESb1/";
+	input <- "/home/crespo/Desktop/11_START/DsclHindcast/";
 
+#	it<-1;
 	# in which folder to write out the data
-	output <- "~//Desktop/Optimisation/Test/OlivierOut/";
+	output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 
 	# what are the name of the data folders
-	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
-				"tmx"=	"tmax/",	# folder name for maximal temperatures
-				"ppt"=	"ppt/"		# folder name for precipitation
+	folder <- list	(	"tmn"=	paste("tmin-",it,"/",sep=""),	# folder name for minimal temperatures
+				"tmx"=	paste("tmax-",it,"/",sep=""),	# folder name for maximal temperatures
+				"ppt"=	paste("ppt-",it,"/",sep="")	# folder name for precipitation
 			);	
 
 return(list("input"=input,"output"=output,"folder"=folder));
@@ -57,24 +64,36 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="templateName2.txt",		# name for prec data file (could be the same)
 #				"arid"= 'A',				# default='A' - humidity conditions from 1 (humid) to 6 (hyper-arid)
 #				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
-#			list(	"temp"="0725756AW.txt",
-#				"prec"="0725756AW.txt",
-#				"arid"= 'A',
-#				"inLand"=TRUE),
-#			list(	"temp"="CHOKWE.txt",
-#				"prec"="CHOKWE.txt",
-#				"arid"= 'A',
-#				"inLand"=TRUE),
-#			list(	"temp"="SUSSUNDENGA.txt",
-#				"prec"="SUSSUNDENGA.txt",
-#				"arid"= 'A',
-#				"inLand"=TRUE),
-#			list(	"temp"="XAI-XAI.txt",
-#				"prec"="XAI-XAI.txt",
-#				"arid"= 'A',
-#				"inLand"=FALSE)
-			list(	"temp"="68396.txt",
-				"prec"="68396.txt",
+			list(	"temp"="0261307.1.txt",
+				"prec"="0261307.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0261516.1.txt",
+				"prec"="0261516.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0293597.2.txt",
+				"prec"="0293597.2.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0327101.1.txt",
+				"prec"="0327101.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0331520.1.txt",
+				"prec"="0331520.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0331585.1.txt",
+				"prec"="0331585.2.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0399894.1.txt",
+				"prec"="0399894.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0400730.1.txt",
+				"prec"="0400730.1.txt",
 				"arid"= 'A',
 				"inLand"=TRUE)
 		);
@@ -91,9 +110,9 @@ init_GCMs <- function()
 {
 GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
 #		"ncep"=	list(	"con"=	"ncep2.2009/"),
-		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
-				"futA"=	"cccma_cgcm3_1-fa/",
-				"futB"=	"cccma_cgcm3_1-fb/")
+#		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
+#				"futA"=	"cccma_cgcm3_1-fa/",
+#				"futB"=	"cccma_cgcm3_1-fb/")
 #		"cnrm"=	list(	"con"=	"cnrm_cm3/",
 #				"futA"=	"cnrm_cm3-fa/",
 #				"futB"=	"cnrm_cm3-fb/"),
@@ -121,6 +140,16 @@ GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
 #		"echo"=	list(	"con"=	"miub_echo_g/",
 #				"futA"=	"miub_echo_g-fa/",
 #				"futB"=	"miub_echo_g-fb/")
+		"caafx"=list(	"a"=	"caafa/",
+				"b"=	"caafb/",
+				"c"=	"caafc/",
+				"d"=	"caafd/",
+				"e"=	"caafe/",
+				"f"=	"caaff/",
+				"g"=	"caafg/",
+				"h"=	"caafh/",
+				"i"=	"caafi/",
+				"j"=	"caafj/")
 	);
 return(GCMs);
 }
@@ -150,7 +179,7 @@ return(GCMs);
  # 	init_paths and init_stations anyway,
  #	+ init_GCMs if initGCMs is TRUE
  ###############################################################################
-convert <- function(model,initGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
+convert <- function(model,initGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)
 {
 ### crop models
 	if(model=="all") model <- 1;
@@ -165,7 +194,7 @@ convert <- function(model,initGCMs=FALSE,seeSteps=FALSE,fillIn=TRUE)
 	}
 
 ### initialisation
-	path <- init_paths();
+	path <- init_paths(iteration);
 	if (initGCMs)	gcms <- init_GCMs();
 	stations <- init_stations();
 
