@@ -28,6 +28,12 @@ read_bruceHeadFile <- function(path2file)
 	# month	=	format(date,"%m")
 	# day	=	format(date,"%d")
 	
+	## noticed that for downscaled hindacst only so far...
+	# because end date is 30-dec while it still adds one day and actually finishes on 31-dec
+	if(period$type==2 && format(period$end,"%m")==12 && format(period$end,"%d")==30){
+		period$end<-period$end+1;
+	}
+	
 	## third line
 	temp <- readLines(path2file,n=3);
 	comm <- temp[3];
