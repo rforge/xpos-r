@@ -85,9 +85,9 @@ formatToMetFile <- function(data,fileHead,path)
 	apsim_table[,4:7] <- format(apsim_table[,4:7],digits=3);
 
 # write it into a .met file
-	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".met",sep="");
+	outName <- paste(path$output,strsplit(path$file$temp,"txt")[[1]][1],"met",sep="");
 	if(!file.exists(path$output)){	# create output dir if does not exists
-		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
+		dir.create(path$output, showWarnings=F, recursive=T, mode = "0777");
 	}else{				# remove output file if does exists
 		if(file.exists(outName))	file.remove(outName);
 	}

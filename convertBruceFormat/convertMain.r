@@ -23,7 +23,7 @@
 
 loop_on_paths <- function()
 {
-	for (it in 2:10){
+	for (it in 1:10){
 		convert("ap",initGCMs=T,iteration=it);
 	}
 }
@@ -36,16 +36,23 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/11_START/DsclHindcast/";
+	input <- "/home/crespo/Desktop/09_WRC/Metfiles/ObsFromUKZN/";
 
-#	it<-1;
 	# in which folder to write out the data
-	output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
+	if (is.null(it)){
+		output <- "/home/crespo/Desktop/09_WRC/Metfiles/ObsFromUKZNmet/";		
+	}else{
+		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
+	}
 
 	# what are the name of the data folders
-	folder <- list	(	"tmn"=	paste("tmin-",it,"/",sep=""),	# folder name for minimal temperatures
-				"tmx"=	paste("tmax-",it,"/",sep=""),	# folder name for maximal temperatures
-				"ppt"=	paste("ppt-",it,"/",sep="")	# folder name for precipitation
+#	folder <- list	(	"tmn"=	paste("tmin-",it,"/",sep=""),	# folder name for minimal temperatures
+#				"tmx"=	paste("tmax-",it,"/",sep=""),	# folder name for maximal temperatures
+#				"ppt"=	paste("ppt-",it,"/",sep="")	# folder name for precipitation
+#			);	
+	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
+				"tmx"=	"tmx/",	# folder name for maximal temperatures
+				"ppt"=	"ppt/"	# folder name for precipitation
 			);	
 
 return(list("input"=input,"output"=output,"folder"=folder));
@@ -64,36 +71,12 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"prec"="templateName2.txt",		# name for prec data file (could be the same)
 #				"arid"= 'A',				# default='A' - humidity conditions from 1 (humid) to 6 (hyper-arid)
 #				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
-			list(	"temp"="0261307.1.txt",
-				"prec"="0261307.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0261516.1.txt",
-				"prec"="0261516.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0293597.2.txt",
-				"prec"="0293597.2.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0327101.1.txt",
-				"prec"="0327101.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0331520.1.txt",
-				"prec"="0331520.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0331585.1.txt",
-				"prec"="0331585.2.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0399894.1.txt",
-				"prec"="0399894.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0400730.1.txt",
-				"prec"="0400730.1.txt",
+#			list(	"temp"="0331520.1.txt",
+#				"prec"="0331520.1.txt",
+#				"arid"= 'A',
+#				"inLand"=TRUE),
+			list(	"temp"="quin5410.txt",
+				"prec"="quin5410.txt",
 				"arid"= 'A',
 				"inLand"=TRUE)
 		);
@@ -109,47 +92,47 @@ return(stations);
 init_GCMs <- function()
 {
 GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
-#		"ncep"=	list(	"con"=	"ncep2.2009/"),
-#		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
-#				"futA"=	"cccma_cgcm3_1-fa/",
-#				"futB"=	"cccma_cgcm3_1-fb/")
-#		"cnrm"=	list(	"con"=	"cnrm_cm3/",
-#				"futA"=	"cnrm_cm3-fa/",
-#				"futB"=	"cnrm_cm3-fb/"),
-#		"csiro35"=list(	"con"=	"csiro_mk3_5/",
-#				"futA"=	"csiro_mk3_5-fa/",
-#				"futB"=	"csiro_mk3_5-fb/"),
-#		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
-#				"futA"=	"gfdl_cm2_0-fa/",
-#				"futB"=	"gfdl_cm2_0-fb/"),
+		"ncep"=	list(	"con"=	"ncep2.2009/"),
+		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
+				"futA"=	"cccma_cgcm3_1-fa/",
+				"futB"=	"cccma_cgcm3_1-fb/"),
+		"cnrm"=	list(	"con"=	"cnrm_cm3/",
+				"futA"=	"cnrm_cm3-fa/",
+				"futB"=	"cnrm_cm3-fb/"),
+		"csiro35"=list(	"con"=	"csiro_mk3_5/",
+				"futA"=	"csiro_mk3_5-fa/",
+				"futB"=	"csiro_mk3_5-fb/"),
+		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
+				"futA"=	"gfdl_cm2_0-fa/",
+				"futB"=	"gfdl_cm2_0-fb/"),
 #		"gfdl1"=list(	"con"=	"gfdl_cm2_1/",
 #				"futA"=	"gfdl_cm2_1-fa/",
 #				"futB"=	"gfdl_cm2_1-fb/"),
-#		"giss"=	list(	"con"=	"giss_model_e_r/",
-#				"futA"=	"giss_model_e_r-fa/",
-#				"futB"=	"giss_model_e_r-fb/"),
-#		"ipsl"=	list(	"con"=	"ipsl_cm4/",
-#				"futA"=	"ipsl_cm4-fa/",
-#				"futB"=	"ipsl_cm4-fb/"),
-#		"echam"=list(	"con"=	"mpi_echam5/",
-#				"futA"=	"mpi_echam5-fa/",
-#				"futB"=	"mpi_echam5-fb/"),
-#		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
-#				"futA"=	"mri_cgcm2_3_2a-fa/",
-#				"futB"=	"mri_cgcm2_3_2a-fb/"),
-#		"echo"=	list(	"con"=	"miub_echo_g/",
-#				"futA"=	"miub_echo_g-fa/",
-#				"futB"=	"miub_echo_g-fb/")
-		"caafx"=list(	"a"=	"caafa/",
-				"b"=	"caafb/",
-				"c"=	"caafc/",
-				"d"=	"caafd/",
-				"e"=	"caafe/",
-				"f"=	"caaff/",
-				"g"=	"caafg/",
-				"h"=	"caafh/",
-				"i"=	"caafi/",
-				"j"=	"caafj/")
+		"giss"=	list(	"con"=	"giss_model_e_r/",
+				"futA"=	"giss_model_e_r-fa/",
+				"futB"=	"giss_model_e_r-fb/"),
+		"ipsl"=	list(	"con"=	"ipsl_cm4/",
+				"futA"=	"ipsl_cm4-fa/",
+				"futB"=	"ipsl_cm4-fb/"),
+		"echam"=list(	"con"=	"mpi_echam5/",
+				"futA"=	"mpi_echam5-fa/",
+				"futB"=	"mpi_echam5-fb/"),
+		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
+				"futA"=	"mri_cgcm2_3_2a-fa/",
+				"futB"=	"mri_cgcm2_3_2a-fb/"),
+		"echo"=	list(	"con"=	"miub_echo_g/",
+				"futA"=	"miub_echo_g-fa/",
+				"futB"=	"miub_echo_g-fb/")
+#		"caafx"=list(	"a"=	"caafa/",
+#				"b"=	"caafb/",
+#				"c"=	"caafc/",
+#				"d"=	"caafd/",
+#				"e"=	"caafe/",
+#				"f"=	"caaff/",
+#				"g"=	"caafg/",
+#				"h"=	"caafh/",
+#				"i"=	"caafi/",
+#				"j"=	"caafj/")
 	);
 return(GCMs);
 }

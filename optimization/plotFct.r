@@ -11,13 +11,13 @@
  ####################################################################
 plotAxes <- function(regDef,varX,varY,labX,labY)
 {
-	plot(	seq(regDef[1,varX],regDef[2,varX],(regDef[2,varX]-regDef[1,varX])/10),	# non plotted
-		seq(regDef[1,varY],regDef[2,varY],(regDef[2,varY]-regDef[1,varY])/10),	# non plotted
+	plot(	x=seq(regDef[1,varX],regDef[2,varX],(regDef[2,varX]-regDef[1,varX])/10),	# non plotted
+		y=seq(regDef[1,varY],regDef[2,varY],(regDef[2,varY]-regDef[1,varY])/10),	# non plotted
 		type="n",				# do not plot
 		xlab=labX,				# X label
 		ylab=labY,				# Y label
 		xlim=c(regDef[1,varX],regDef[2,varX]),	# X limit
-		ylim=c(regDef[1,varY],regDef[2,varY])	# Y limit
+		ylim=c(regDef[1,varY],regDef[2,varY]),	# Y limit
 	);
 }
 
@@ -406,7 +406,7 @@ return(criS);
 ## IN DECISION SPACE
  # show a list of regions in 2D decision space
  ###############################################################################
-showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="decision 1",name2="decision 2",title="decision space")
+showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="sowing date",name2="fertilisation (kg/ha)",title="title")
 {
 	graphics.off();
 	plot.new();
@@ -418,22 +418,23 @@ showListIn2DDecisionSpace <- function(decS,criS,besList,boxColor="gray",name1="d
 	coloredPercent<-0.1;
 	for (r in 1:besList$itemNo){
 		for (d in 1:besList$regEva[[r]]$itemNo){
-			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent))){
-				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkgreen",NA,NULL);
-			}
+#			if(any(besList$regEva[[r]]$decEva[[d]][,2]<=(criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent))){
+#				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkgreen",NA,NULL);
+#			}
 			if(any(besList$regEva[[r]]$decEva[[d]][,1]<=(criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent))){
 ## I get confused about the percentile when the value is negated ...
 				plotRectangle(besList$regEva[[r]]$regDef,1,2,"darkred",NA,NULL);
 			}
 		}
 	}
-	legend("topleft",
+	legend("bottomright",
 		legend=c(	"all efficient decision areas",
-				paste("any yield outcomes <= ",ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)),sep=""),
-				paste("any N losses outcomes <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)),sep="")),
-		fill=c("gray", "darkred", "darkgreen"),
+				paste("yield >= ",-ceiling((criS[1,1]+(criS[2,1]-criS[1,1])/100*coloredPercent)),sep="")),
+#				paste("extractable soil water <= ",ceiling((criS[1,2]+(criS[2,2]-criS[1,2])/100*coloredPercent)),sep="")),
+		fill=c("gray", "darkred"),#, "darkgreen"),
 		bty="n", cex=0.9
-	)       
+	)
+	mtext(paste('24oct','07nov','21nov','05dec','19dec','02jan','16jan','30jan',sep=" --- "), side=1, line=0);#, padj=1, cex=.8, font=2);
 }
 
 ## IN DECISION SPACE
@@ -851,7 +852,7 @@ compareLists<-function(baseList,otherList,varX,varY,varH)
 ## IN CRITERIA SPACE
  # show a list of regions in 2D criteria space
  ###############################################################################
-showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",name2="criterion 2",title="criteria space")
+showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="(negated) yield (kg/ha)",name2="extractable soil water (mm)",title="criteria space")
 {
 	graphics.off();
 	plot.new();
@@ -899,17 +900,17 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 					}
 				}
 			}
-			if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)){
-				rect(	criDef[1,varX],	# x left
-					criDef[1,varY],	# y bottom
-					criDef[2,varX],	# x right
-					criDef[2,varY],	# y top
-					density=0,
-					border="green",
-					lwd=1.5,
-					asp=1
-				);
-			}
+#			if(criDef[1,varY]<=(criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)){
+#				rect(	criDef[1,varX],	# x left
+#					criDef[1,varY],	# y bottom
+#					criDef[2,varX],	# x right
+#					criDef[2,varY],	# y top
+#					density=0,
+#					border="green",
+#					lwd=1.5,
+#					asp=1
+#				);
+#			}
 			if(criDef[1,varX]<=(criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercent)){
 				rect(	criDef[1,varX],	# x left
 					criDef[1,varY],	# y bottom
@@ -923,9 +924,9 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="criterion 1",n
 			}
 		}
 	}
-	legend("topright",
-		legend=c(	paste("any yield optimum <= ",ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercent)),sep=""),
-				paste("any N losses optimum <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)),sep="")),
+	legend("topleft",
+		legend=c(	paste("yield >= ",-ceiling((criS[1,varX]+(criS[2,varX]-criS[1,varX])/100*coloredPercent)),sep="")),
+#				paste("any N losses optimum <= ",ceiling((criS[1,varY]+(criS[2,varY]-criS[1,varY])/100*coloredPercent)),sep="")),
 		fill=c("red", "green"),
 		bty="n", cex=0.9
 	) 
