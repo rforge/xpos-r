@@ -38,6 +38,7 @@ init_paths <- function(it)
 	# in which folder to read the data
 	input <- "/home/crespo/Desktop/09_WRC/Metfiles/ObsFromUKZN/";
 
+#	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
 		output <- "/home/crespo/Desktop/09_WRC/Metfiles/ObsFromUKZNmet/";		
@@ -77,6 +78,34 @@ stations <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
 #				"inLand"=TRUE),
 			list(	"temp"="quin5410.txt",
 				"prec"="quin5410.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0261516.1.txt",
+				"prec"="0261516.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0293597.2.txt",
+				"prec"="0293597.2.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0327101.1.txt",
+				"prec"="0327101.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0331520.1.txt",
+				"prec"="0331520.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0331585.1.txt",
+				"prec"="0331585.2.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0399894.1.txt",
+				"prec"="0399894.1.txt",
+				"arid"= 'A',
+				"inLand"=TRUE),
+			list(	"temp"="0400730.1.txt",
+				"prec"="0400730.1.txt",
 				"arid"= 'A',
 				"inLand"=TRUE)
 		);
@@ -133,6 +162,16 @@ GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
 #				"h"=	"caafh/",
 #				"i"=	"caafi/",
 #				"j"=	"caafj/")
+		"caafx"=list(	"a"=	"caafa/",
+				"b"=	"caafb/",
+				"c"=	"caafc/",
+				"d"=	"caafd/",
+				"e"=	"caafe/",
+				"f"=	"caaff/",
+				"g"=	"caafg/",
+				"h"=	"caafh/",
+				"i"=	"caafi/",
+				"j"=	"caafj/")
 	);
 return(GCMs);
 }

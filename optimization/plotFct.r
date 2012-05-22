@@ -870,8 +870,10 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="(negated) yiel
 			for(d in 1:uneList$regEva[[r]]$itemNo){
 				for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
 					for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
-						if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
-						if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
+						uneList$regEva[[r]]$decEva[[d]][uneList$regEva[[r]]$decEva[[d]][,c]==0,c] <- NA;
+						if(min(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T)<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T);
+						if(max(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T)<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T);
+						uneList$regEva[[r]]$decEva[[d]][is.na(uneList$regEva[[r]]$decEva[[d]][,c]),c] <- 0;
 					}
 				}
 			}
@@ -895,8 +897,10 @@ showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="(negated) yiel
 			for(d in 1:uneList$regEva[[r]]$itemNo){
 				for(p in 1:dim(uneList$regEva[[r]]$decEva[[d]])[1]){
 					for (c in 1:dim(uneList$regEva[[r]]$decEva[[d]])[2]){
-						if(min(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c]);
-						if(max(uneList$regEva[[r]]$decEva[[d]][,c])<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c]);
+						uneList$regEva[[r]]$decEva[[d]][uneList$regEva[[r]]$decEva[[d]][,c]==0,c] <- NA;
+						if(min(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T)<criDef[1,c] || is.na(criDef[1,c])) criDef[1,c]<-min(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T);
+						if(max(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T)<criDef[2,c] || is.na(criDef[2,c])) criDef[2,c]<-max(uneList$regEva[[r]]$decEva[[d]][,c],na.rm=T);
+						uneList$regEva[[r]]$decEva[[d]][is.na(uneList$regEva[[r]]$decEva[[d]][,c]),c] <- 0;
 					}
 				}
 			}
