@@ -76,6 +76,7 @@ return(list("input"=input,"output"=output,"folder"=folder));
  #	"aq" for AQUACROP
  #	"cs" for CSAG (basically you want to compute ETo)
  #	"ds" for DSSAT
+ #	"ag" for AgMIP
  #	"all" for both
  # > allGCM
  #	FALSE (default) plays only with stat list (defined in init_stat)
@@ -92,9 +93,10 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 	if(model=="aq") model <- 3;
 	if(model=="cs") model <- 4;
 	if(model=="ds") model <- 5;
+	if(model=="ag") model <- 6;
 	if (!is.numeric(model)){
 		print("### ERROR: unknown target model");
-		print("### targetModel available so far: 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP), 'cs' (CSAG), 'ds' (DSSAT) or 'all'");
+		print("### targetModel available so far: 'ag' (AgMIP), 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP), 'cs' (CSAG), 'ds' (DSSAT) or 'all'");
 		stop();
 	}
 
@@ -192,6 +194,7 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 							convertOne("aq",pathToStation,seeSteps,fillIn);
 							convertOne("cs",pathToStation,seeSteps,fillIn);
 							convertOne("ds",pathToStation,seeSteps,fillIn);
+							convertOne("ag",pathToStation,seeSteps,fillIn);
 						},{	# apsim only
 							convertOne("ap",pathToStation,seeSteps,fillIn);
 						},{	# aquacrop only
@@ -200,6 +203,8 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 							convertOne("cs",pathToStation,seeSteps,fillIn);
 						},{	# dssat only
 							convertOne("ds",pathToStation,seeSteps,fillIn);
+						},{	# AgMIP only
+							convertOne("ag",pathToStation,seeSteps,fillIn);
 						}
 					);
 
@@ -235,6 +240,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 	if(targetModel=="aq") targetModel <- 2;
 	if(targetModel=="cs") targetModel <- 3;
 	if(targetModel=="ds") targetModel <- 4;
+	if(targetModel=="ag") targetModel <- 5;
 	if (!is.numeric(targetModel)){
 		print("### ERROR: unknown target model",quote=FALSE);
 		print("### targetModel available so far: 'ds' (DSSAT), 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP) or 'all'",quote=FALSE);
