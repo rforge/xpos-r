@@ -285,7 +285,7 @@ prec_perMonth <- function(metDat,figTit=figTitDef)
 }
 
 ##############################################################################
-prec_runMonth <- function(metDat,figTit=figTitDef)
+prec_runMonth <- function(metDat,figTit=figTitDef,noRainThreshold=0,windowSemiWidth=14)
 {
 	metDat <- as.matrix(metDat);
 
@@ -293,11 +293,11 @@ prec_runMonth <- function(metDat,figTit=figTitDef)
 	metCol <- dim(metDat)[2];
 	winTot <- array(NA,dim=c(dim(metDat)[1],(metCol+2)));
 	winTot[,1:metCol] <- metDat[,];
-	for(d in 15:(dim(metDat)[1]-14)){
-		window <- array(NA,dim=29);
-		window[] <- metDat[(d-14):(d+14),pptC];
-		winTot[d,(metCol+1)] <- length(window[window[]>0]);
-		winTot[d,(metCol+2)] <- sum(window[]);
+	for(d in (windowSemiWidth+1):(dim(metDat)[1]-windowSemiWidth)){
+		window <- array(NA,dim=(windowSemiWidth+windowSemiWidth+1));
+		window[] <- metDat[(d-windowSemiWidth):(d+windowSemiWidth),pptC];
+		winTot[d,(metCol+1)] <- length(window[window[]>noRainThreshold]);
+		winTot[d,(metCol+2)] <- sum(window[window[]>noRainThreshold]);
 	}
 
 	## put NA on 29-FEB when leap year
@@ -342,8 +342,9 @@ prec_runMonth <- function(metDat,figTit=figTitDef)
 		labels=c("01-jan","31-jan","28-feb","31-mar","30-apr","31-may","30-jun","31-jul","31-aug","30-sep","31-oct","30-nov","31-dec")
 	);
 	axis(2,at=NULL); grid(nx=NA,ny=NULL);
+	winWidth<-windowSemiWidth*2+1;
 	legend(	"center",
-		legend=c("80th 29days totals (mm)","50th 29days totals (mm)","20th 29days totals (mm)","50th smoothed 29days totals (mm)","29days mean totals (mm)"),
+		legend=c(paste("80th ",winWidth,"days totals (mm)",sep=""),paste("50th ",winWidth,"days totals (mm)",sep=""),paste("20th ",winWidth,"days totals (mm)",sep=""),paste("50th ",winWidth,"days smoothed totals (mm)",sep=""),paste(winWidth,"days totals mean (mm)",sep="")),
 		col=c("blue","blue","blue","red","black"),
 		lty=c(3,1,3,1,1),
 		lwd=c(1,1.5,1,1,1.5)
