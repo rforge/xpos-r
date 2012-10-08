@@ -260,7 +260,7 @@ checkTmpRain <- function(data)
 	}
 # tmin - tmax
 	if (any((as.numeric(tmx)-as.numeric(tmn))<0,na.rm=TRUE)){
-		stopProcess <- 3;
+#		stopProcess <- 3;
 		print("# WARNING: there is max temperature < min temperature !!",quote=FALSE);
 	}
 # ppt

@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_observedSentinels/Public";
+	input <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/TMP";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_observedSentinels/InLandIsF";
+		output <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/InLandIsT";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -85,7 +85,7 @@ return(list("input"=input,"output"=output,"folder"=folder));
  # 	init_paths and init_stat anyway,
  #	+ init_GCMs if allGCM is TRUE
  ###############################################################################
-convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inLand=FALSE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)
+convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)
 {
 ### crop models
 	if(model=="all") model <- 1;

@@ -54,7 +54,7 @@ compute_radn_1day <- function(julDay,tmx,tmn,staLat,staAlt,inland)
 		
 	Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
 	# estimate of the atmospheric transmissivity
-	Tt <- Krs *(1+2.7*10^(-5)*staAlt)*sqrt(tmx-tmn);
+	Tt <- Krs *(1+2.7*10^(-5)*staAlt)*sqrt(abs(tmx-tmn));
 		
 	# Solar radiation at earth's surface [MJ.m^(-2).day^(-1)]
 	Rs <- Ra*Tt;
@@ -174,7 +174,7 @@ compute_ETo_1Day <- function(tmx,tmn,staAlt,sRad,eRad,arid)
 
 #=> HS	# Hargreaves and Samani
 #	a <- 0; b <- 1;							# unadjusted version
-#	HS <- a+b*0.0023/lambda*(((tmx+tmn)/2)+17.8)*sqrt(tmx-tmn)*eRad;
+#	HS <- a+b*0.0023/lambda*(((tmx+tmn)/2)+17.8)*sqrt(abs(tmx-tmn))*eRad;
 
 ## AI requirements -> Relative Humidity (RH)
 	RH <- 100 * ea / eTmean;
@@ -202,7 +202,6 @@ compute_mark <- function(tmin,tmax,lat,alt,jds)
      Rsolar <- (118.08/pi) * (1 + (0.033*cos(0.0172*jds))) * ((ws*sin(latr)*sin(delta)) + (cos(latr)*cos(delta)*sin(ws))) 
 
      alt <- ifelse(alt > -90, alt, 0)
-     ks <- 0.16 * (1 + (2.7e-5 * alt)) * sqrt(tmax - tmin) # approx atmos transmissivity - 1st coeff can be in range 0.1 - 0.2
 
      Rs <-  (1-0.23) * ks * Rsolar # assumes albedo 0.23
 
