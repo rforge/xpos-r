@@ -852,7 +852,7 @@ compareLists<-function(baseList,otherList,varX,varY,varH)
 ## IN CRITERIA SPACE
  # show a list of regions in 2D criteria space
  ###############################################################################
-showListIn2DCriteriaSpace <- function(criS,uneList=besList,name1="(negated) yield (kg/ha)",name2="extractable soil water (mm)",title="criteria space")
+showListIn2DCriteriaSpace <- function(criS=criS,uneList=besList,name1="(negated) yield (kg/ha)",name2="extractable soil water (mm)",title="criteria space")
 {
 	graphics.off();
 	plot.new();
