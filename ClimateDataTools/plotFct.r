@@ -372,6 +372,13 @@ prec_runMonth <- function(metDat,figTit=figTitDef,noRainThreshold=0,windowSemiWi
 		lty=c(3,1,3,1,1,NULL),
 		lwd=c(2,2,2,1,1,NULL)
 	);
+	winWidth<-windowSemiWidth*2+1;
+	legend(	"top",
+		legend=c("80th",paste("50th ",winWidth," days totals",sep=""),"20th",paste("mean ",winWidth," days totals",sep=""),"mean # of rainy day",paste("na.rm = ",length(met365[is.na(met365[,pptC]),pptC]),sep="")),
+		col=c("blue","blue","blue","black","red","white"),
+		lty=c(3,1,3,1,1,NULL),
+		lwd=c(2,2,2,1,1,NULL)
+	);
 
 	lines(xDay,(quaPpt[,1]*rDayFac),type="h",lty=1,lwd=1,col="pink");
 	lines(xDay,quaPpt[,2],type="l",lty=1,lwd=1,col="black");
