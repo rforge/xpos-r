@@ -9,8 +9,8 @@ source('matrixTools.r')
 source('mapsTools.r')
 
 ####### INIT
-path2in <- "/home/crespo/Desktop/Link to WinShared/12_AgMIP/2012-09_SAAworkshop/AgMIP-Accra Climate from Alex/WorldClim/"
-#path2in <- "../../../../12_AgMIP/2012-09_SAAworkshop/AgMIP-Accra Climate from Alex/WorldClim/"
+#path2in <- "/home/crespo/Desktop/Link to WinShared/12_AgMIP/2012-09_SAAworkshop/AgMIP-Accra Climate from Alex/WorldClim/"
+path2in <- "/local/users-a/crespo/wine_shared/12_AgMIP/2012-09_SAAworkshop/AgMIP-Accra Climate from Alex/WorldClim/"
 #path2in <- "~/Desktop/WorldClim/"
 
 ####### LOAD DATA
@@ -22,18 +22,20 @@ load(paste(path2in,"wdc_ppt.rData",sep=""));pptAll<-wdc;	# total(?) precipitatio
 load(paste(path2in,"wdc_tme.rData",sep=""));tmeAll<-wdc;	# mean temperature = (lat,lon,month)
 
 ####### DEFINE SUBSET
-#corTL<-c(40,-30);corBR<-c(-35,52)		# Africa
-corTL<-c(0,10);corBR<-c(-35,52)		# southern Africa
+#corTL<-c(40,-30);corBR<-c(-35,52)		# 137.158.102.43:/exports/terra/data/staging/local/users-aAfrica
+corTL<-c(0,10);corBR<-c(-35,52)			# southern Africa
 #corTL<-c(-22,15.9);corBR<-c(-35,34)		# South Africa
 #corTL<-c(-28.80,25.00);corBR<-c(-29.50,27.00)	# fast-track Bloemfontein
 
 ####### REDUCE FULL MATRICES TO SUBmatrices
-corners <-mat_selArea(mLat=latAll,mLon=lonAll,corTL=corTL,corBR=corBR)
-altSub <- altAll[corners$row[1]:corners$row[2],corners$col[1]:corners$col[2]]
-latSub <- latAll[corners$row[1]:corners$row[2],corners$col[1]:corners$col[2]]
-lonSub <- lonAll[corners$row[1]:corners$row[2],corners$col[1]:corners$col[2]]
-pptSub <- pptAll[corners$row[1]:corners$row[2],corners$col[1]:corners$col[2],]
-tmeSub <- tmeAll[corners$row[1]:corners$row[2],corners$col[1]:corners$col[2],]
+corners <- list('TL'=NULL,'BR'=NULL)
+corners$TL <- map_latLon2matIndex(corTL,mLat=latAll,mLon=lonAll)
+corners$BR <- map_latLon2matIndex(corBR,mLat=latAll,mLon=lonAll)
+altSub <- altAll[corners$TL[1]:corners$BR[1],corners$TL[2]:corners$BR[2]]
+latSub <- latAll[corners$TL[1]:corners$BR[1],corners$TL[2]:corners$BR[2]]
+lonSub <- lonAll[corners$TL[1]:corners$BR[1],corners$TL[2]:corners$BR[2]]
+pptSub <- pptAll[corners$TL[1]:corners$BR[1],corners$TL[2]:corners$BR[2],]
+tmeSub <- tmeAll[corners$TL[1]:corners$BR[1],corners$TL[2]:corners$BR[2],]
 rm(wdc,latAll,lonAll,altAll,pptAll,tmeAll)
 
 ####### PLOT param
@@ -73,15 +75,17 @@ for (r in 1:rNo){
 		}
 
 		# plot stations
-		ufs <- transform_coor2mat(c(26.18730,-29.10901),latSub,lonSub);
-		points(t(ufs),pch="+")
+		ufs <- poi_latLon2pointIndex(c(-29.10901,26.18730),latSub,lonSub) 
+		points(ufs,pch="+")
 
 		# plot
-		#opt<-2;
-		#plotBorders<-pMat_borders(opt=opt,plotData,latSub,lonSub)
-		#lines(plotBorders$land,		type="l",lty=1,asp=1)
-		#if(opt>1)	lines(plotBorders$country,	type="l",lty=2,asp=1);
-		#if(opt>2)	lines(plotBorders$river,	type="l",lty=3,asp=1)
+		opt<-2;
+		if(r==1 && c==1){
+			plotBorders<-map_borders(opt=opt,plotData,latSub,lonSub);
+		}
+		lines(plotBorders$land,		type="l",lty=1,asp=1);
+		if(opt>1)	lines(plotBorders$country,	type="l",lty=2,asp=1);
+		if(opt>2)	lines(plotBorders$river,	type="l",lty=3,asp=1);
 	}
 }
 

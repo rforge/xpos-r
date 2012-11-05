@@ -44,8 +44,6 @@ mat_rotate45 <- function(mat)
 		for (i in 1:dim(mat)[1]){
 			new[i,]<-mat[((dim(mat)[1])-i+1),]
 		}
-	}else{
-		new<-mat
 	}
 return<-(t(new))
 }
