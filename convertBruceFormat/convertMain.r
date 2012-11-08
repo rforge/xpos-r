@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/TMP";
+	input <- "/local/users-a/crespo/wine_shared/12_AgMIP/2012-10-01_fastTrack/AMIP/CsagData_CSAG";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/InLandIsT";
+		output <- "/local/users-a/crespo/wine_shared/12_AgMIP/2012-10-01_fastTrack/AMIP/CsagData_CM/Future/";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -53,7 +53,9 @@ init_paths <- function(it)
 #			);	
 	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
 				"tmx"=	"tmx/",	# folder name for maximal temperatures
-				"ppt"=	"ppt/"	# folder name for precipitation
+				"ppt"=	"ppt/",		# folder name for precipitation
+#				"rad"=	"rad/"		# folder for solar radiation
+				"rad"=	NULL		# no solar radiation
 			);	
 
 return(list("input"=input,"output"=output,"folder"=folder));
@@ -96,7 +98,7 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 	if(model=="ag") model <- 6;
 	if (!is.numeric(model)){
 		print("### ERROR: unknown target model");
-		print("### targetModel available so far: 'ag' (AgMIP), 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP), 'cs' (CSAG), 'ds' (DSSAT) or 'all'");
+		print("### targetModel available so far: 'ag' (AgMIP), 'cs' (CSAG), 'ap' (APSIM), 'aq' (AQUACROP), 'ds' (DSSAT) or 'all'");
 		stop();
 	}
 
@@ -180,7 +182,8 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 									"output"=paste(path$output,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
 									"folder"=	list(	"tmn"=path$folder$tmn,
 												"tmx"=path$folder$tmx,
-												"ppt"=path$folder$ppt
+												"ppt"=path$folder$ppt,
+												"rad"=path$folder$rad
 											),
 									"file"=		list(	"temp"=staNames[[es]][[gc]][[1]][st],
 												"prec"=staNames[[es]][[gc]][[1]][st]
@@ -192,9 +195,9 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 						{	# all
 							convertOne("ap",pathToStation,seeSteps,fillIn);
 							convertOne("aq",pathToStation,seeSteps,fillIn);
-							convertOne("cs",pathToStation,seeSteps,fillIn);
+#							convertOne("cs",pathToStation,seeSteps,fillIn);
 							convertOne("ds",pathToStation,seeSteps,fillIn);
-							convertOne("ag",pathToStation,seeSteps,fillIn);
+#							convertOne("ag",pathToStation,seeSteps,fillIn);
 						},{	# apsim only
 							convertOne("ap",pathToStation,seeSteps,fillIn);
 						},{	# aquacrop only
@@ -277,7 +280,11 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 		{	#################### APSIM #
 			source('convertToApsim.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
-			data <- compute_radn(data,fileHead$station,pathToStation$inland);
+			if(is.null(pathToStation$folder$rad)){
+				data <- compute_radn(data,fileHead$station,pathToStation$inland);
+			}else{
+				data$sRad<-data$rad;
+			}
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
 			data <- compute_tavNamp(data);
 			if(seeSteps)	print("... format and write data into .met file ...",quote=FALSE);
@@ -328,12 +335,15 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 			if(seeSteps)	print("... format and write data into .rdn and .eto files ...",quote=FALSE);
 			formatToEToCSAG(data,fileHead,pathToStation);
 			formatToRdnCSAG(data,fileHead,pathToStation);
-			# formatToTmnCSAG(data,fileHead,pathToStation);
+			# formatToTmnCSAG(data,fileHead,pathToStatio/terra/data/observed/station/private/cleaned/africa_datasets.separate/malawi_usaid/bruce_formatn);
 		},	# CSAG ########################
 		{	####################### DSSAT #
 			source('convertToDssat.r');
-			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
-			data <- compute_radn(data,fileHead$station,pathToStation$inland);
+			if(is.null(pathToStation$folder$rad)){
+				data <- compute_radn(data,fileHead$station,pathToStation$inland);
+			}else{
+				data$sRad<-data$rad;
+			}
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
 			data <- compute_tavNamp(data);
 			if(seeSteps)	print("... format and write data into .WTH file ...",quote=FALSE);

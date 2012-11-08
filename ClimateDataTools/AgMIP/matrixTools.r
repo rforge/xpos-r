@@ -9,6 +9,22 @@
  # I'LL CALL THIS MATRIX THE top-north left-west matrix
  #####################################################################
 
+loopOnTranslate <- function()
+{
+	pathToMatlab <- "../../../../12_AgMIP/2012-11-08_fromALex/Matlab/"
+	pathToR <-  "../../../../12_AgMIP/2012-11-08_fromALex/R/"
+	allY <- list.files(pathToMatlab)
+
+	for (y in 1:length(allY)){
+print(paste(y,length(allY),sep=" / "))		
+		allF <- list.files(pathToMatlab)
+		if(!file.exists(paste(pathToR,allY[y],"/",sep="")))	dir.create(paste(pathToR,allY[y],"/",sep=""), showWarnings=F, recursive=T, mode = "0777")
+		mat_translate(paste(pathToMatlab,allY[y],"/",sep=""),paste(pathToR,allY[y],"/",sep=""))
+	}
+}
+
+
+
 ## read *.mat matlab formatted matrices
 ####################################################################
 # read and save and clear objects, as they are quite big
@@ -16,15 +32,15 @@
 # 	assumes there is ONLY matlab formatted *.mat matrices, if not just make another folder with ONLY those
 #	remember than when you load the rData file, the object name is 'wdc'
 ####################################################################
-mat_translate <- function(path2in)
+mat_translate <- function(path2in,path2out)
 {	library('R.matlab')
 	file <- list.files(path2in)
 
 	for (f in 1:length(file)){
-		fName <- strsplit(file[f],split=".");
+		fName <- strsplit(file[f],split="\\.");
 		tmp <- readMat(paste(path2in,file[f],sep=""))
 		wdc <- tmp[[1]]
-		save(wdc,file=paste(path2in,paste(fName[1:(length(fName)-1)],"rData",sep="."),sep=""))
+		save(wdc,file=paste(path2out,paste(fName[[1]][1:(length(fName)-1)],"rData",sep="."),sep=""))
 		rm(tmp)
 		rm(wdc)		
 	}

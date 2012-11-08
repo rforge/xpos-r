@@ -39,13 +39,17 @@ checkCoordinates <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 # check on altitudes
 	minAlt<-min(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
 	maxAlt<-max(fileHead_tmn$station$alt,fileHead_tmx$station$alt,fileHead_ppt$station$alt);
-	if(minAlt!=maxAlt){
-		stopProcess<-3;
-		print("# WARNING: unconsitent altitudes -> assume tmn's one",quote=FALSE);
+	if(!is.na(minAlt!=maxAlt)){
+		if(minAlt!=maxAlt){
+			stopProcess<-3;
+			print("# WARNING: unconsitent altitudes -> assume tmn's one",quote=FALSE);
+		}
 	}
-	if(minAlt<(-90) || maxAlt>7000){
-		stopProcess<-3;
-		print("# WARNING: unrealistic altitude -> assume tmn's one",quote=FALSE);
+	if(!is.na(minAlt*maxAlt)){
+		if(minAlt<(-90) || maxAlt>7000){
+			stopProcess<-3;
+			print("# WARNING: unrealistic altitude -> assume tmn's one",quote=FALSE);
+		}
 	}
 
 # print warnings and wait for acknowledgment
@@ -104,11 +108,12 @@ longestPeriod <- function(fileHead_tmn,fileHead_tmx,fileHead_ppt)
 	fileHead$period$start<-max(fileHead_tmn$period$start,fileHead_tmx$period$start,fileHead_ppt$period$start);
 	fileHead$period$end<-min(fileHead_tmn$period$end,fileHead_tmx$period$end,fileHead_ppt$period$end);
 
+# ALREADY CHECKED in 'checkCoordinates'
 # check on realistic altitudes
-	if(fileHead$station$alt<(-90) || fileHead$station$alt>7000){
-		print("# WARNING: unrealistic altitude -> assume altitude = 0",quote=FALSE);
-		fileHead$station$alt=0;
-	}
+#	if(fileHead$station$alt<(-90) || fileHead$station$alt>7000){
+#		print("# WARNING: unrealistic altitude -> assume altitude = 0",quote=FALSE);
+#		fileHead$station$alt=0;
+#	}
 
 # check that there is actually a positive common period
 	if(fileHead$period$end-fileHead$period$start < 0){
