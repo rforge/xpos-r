@@ -20,22 +20,16 @@ map_latLon2matIndex <- function(coo,mLat,mLon)
 {
 # did not test it, watch out and swaped lat lon in input adn output
 	index<-c(NA,NA)
-	dLat <- mLat[,1]-coo[1]
-	dLon <- mLon[1,]-coo[2]
+	dLat <- mLat-coo[1]
+	dLon <- mLon-coo[2]
 	pLat <- length(dLat[dLat>0])+1
 	pLon <- length(dLon[dLon<0])+1
 	ifelse(abs(dLat[pLat-1])<abs(dLat[pLat]),pLat<-pLat-1,pLat<-pLat)
 	ifelse(abs(dLon[pLon-1])<abs(dLon[pLon]),pLon<-pLon-1,pLon<-pLon)
 	index[1] <- pLat
 	index[2] <- pLon
+
 return(index)
-}
-poi_latLon2pointIndex <- function(coo,mLat,mLon)
-{
-	coo<-map_latLon2matIndex(coo,mLat,mLon);
-	coo[1] <- dim(mLat)[1]-coo[1];
-	tmp<-coo[1]; coo[1]<-coo[2]; coo[2]<-tmp;
-return(t(coo));
 }
 
 # draw land,countries,river borders
@@ -58,37 +52,45 @@ map_borders <- function(opt=2,plotData,sLat,sLon)
 	tLat <- round(sLat[,1],digits=5)
 	tLon <- round(sLon[1,],digits=5)
 	# re-index it
-print("land borders ...")
+	print("land borders ...")
 	land_index <- array(NA,dim=dim(land_borders))
 	for (p in 1:dim(land_index)[1]){
-print(paste(p,dim(land_index)[1],sep="/"));
 		if(any(is.na(land_borders[p,])))	next;
 		if(land_borders[p,2]>tLat[1] || land_borders[p,2]<tLat[length(tLat)])	next;
 		if(land_borders[p,1]<tLon[1] || land_borders[p,1]>tLon[length(tLon)])	next;
-		land_index[p,] <- poi_latLon2pointIndex(c(land_borders[p,2],land_borders[p,1]),sLat,sLon)
+		land_index[p,] <- transform_coor2mat(land_borders[p,])
 	}
 
-	country_index <- NULL;
 	if(opt>1){	print("country borders ...")
 		country_index <- array(NA,dim=dim(country_borders))
 		for (p in 1:dim(country_index)[1]){
-print(paste(p,dim(land_index)[1],sep="/"));
 			if(any(is.na(country_borders[p,])))	next;
 			if(country_borders[p,2]>tLat[1] || country_borders[p,2]<tLat[length(tLat)])	next;
 			if(country_borders[p,1]<tLon[1] || country_borders[p,1]>tLon[length(tLon)])	next;
-			country_index[p,] <- poi_latLon2pointIndex(c(country_borders[p,2],country_borders[p,1]),sLat,sLon)
+			dLat <- tLat-country_borders[p,2]
+			dLon <- tLon-country_borders[p,1]
+			pLat <- length(dLat[dLat>0])+1	# > because southern, i.e matrix starts with positive values
+			pLon <- length(dLon[dLon<0])+1	# > because eastern, i.e matrix starts with negative values
+			ifelse(abs(dLat[pLat-1])<abs(dLat[pLat]),pLat<-pLat-1,pLat<-pLat)
+			ifelse(abs(dLon[pLon-1])<abs(dLon[pLon]),pLon<-pLon-1,pLon<-pLon)
+			country_index[p,2] <- length(tLat)-pLat+1
+			country_index[p,1] <- pLon	
 		}
 	}
-
-	river_index <- NULL;
 	if(opt>2){	print("river borders ...")
 		river_index <- array(NA,dim=dim(river_borders))
 		for (p in 1:dim(river_index)[1]){
-print(paste(p,dim(land_index)[1],sep="/"));
 			if(any(is.na(river_borders[p,])))	next;
 			if(river_borders[p,2]>tLat[1] || river_borders[p,2]<tLat[length(tLat)])	next;
 			if(river_borders[p,1]<tLon[1] || river_borders[p,1]>tLon[length(tLon)])	next;
-			river_index[p,] <- poi_latLon2pointIndex(c(river_borders[p,2],river_borders[p,1]),sLat,sLon)
+			dLat <- tLat-river_borders[p,2]
+			dLon <- tLon-river_borders[p,1]
+			pLat <- length(dLat[dLat>0])+1	# > because southern, i.e matrix starts with positive values
+			pLon <- length(dLon[dLon<0])+1	# > because eastern, i.e matrix starts with negative values
+			ifelse(abs(dLat[pLat-1])<abs(dLat[pLat]),pLat<-pLat-1,pLat<-pLat)
+			ifelse(abs(dLon[pLon-1])<abs(dLon[pLon]),pLon<-pLon-1,pLon<-pLon)
+			river_index[p,2] <- length(tLat)-pLat+1
+			river_index[p,1] <- pLon	
 		}
 	}
 
