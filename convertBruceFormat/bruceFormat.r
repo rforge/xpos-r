@@ -60,15 +60,6 @@ importData <- function(path,fileHead)
 	head_ppt <- read_bruceHeadFile(path2file);
 	ppt <- as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
 
-	# rad if exist
-	radiation<-FALSE; rad=NULL;
-	if (!is.null(path$folder$rad)){
-		radiation<-TRUE;
-		path2file <- paste(path$input,path$folder$rad,path$file$temp,sep="");
-		head_rad <- read_bruceHeadFile(path2file);
-		rad <- as.array(as.numeric(scan(path2file,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
-	}
-
 # cut the tail of files that do not belong into the common period
 	# tmn
 	tail <- 0; tail <- head_tmn$period$end-fileHead$period$end;
@@ -79,11 +70,6 @@ importData <- function(path,fileHead)
 	# ppt
 	tail <- 0; tail <- head_ppt$period$end-fileHead$period$end;
 	if(tail>0) ppt <- ppt[1:(dim(ppt)[1]-tail)];
-	# rad
-	if (radiation){
-		tail <- 0; tail <- head_rad$period$end-fileHead$period$end;
-		if(tail>0) rad <- rad[1:(dim(rad)[1]-tail)];
-	}
 
 # cut the head of files that do not belong into the common period
 	# tmn
@@ -95,26 +81,14 @@ importData <- function(path,fileHead)
 	# ppt
 	head <- 0; head <- fileHead$period$start-head_ppt$period$start;
 	if(head>0) ppt <- ppt[(head+1):dim(ppt)[1]];
-	# rad
-	if (radiation){
-		head <- 0; head <- fileHead$period$start-head_rad$period$start;
-		if(head>0) rad <- rad[(head+1):dim(rad)[1]];
-	}
 
 # check period consistencies
-	if(radiation){
-		if( dim(tmn)!=dim(tmx) || dim(tmn)!=dim(ppt) || dim(tmn)!=dim(rad) || dim(tmx)!=dim(ppt) || dim(tmx)!=dim(rad) || dim(ppt)!=dim(rad)){
-			print("# ERROR: not your fault, but the importData function (in bruceFormat.r) is failing producing files of same length :(",quote=FALSE);
-			stop();
-		}
-	}else{
-		if( dim(tmn)!=dim(tmx) || dim(tmn)!=dim(ppt) || dim(tmx)!=dim(ppt)){
-			print("# ERROR: not your fault, but the importData function (in bruceFormat.r) is failing producing files of same length :(",quote=FALSE);
-			stop();
-		}
+	if( dim(tmn)!=dim(tmx) || dim(tmn)!=dim(ppt) || dim(tmx)!=dim(ppt)){
+		print("# ERROR: not your fault, but the importData function (in bruceFormat.r) is failing producing files of same length :(",quote=FALSE);
+		stop();
 	}
 
-return(list("tmn"=tmn,"tmx"=tmx,"ppt"=ppt,"rad"=rad));
+return(list("tmn"=tmn,"tmx"=tmx,"ppt"=ppt));
 }
 
 ##
