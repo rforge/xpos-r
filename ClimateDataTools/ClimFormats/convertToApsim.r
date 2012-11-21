@@ -75,7 +75,9 @@ formatToMetFile <- function(data,fileHead,path)
 	fake_year <- array(as.numeric(data$year)-ifelse(format(fileHead$period$end,"%Y")>=2065,100,0),dim=dim(data$year));
 
 # make one table from all the data
-	apsim_table <- as.numeric(fake_year);				# fake year titled	'year'
+#	apsim_table <- as.numeric(fake_year);				# fake year titled	'year'
+# with RCP we'll have some problems
+	apsim_table <- as.numeric(data$year);				# fake year titled	'year'
 	apsim_table <- cbind(apsim_table,as.integer(data$year));	# real year titled	'realY'
 	apsim_table <- cbind(apsim_table,as.integer(data$julDay));	# julian day titled	'day'
 	apsim_table <- cbind(apsim_table,as.numeric(data$tmn));		# temp min titled	'mint'
