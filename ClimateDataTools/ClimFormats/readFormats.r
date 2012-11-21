@@ -20,7 +20,8 @@ createNULLlist <- function()
 return(l)
 }
 
-inFi<-'/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
+inFi<-'/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
+# inFi<-'/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
 ## AgMIP
 read_AgMIPformat <- function(inFile=inFi)
 {
@@ -53,10 +54,8 @@ read_AgMIPformat <- function(inFile=inFi)
 	agmip$data$yyyy <- 	data[,colnames(data)=="YYYY"]
 	agmip$data$mm <- 	data[,colnames(data)=="MM"]
 	agmip$data$dd <- 	data[,colnames(data)=="DD"]
-	for (l in 1:length(agmip$data$date)){
-		d <- strsplit(as.character(agmip$data$date[l]),split="")[[1]]
-		agmip$data$juld[l] <- 	as.numeric(paste(d[5],d[6],d[7],sep=""))
-	}
+	agmip$data$juld <- 	as.numeric(format(as.Date(paste(agmip$data$yyyy,agmip$data$mm,agmip$data$dd,sep="-")),"%j"))
+
 	agmip$data$srad <- 	data[,colnames(data)=="SRAD"]
 	agmip$data$tmax <- 	data[,colnames(data)=="TMAX"]
 	agmip$data$tmin <- 	data[,colnames(data)=="TMIN"]
@@ -76,13 +75,21 @@ read_AgMIPformat <- function(inFile=inFi)
 		agmip$data[[d]][agmip$data[[d]][]==-99] <- NA 
 		agmip$data[[d]][agmip$data[[d]][]==NaN] <- NA 
 	}
+
+print("### > your output is formated as follow",quote=F)
+print("    > $file    <- path to file you read",quote=F)
+print("    > $station <- list(\'id\',\'lat\',\'lon\',\'alt\',\'comm\')",quote=F)
+print("    > $clim    <- list(\'tav\',\'amp\',\'refht\',\'wndht\')",quote=F)
+print("    > $period  <- list(\'start\',\'end\',\'type\')",quote=F)
+print("    > $data    <- list(\'date\',\'yyyy\',\'mm\',\'dd\',\'juld\',",quote=F)
+print("                       \'srad\',\'tmax\',\'tmin\',\'rain\',\'wind\',\'dewp\',\'vprs\',\'rhum\')",quote=F)
+
 return(agmip)
 rm(data,head)
 }
 
-inFo<- '/home/crespo/Desktop/Link\ to\ WinShared/2012-10-01_fastTrack/AMIP/CsagData_CSAG/SRESa2/cccma_cgcm3_1-fa'
-#inFo<- '/home/crespo/Desktop/Link\ to\ WinShared/2012-10-01_fastTrack/AMIP/CsagData_CSAG/SRESa2/Test'
-inFo <- '/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-07_Sentinel/CSAGformat/RZA/obs'
+inFo<- '/home/crespo/Desktop/12_AgMIP/2012-07_Sentinel/CSAGformat/RZA/obs'
+#inFo <- '/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-07_Sentinel/CSAGformat/RZA/obs'
 fNa<- '0261516.1.txt'
 ## old CSAG
 # inFolder is the direct parent folder of tmn,tmx,ppt
@@ -113,10 +120,8 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 		head[v,2] <- line[[1]][2]	# LAT
 		head[v,3] <- line[[1]][3]	# LON
 		head[v,4] <- line[[1]][4]	# ALT
-		d <- strsplit(line[[2]][1],split="")[[1]]
-		head[v,5] <- paste(d[1],d[2],d[3],d[4],"-",d[5],d[6],"-",d[7],d[8],sep="")	# sDate
-		d <- strsplit(line[[2]][2],split="")[[1]]
-		head[v,6] <- paste(d[1],d[2],d[3],d[4],"-",d[5],d[6],"-",d[7],d[8],sep="")	# eDate
+		head[v,5] <- as.character(as.Date(line[[2]][1],"%Y%m%d"))	# sDate
+		head[v,6] <- as.character(as.Date(line[[2]][2],"%Y%m%d"))	# eDate
 		head[v,7] <- line[[2]][3]	# TYPE
 		head[v,8] <- line[[3]][1]	# COMM
 	
@@ -157,21 +162,9 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 	csag$data$yyyy <- 	as.numeric(format(csag$data$date,"%Y"))
 	csag$data$mm <- 	as.numeric(format(csag$data$date,"%m"))
 	csag$data$dd <- 	as.numeric(format(csag$data$date,"%d"))
-	csag$data$juld <- 	1:length(csag$data$date)
-	for (l in 1:length(csag$data$date)){
-		o<-paste(csag$data$yyyy[l],"01","01",sep="-")
-		csag$data$juld[l] <- julian(csag$data$date[l],origin=as.Date(o))+1
-	}
-	csag$data$date <- NULL
-	for (l in 1:length(csag$data$yyyy)){
-		jD <- strsplit(as.character(csag$data$juld[l]),split="")[[1]]
-		switch(length(jD),
-			d <- paste(csag$data$yyyy[l],"00",sep=""),
-			d <- paste(csag$data$yyyy[l],"0",sep=""),
-			d <- csag$data$yyyy[l]
-		)
-		csag$data$date[l] <- as.numeric(paste(d,csag$data$juld[l],sep=""))
-	}
+	csag$data$juld <- 	as.numeric(format(csag$data$date,"%j"))
+	csag$data$date <- 	as.numeric(format(csag$data$date,"%Y%j"))
+
 	csag$data$srad <- 	array(NA,dim=length(csag$data$date))
 	csag$data$wind <- 	array(NA,dim=length(csag$data$date))
 	csag$data$dewp <- 	array(NA,dim=length(csag$data$date))
@@ -226,6 +219,15 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 		csag$data[[d]][csag$data[[d]][]==-99] <- NA 
 		csag$data[[d]][csag$data[[d]][]==NaN] <- NA 
 	}
+
+print("### > your output is formated as follow",quote=F)
+print("    > $file    <- path to file you read",quote=F)
+print("    > $station <- list(\'id\',\'lat\',\'lon\',\'alt\',\'comm\')",quote=F)
+print("    > $clim    <- list(\'tav\',\'amp\',\'refht\',\'wndht\')",quote=F)
+print("    > $period  <- list(\'start\',\'end\',\'type\')",quote=F)
+print("    > $data    <- list(\'date\',\'yyyy\',\'mm\',\'dd\',\'juld\',",quote=F)
+print("                       \'srad\',\'tmax\',\'tmin\',\'rain\',\'wind\',\'dewp\',\'vprs\',\'rhum\')",quote=F)
+
 return(csag)
 rm(cVar,head,line,d,o,jD,startD,endD)
 }
