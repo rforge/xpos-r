@@ -1,4 +1,5 @@
 
+# need climTools.r
 
 
 ### MEANS
@@ -13,13 +14,17 @@ stat_annualMeans <- function(data,maxMV=10)
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
 		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1]))
-		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
+		y<-data$yyyy[1]
+		while(y<=data$yyyy[length(data$yyyy)]){
+			fullY <- array(NA,dim=as.numeric(julian(as.Date(paste(y,"12","31",sep="-")),origin=as.Date(paste(y,"01","01",sep="-"))))+1)
+			fullY[1:length(data[[v]][data$yyyy==y])] <- data[[v]][data$yyyy==y]
 			mMV <- maxMV*length(data[[v]][data$yyyy==y])/100
 			## only if less than maxMV% missing data per set
-			if(length(data[[v]][is.na(data[[v]]) & data$yyyy==y])<=mMV){
+			if(length(fullY[is.na(fullY)])<=mMV){
 				c <- 1+y-data$yyyy[1]
-				tmp[c] <- mean(data[[v]][data$yyyy==y],na.rm=T)
+				tmp[c] <- mean(fullY,na.rm=T)
 			}
+		y<-y+1
 		}
 		aMeans <- c(aMeans,list(tmp))
 		names(aMeans)[length(aMeans)] <- names(data)[v]
@@ -39,15 +44,21 @@ stat_monthlyMeans <- function(data,maxMV=10)
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
 		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1])*12)
-		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
-			for(m in 1:12){
+		y<-data$yyyy[1]
+		while(y<=data$yyyy[length(data$yyyy)]){
+			m<-data$mm[data$yyyy==y][1]
+			while(m<=data$mm[data$yyyy==y][length(data$mm[data$yyyy==y])]){
+				fullM <- array(NA,dim=as.numeric(julian(as.Date(paste(y,m,maxNo_days(y,m),sep="-")),origin=as.Date(paste(y,m,"01",sep="-"))))+1)
+				fullM[1:length(data[[v]][data$mm==m & data$yyyy==y])] <- data[[v]][data$mm==m & data$yyyy==y]
 				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
 				## only if less than maxMV% missing data per set
-				if(length(data[[v]][is.na(data[[v]]) & data$mm==m & data$yyyy==y])<=mMV){
+				if(length(fullM[is.na(fullM)])<=mMV){
 					c <- 12*(y-data$yyyy[1])+m
-					tmp[c] <- mean(data[[v]][data$mm==m & data$yyyy==y],na.rm=T)
+					tmp[c] <- mean(fullM,na.rm=T)
 				}
+			m<-m+1
 			}
+		y<-y+1
 		}
 		mMeans <- c(mMeans,list(tmp))
 		names(mMeans)[length(mMeans)] <- names(data)[v]
@@ -104,13 +115,17 @@ stat_annualTotals <- function(data,maxMV=5)
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
 		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1]))
-		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
+		y<-data$yyyy[1]
+		while(y<=data$yyyy[length(data$yyyy)]){
+			fullY <- array(NA,dim=as.numeric(julian(as.Date(paste(y,"12","31",sep="-")),origin=as.Date(paste(y,"01","01",sep="-"))))+1)
+			fullY[1:length(data[[v]][data$yyyy==y])] <- data[[v]][data$yyyy==y]
 			mMV <- maxMV*length(data[[v]][data$yyyy==y])/100
 			## only if less than maxMV% missing data per set
-			if(length(data[[v]][is.na(data[[v]]) & data$yyyy==y])<=mMV){
+			if(length(fullY[is.na(fullY)])<=mMV){
 				c <- 1+y-data$yyyy[1]
-				tmp[c] <- sum(data[[v]][data$yyyy==y],na.rm=T)
+				tmp[c] <- sum(fullY,na.rm=T)
 			}
+		y<-y+1
 		}
 		aTotals <- c(aTotals,list(tmp))
 		names(aTotals)[length(aTotals)] <- names(data)[v]
@@ -130,15 +145,21 @@ stat_monthlyTotals <- function(data,maxMV=5)
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
 		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1])*12)
-		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
-			for(m in 1:12){
+		y<-data$yyyy[1]
+		while(y<=data$yyyy[length(data$yyyy)]){
+			m<-data$mm[data$yyyy==y][1]
+			while(m<=data$mm[data$yyyy==y][length(data$mm[data$yyyy==y])]){
+				fullM <- array(NA,dim=as.numeric(julian(as.Date(paste(y,m,maxNo_days(y,m),sep="-")),origin=as.Date(paste(y,m,"01",sep="-"))))+1)
+				fullM[1:length(data[[v]][data$mm==m & data$yyyy==y])] <- data[[v]][data$mm==m & data$yyyy==y]
 				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
 				## only if less than maxMV% missing data per set
-				if(length(data[[v]][is.na(data[[v]]) & data$mm==m & data$yyyy==y])<=mMV){
+				if(length(fullM[is.na(fullM)])<=mMV){
 					c <- 12*(y-data$yyyy[1])+m
-					tmp[c] <- sum(data[[v]][data$mm==m & data$yyyy==y],na.rm=T)
+					tmp[c] <- sum(fullM,na.rm=T)
 				}
+			m<-m+1
 			}
+		y<-y+1
 		}
 		mTotals <- c(mTotals,list(tmp))
 		names(mTotals)[length(mTotals)] <- names(data)[v]
@@ -186,7 +207,7 @@ rm(tmp,aHalfWidth,pHalfWidth,v,l,maxMV,mMV,windowA,windowP,window)
 ### QUANTILES
 ########################################################################
 
-### before ....
+### OBSOLETE
 ##############################################################################
 temp_quantiles <- function(metDat,figTit=figTitDef)
 {

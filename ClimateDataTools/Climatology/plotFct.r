@@ -1,6 +1,6 @@
-#setwd("/home/crespo/Link to WinShared/SSAtmp/");
-graphics.off();
 
+
+### find a way to get rid of that
 pathDef <- NULL;
 figTitDef <- "Title";
 
@@ -43,15 +43,15 @@ copyDev2fig <- function(file)
 	dev.print(device=xfig,file=file);
 }
 
-##############################################################################
-load_obs <- function(path=pathDef,yeaC=2,julC=3,tmnC=4,tmxC=5,pptC=6,solC=7){
 
-	data<-read.table(path,skip=24);
-
-	obs <- list("data"=data,"yeaC"=yeaC,"julC"=julC,"tmnC"=tmnC,"tmxC"=tmxC,"pptC"=pptC,"solC"=solC)
-return(obs);
+# plot a variable against another
+plot_timeSerie <- function(xVar,yVar)
+{
+	graphics.off()
+	plot(xVar,yVar,type="l")
 }
 
+#### OBSOLETE
 ##############################################################################
 temp_quantiles <- function(metDat,figTit=figTitDef)
 {

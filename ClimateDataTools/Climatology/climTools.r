@@ -16,3 +16,39 @@ is.leapYear <- function(year)
 return(leap);
 }
 
+##
+ # how many days in a specific month-year
+ ###############################################################################
+maxNo_days <- function(year,month)
+{
+	switch(month,
+		{	# 1: JAN
+		dayNo <- 31
+		},{	# 2: FEB
+		dayNo <- ifelse(is.leapYear(year),29,28)
+		},{	# 3: MAR
+		dayNo <- 31
+		},{	# 4: APR
+		dayNo <- 30
+		},{	# 5: MAY
+		dayNo <- 31
+		},{	# 6: JUN
+		dayNo <- 30
+		},{	# 7: JUL
+		dayNo <- 31
+		},{	# 8: AUG
+		dayNo <- 31
+		},{	# 9: SEP
+		dayNo <- 30
+		},{	# 10: OCT
+		dayNo <- 31
+		},{	# 11: NOV
+		dayNo <- 30
+		},{	# 12: DEC
+		dayNo <- 31
+		}
+	)
+
+return(dayNo)
+}
+
