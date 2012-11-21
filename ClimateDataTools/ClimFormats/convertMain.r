@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/TMP";
+	input <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/bruce_format";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/crespo/Desktop/Link2wine_shared/12_AgMIP/2012-07_Sentinel/InLandIsT";
+		output <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/APSIM_format/InLandIsT";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -51,8 +51,8 @@ init_paths <- function(it)
 #				"tmx"=	paste("tmax-",it,"/",sep=""),	# folder name for maximal temperatures
 #				"ppt"=	paste("ppt-",it,"/",sep="")	# folder name for precipitation
 #			);	
-	folder <- list	(	"tmn"=	"tmn/",	# folder name for minimal temperatures
-				"tmx"=	"tmx/",	# folder name for maximal temperatures
+	folder <- list	(	"tmn"=	"tmin/",	# folder name for minimal temperatures
+				"tmx"=	"tmax/",	# folder name for maximal temperatures
 				"ppt"=	"ppt/"	# folder name for precipitation
 			);	
 
@@ -85,7 +85,7 @@ return(list("input"=input,"output"=output,"folder"=folder));
  # 	init_paths and init_stat anyway,
  #	+ init_GCMs if allGCM is TRUE
  ###############################################################################
-convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)
+convert <- function(model,allRCP=TRUE,allPara=TRUE,allStat=TRUE,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)	# ,allSRES=TRUE,allGCM=TRUE
 {
 ### crop models
 	if(model=="all") model <- 1;
@@ -105,44 +105,61 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 	staNames <- NULL;
 
 	## SRES
-	if(allSRES){
-		sres <- list.files(path$input);
-		for (es in 1:length(sres)){
-			tmp <- list("t"=NULL)
-			staNames <- c(staNames,tmp);
-			names(staNames)[es]<-sres[es];
-		}
-	}else{	
-		print("make a folder with ONLY the SRES you want to deal with !!");
-		browser();
-	}
+#	if(allSRES){
+#		sres <- list.files(path$input);
+#		for (es in 1:length(sres)){
+#			tmp <- list("t"=NULL)
+#			staNames <- c(staNames,tmp);
+#			names(staNames)[es]<-sres[es];
+#		}
+#	}else{	
+#		print("make a folder with ONLY the SRES you want to deal with !!");
+#		browser();
+#	}
 
 	## GCMs
-	if(allGCM){
-		for (es in 1:length(staNames)){
-			gcms <- list.files(paste(path$input,names(staNames)[es],sep="/"));
-			for (gc in 1:length(gcms)){
-				tmp <- list("t"=NULL)
-				staNames[[es]] <- c(staNames[[es]],tmp);
-				names(staNames[[es]])[gc] <- gcms[gc];
-			}
+#	if(allGCM){
+#		for (es in 1:length(staNames)){
+#			gcms <- list.files(paste(path$input,names(staNames)[es],sep="/"));
+#			for (gc in 1:length(gcms)){
+#				tmp <- list("t"=NULL)
+#				staNames[[es]] <- c(staNames[[es]],tmp);
+#				names(staNames[[es]])[gc] <- gcms[gc];
+#			}
+#		}
+#	}else{
+#		print("make a folder with ONLY the GCMs you want to deal with !!");
+#		browser();
+#	}
+
+	## RCPs
+	if(allRCP){
+		rcp <- list.files(path$input);
+		for (rc in 1:length(rcp)){
+			tmp <- list("t"=NULL)
+			staNames <- c(staNames,tmp);
+			names(staNames)[rc]<-rcp[rc];
 		}
-	}else{
-		print("make a folder with ONLY the GCMs you want to deal with !!");
+	}else{	
+		print("make a folder with ONLY the RCP you want to deal with !!");
 		browser();
 	}
 
 	## parameters
 	if(allPara){
-		for (es in 1:length(staNames)){
-			for (gc in 1:length(staNames[[es]])){
-				para <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],sep="/"));
+#		for (es in 1:length(staNames)){
+		for (rc in 1:length(staNames)){
+#			for (gc in 1:length(staNames[[es]])){
+#				para <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],sep="/"));
+				para <- list.files(paste(path$input,names(staNames)[rc],sep="/"));
 				for(pa in 1:length(para)){
 					tmp <- list("t"=NULL)
-					staNames[[es]][[gc]] <- c(staNames[[es]][[gc]],tmp);
-					names(staNames[[es]][[gc]])[pa] <- para[pa];
+#					staNames[[es]][[gc]] <- c(staNames[[es]][[gc]],tmp);
+					staNames[[rc]] <- c(staNames[[rc]],tmp);
+#					names(staNames[[es]][[gc]])[pa] <- para[pa];
+					names(staNames[[rc]])[pa] <- para[pa];
 				}
-			}
+#			}
 		}
 	}else{
 		print("make a folder with ONLY the parameters you want to deal with !!");
@@ -151,13 +168,16 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 
 	## staNames
 	if(allStat){
-		for (es in 1:length(staNames)){
-			for (gc in 1:length(staNames[[es]])){
+#		for (es in 1:length(staNames)){
+		for (rc in 1:length(staNames)){
+#			for (gc in 1:length(staNames[[es]])){
 				for(pa in 1:length(para)){
-					stat <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],names(staNames[[es]][[gc]])[pa],sep="/"));
-					staNames[[es]][[gc]][[pa]] <- stat;
+#					stat <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],names(staNames[[es]][[gc]])[pa],sep="/"));
+#					staNames[[es]][[gc]][[pa]] <- stat;
+					stat <- list.files(paste(path$input,names(staNames)[rc],names(staNames[[rc]])[pa],sep="/"));
+					staNames[[rc]][[pa]] <- stat;
 				}
-			}
+#			}
 		}
 	}else{
 		print("make a folder with ONLY the stations you want to deal with !!");
@@ -166,28 +186,37 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 
 ## given last structure, just go through all staNames of 1 param of all GCMs of all SRES included in staNames
 ### multiple GCMs routine
-		for (es in 1:length(staNames)){
-			print(paste(" > SRES : ",names(staNames)[es],sep=""),quote=FALSE);
-			for (gc in 1:length(staNames[[es]])){
-				print(paste(" > > GCMs : ",names(staNames[[es]])[gc],sep=""),quote=FALSE);
-				for(st in 1:length(staNames[[es]][[gc]][[1]])){
-					print(paste(" > > > station : ",staNames[[es]][[gc]][[1]][st],sep=""),quote=FALSE);
+#		for (es in 1:length(staNames)){
+		for (rc in 1:length(staNames)){
+#			print(paste(" > SRES : ",names(staNames)[es],sep=""),quote=FALSE);
+			print(paste(" > RCP : ",names(staNames)[rc],sep=""),quote=FALSE);
+#			for (gc in 1:length(staNames[[es]])){
+#				print(paste(" > > GCMs : ",names(staNames[[es]])[gc],sep=""),quote=FALSE);
+#				for(st in 1:length(staNames[[es]][[gc]][[1]])){
+				for(st in 1:length(staNames[[rc]][[1]])){
+#					print(paste(" > > > station : ",staNames[[es]][[gc]][[1]][st],sep=""),quote=FALSE);
+					print(paste(" > > > station : ",staNames[[rc]][[1]][st],sep=""),quote=FALSE);
 #					if (is.null(stat[[s]]$arid) || (is.numeric(stat[[s]]$arid) && (stat[[s]]$arid < 1 || stat[[s]]$arid > 5)) || (is.character(stat[[s]]$arid)&& stat[[s]]$arid!='A')){
 #						print("# WARNING: wrong arid parameter -> assuming automatic condition",quote=FALSE);
 #						stat[[s]]$arid <- 'A';
 #					}
-					pathToStation <-	list(	"input"=paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
-									"output"=paste(path$output,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
+					pathToStation <-	list(	#"input"=paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
+									"input"=paste(path$input,names(staNames)[rc],"",sep="/"),
+									#"output"=paste(path$output,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
+									"output"=paste(path$output,names(staNames)[rc],"",sep="/"),
 									"folder"=	list(	"tmn"=path$folder$tmn,
 												"tmx"=path$folder$tmx,
 												"ppt"=path$folder$ppt
 											),
-									"file"=		list(	"temp"=staNames[[es]][[gc]][[1]][st],
-												"prec"=staNames[[es]][[gc]][[1]][st]
+									"file"=		list(	#"temp"=staNames[[es]][[gc]][[1]][st],
+												"temp"=staNames[[rc]][[1]][st],
+												#"prec"=staNames[[es]][[gc]][[1]][st]
+												"prec"=staNames[[rc]][[1]][st]
 											),
 									"inland"=inLand,
 									"arid"='A'
 								);
+
 					switch(model,
 						{	# all
 							convertOne("ap",pathToStation,seeSteps,fillIn);
@@ -209,7 +238,7 @@ convert <- function(model,allSRES=TRUE,allGCM=TRUE,allPara=TRUE,allStat=TRUE,inL
 					);
 
 				}
-			}
+#			}
 		}
 print(" ... process completed ...");
 }
