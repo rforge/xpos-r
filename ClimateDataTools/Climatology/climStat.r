@@ -2,10 +2,12 @@
 
 
 ### MEANS
+########################################################################
+
 # compute the annual mean
 # over years with no more than maxMV% (maxMV: maximum missing value percentage) missing data per year
 # data format defined in readFormats.r
-stat_annualMeans <- function(data,maxMV)
+stat_annualMeans <- function(data,maxMV=10)
 {
 	aMeans <- NULL
 	# I just compute it all, even if computing the date does not make any sense
@@ -25,13 +27,13 @@ stat_annualMeans <- function(data,maxMV)
 
 return(aMeans)
 # rm tmp objects
-rm(tmp)
+rm(tmp,v,y,maxMV,mMV,c)
 }
 
 # compute the monthly mean
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per month
 # data format defined in readFormats.r
-stat_monthlyMeans <- function(data,maxMV)
+stat_monthlyMeans <- function(data,maxMV=10)
 {
 	mMeans <- NULL
 	# I just compute it all, even if computing the date does not make any sense
@@ -53,31 +55,33 @@ stat_monthlyMeans <- function(data,maxMV)
 
 return(mMeans)
 # rm tmp objects
-rm(tmp)
+rm(tmp,v,y,m,maxMV,mMV,c)
 }
 
 # compute the winWD time-window mean (winWidth: window width)
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per time-window
 # data format defined in readFormats.r
-stat_windowMeans <- function(data,maxMV,winWidth)
+stat_windowMeans <- function(data,maxMV=10,winWidth=29)
 {
-# under constructions
 	wMeans <- NULL
-	# winWidth-1 because I'm gonna look at one day -pHalfWidth and +aHalfWidth, hence a pHalfWidth+1+aHalfWidth wide window
-	pHalfWidth <- floor((winWidth-1)/2)
-	aHalfWidth <- (winWidth-1) - pHalfWidth
-browser()
+	# winWidth-1 because I'm gonna look at one day -aHalfWidth and +pHalfWidth, hence a aHalfWidth+1+pHalfWidth wide window
+	aHalfWidth <- floor((winWidth-1)/2)
+	pHalfWidth <- (winWidth-1) - aHalfWidth
+
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
 		tmp <- array(NA,dim=length(data$date))
 		for(l in 1:length(data$date)){
 			mMV <- maxMV*winWidth/100
 			## only if less than maxMV% missing data per set
-#			if(<=mMV){
-				ifelse(pHalfWidth>l,s<-l-pHalfWidth,s<-1)
-				ifelse(aHalfWidth>=(length(data$date)-l),,)
-				tmp[l] <- mean(data[[v]][s:(l+aHalfWidth)],na.rm=T)
-#			}
+			windowA <- array(NA,dim=aHalfWidth+1)
+			windowP <- array(NA,dim=pHalfWidth+1)
+			ifelse(aHalfWidth>=l,windowA[(length(windowA)-length(data[[v]][1:l])+1):length(windowA)]<-data[[v]][1:l],windowA<-data[[v]][(l-aHalfWidth):l])
+			ifelse(pHalfWidth>=(length(data$date)-l),windowP[1:(length(data$date)-l+1)]<-data[[v]][l:length(data$date)],windowP<-data[[v]][l:(l+pHalfWidth)])
+			window <- c(windowA,windowP[2:length(windowP)])
+			if(length(window[is.na(window)])<=mMV){
+				tmp[l] <- mean(window,na.rm=T)
+			}
 		}
 		wMeans <- c(wMeans,list(tmp))
 		names(wMeans)[length(wMeans)] <- names(data)[v]
@@ -85,33 +89,104 @@ browser()
 
 return(wMeans)
 # rm tmp objects
-rm(tmp)
+rm(tmp,aHalfWidth,pHalfWidth,v,l,maxMV,mMV,windowA,windowP,window)
 }
 
 ### TOTALS
+########################################################################
+
 # compute the annual totals
 # over years with no more than maxMV% (maxMV: percentage upper limit) missing data per year
 # data format defined in readFormats.r
-stat_annualTotals <- function(data,maxMV)
+stat_annualTotals <- function(data,maxMV=5)
 {
+	aTotals <- NULL
+	# I just compute it all, even if computing the date does not make any sense
+	for (v in 1:length(data)){
+		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1]))
+		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
+			mMV <- maxMV*length(data[[v]][data$yyyy==y])/100
+			## only if less than maxMV% missing data per set
+			if(length(data[[v]][is.na(data[[v]]) & data$yyyy==y])<=mMV){
+				c <- 1+y-data$yyyy[1]
+				tmp[c] <- sum(data[[v]][data$yyyy==y],na.rm=T)
+			}
+		}
+		aTotals <- c(aTotals,list(tmp))
+		names(aTotals)[length(aTotals)] <- names(data)[v]
+	}
+
+return(aTotals)
+# rm tmp objects
+rm(tmp,v,y,maxMV,mMV,c)
 }
 
 # compute the monthly totals
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per month
 # data format defined in readFormats.r
-stat_monthlyTotals <- function(data,maxMV)
+stat_monthlyTotals <- function(data,maxMV=5)
 {
+	mTotals <- NULL
+	# I just compute it all, even if computing the date does not make any sense
+	for (v in 1:length(data)){
+		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1])*12)
+		for(y in data$yyyy[1]:data$yyyy[length(data$yyyy)]){
+			for(m in 1:12){
+				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
+				## only if less than maxMV% missing data per set
+				if(length(data[[v]][is.na(data[[v]]) & data$mm==m & data$yyyy==y])<=mMV){
+					c <- 12*(y-data$yyyy[1])+m
+					tmp[c] <- sum(data[[v]][data$mm==m & data$yyyy==y],na.rm=T)
+				}
+			}
+		}
+		mTotals <- c(mTotals,list(tmp))
+		names(mTotals)[length(mTotals)] <- names(data)[v]
+	}
+
+return(mTotals)
+# rm tmp objects
+rm(tmp,v,y,m,maxMV,mMV,c)
 }
 
-# compute the winWD time-window mean (winWD: window width)
+# compute the winWD time-window mean (winWidth: window width)
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per time-window
 # data format defined in readFormats.r
-stat_windowMTotals <- function(data,maxMV,winWD)
+stat_windowTotals <- function(data,maxMV=5,winWidth=29)
 {
+	wTotals <- NULL
+	# winWidth-1 because I'm gonna look at one day -aHalfWidth and +pHalfWidth, hence a aHalfWidth+1+pHalfWidth wide window
+	aHalfWidth <- floor((winWidth-1)/2)
+	pHalfWidth <- (winWidth-1) - aHalfWidth
+
+	# I just compute it all, even if computing the date does not make any sense
+	for (v in 1:length(data)){
+		tmp <- array(NA,dim=length(data$date))
+		for(l in 1:length(data$date)){
+			mMV <- maxMV*winWidth/100
+			## only if less than maxMV% missing data per set
+			windowA <- array(NA,dim=aHalfWidth+1)
+			windowP <- array(NA,dim=pHalfWidth+1)
+			ifelse(aHalfWidth>=l,windowA[(length(windowA)-length(data[[v]][1:l])+1):length(windowA)]<-data[[v]][1:l],windowA<-data[[v]][(l-aHalfWidth):l])
+			ifelse(pHalfWidth>=(length(data$date)-l),windowP[1:(length(data$date)-l+1)]<-data[[v]][l:length(data$date)],windowP<-data[[v]][l:(l+pHalfWidth)])
+			window <- c(windowA,windowP[2:length(windowP)])
+			if(length(window[is.na(window)])<=mMV){
+				tmp[l] <- sum(window,na.rm=T)
+			}
+		}
+		wTotals <- c(wTotals,list(tmp))
+		names(wTotals)[length(wTotals)] <- names(data)[v]
+	}
+
+return(wTotals)
+# rm tmp objects
+rm(tmp,aHalfWidth,pHalfWidth,v,l,maxMV,mMV,windowA,windowP,window)
 }
 
 ### QUANTILES
+########################################################################
 
+### before ....
 ##############################################################################
 temp_quantiles <- function(metDat,figTit=figTitDef)
 {
