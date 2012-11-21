@@ -32,7 +32,7 @@ stat_annualMeans <- function(data,maxMV=10)
 
 return(aMeans)
 # rm tmp objects
-rm(tmp,v,y,maxMV,mMV,c)
+rm(tmp,v,y,maxMV,mMV,c,fullY)
 }
 
 # compute the monthly mean
@@ -43,7 +43,10 @@ stat_monthlyMeans <- function(data,maxMV=10)
 	mMeans <- NULL
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
-		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1])*12)
+		# monthNo <- months of first year + 12*no of fullY + months of last year
+		monthNo <- (12-data$mm[1]+1) + (12*(data$yyyy[length(data$yyyy)]-data$yyyy[1]+1-2)) + (data$mm[length(data$mm)])
+		tmp <- array(NA,dim=monthNo)
+		c<-1
 		y<-data$yyyy[1]
 		while(y<=data$yyyy[length(data$yyyy)]){
 			m<-data$mm[data$yyyy==y][1]
@@ -53,9 +56,9 @@ stat_monthlyMeans <- function(data,maxMV=10)
 				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
 				## only if less than maxMV% missing data per set
 				if(length(fullM[is.na(fullM)])<=mMV){
-					c <- 12*(y-data$yyyy[1])+m
 					tmp[c] <- mean(fullM,na.rm=T)
 				}
+			c<-c+1
 			m<-m+1
 			}
 		y<-y+1
@@ -66,7 +69,7 @@ stat_monthlyMeans <- function(data,maxMV=10)
 
 return(mMeans)
 # rm tmp objects
-rm(tmp,v,y,m,maxMV,mMV,c)
+rm(tmp,v,y,m,maxMV,mMV,c,monthNo,fullM)
 }
 
 # compute the winWD time-window mean (winWidth: window width)
@@ -133,7 +136,7 @@ stat_annualTotals <- function(data,maxMV=5)
 
 return(aTotals)
 # rm tmp objects
-rm(tmp,v,y,maxMV,mMV,c)
+rm(tmp,v,y,maxMV,mMV,c,fullY)
 }
 
 # compute the monthly totals
@@ -167,7 +170,7 @@ stat_monthlyTotals <- function(data,maxMV=5)
 
 return(mTotals)
 # rm tmp objects
-rm(tmp,v,y,m,maxMV,mMV,c)
+rm(tmp,v,y,m,maxMV,mMV,c,fullM)
 }
 
 # compute the winWD time-window mean (winWidth: window width)
