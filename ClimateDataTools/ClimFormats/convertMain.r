@@ -41,7 +41,7 @@ init_paths <- function(it)
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/APSIM_format/InLandIsT";
+		output <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/APSIM_format/InLandIsF";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}

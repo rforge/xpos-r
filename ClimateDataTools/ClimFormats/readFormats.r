@@ -232,3 +232,15 @@ return(csag)
 rm(cVar,head,line,d,o,jD,startD,endD)
 }
 
+
+#### OBSOLETE
+##############################################################################
+load_obs <- function(path=pathDef,yeaC=2,julC=3,tmnC=4,tmxC=5,pptC=6,solC=7){
+
+	data<-read.table(path,skip=24);
+
+	obs <- list("data"=data,"yeaC"=yeaC,"julC"=julC,"tmnC"=tmnC,"tmxC"=tmxC,"pptC"=pptC,"solC"=solC)
+return(obs);
+}
+
+
