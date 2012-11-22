@@ -18,7 +18,7 @@ stat_annualMeans <- function(data,maxMV=10)
 		while(y<=data$yyyy[length(data$yyyy)]){
 			fullY <- array(NA,dim=as.numeric(julian(as.Date(paste(y,"12","31",sep="-")),origin=as.Date(paste(y,"01","01",sep="-"))))+1)
 			fullY[1:length(data[[v]][data$yyyy==y])] <- data[[v]][data$yyyy==y]
-			mMV <- maxMV*length(data[[v]][data$yyyy==y])/100
+			mMV <- maxMV*length(fullY)/100
 			## only if less than maxMV% missing data per set
 			if(length(fullY[is.na(fullY)])<=mMV){
 				c <- 1+y-data$yyyy[1]
@@ -53,7 +53,7 @@ stat_monthlyMeans <- function(data,maxMV=10)
 			while(m<=data$mm[data$yyyy==y][length(data$mm[data$yyyy==y])]){
 				fullM <- array(NA,dim=as.numeric(julian(as.Date(paste(y,m,maxNo_days(y,m),sep="-")),origin=as.Date(paste(y,m,"01",sep="-"))))+1)
 				fullM[1:length(data[[v]][data$mm==m & data$yyyy==y])] <- data[[v]][data$mm==m & data$yyyy==y]
-				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
+				mMV <- maxMV*length(fullM)/100
 				## only if less than maxMV% missing data per set
 				if(length(fullM[is.na(fullM)])<=mMV){
 					tmp[c] <- mean(fullM,na.rm=T)
@@ -122,7 +122,7 @@ stat_annualTotals <- function(data,maxMV=5)
 		while(y<=data$yyyy[length(data$yyyy)]){
 			fullY <- array(NA,dim=as.numeric(julian(as.Date(paste(y,"12","31",sep="-")),origin=as.Date(paste(y,"01","01",sep="-"))))+1)
 			fullY[1:length(data[[v]][data$yyyy==y])] <- data[[v]][data$yyyy==y]
-			mMV <- maxMV*length(data[[v]][data$yyyy==y])/100
+			mMV <- maxMV*length(fullY)/100
 			## only if less than maxMV% missing data per set
 			if(length(fullY[is.na(fullY)])<=mMV){
 				c <- 1+y-data$yyyy[1]
@@ -147,19 +147,22 @@ stat_monthlyTotals <- function(data,maxMV=5)
 	mTotals <- NULL
 	# I just compute it all, even if computing the date does not make any sense
 	for (v in 1:length(data)){
-		tmp <- array(NA,dim=(1+data$yyyy[length(data$yyyy)]-data$yyyy[1])*12)
+		# monthNo <- months of first year + 12*no of fullY + months of last year
+		monthNo <- (12-data$mm[1]+1) + (12*(data$yyyy[length(data$yyyy)]-data$yyyy[1]+1-2)) + (data$mm[length(data$mm)])
+		tmp <- array(NA,dim=monthNo)
+		c<-1
 		y<-data$yyyy[1]
 		while(y<=data$yyyy[length(data$yyyy)]){
 			m<-data$mm[data$yyyy==y][1]
 			while(m<=data$mm[data$yyyy==y][length(data$mm[data$yyyy==y])]){
 				fullM <- array(NA,dim=as.numeric(julian(as.Date(paste(y,m,maxNo_days(y,m),sep="-")),origin=as.Date(paste(y,m,"01",sep="-"))))+1)
 				fullM[1:length(data[[v]][data$mm==m & data$yyyy==y])] <- data[[v]][data$mm==m & data$yyyy==y]
-				mMV <- maxMV*length(data[[v]][data$mm==m & data$yyyy==y])/100
+				mMV <- maxMV*length(fullM)/100
 				## only if less than maxMV% missing data per set
 				if(length(fullM[is.na(fullM)])<=mMV){
-					c <- 12*(y-data$yyyy[1])+m
 					tmp[c] <- sum(fullM,na.rm=T)
 				}
+			c<-c+1
 			m<-m+1
 			}
 		y<-y+1

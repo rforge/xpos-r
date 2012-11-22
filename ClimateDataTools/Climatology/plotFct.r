@@ -44,11 +44,40 @@ copyDev2fig <- function(file)
 }
 
 
-# plot a variable against another
-plot_timeSerie <- function(xVar,yVar)
+#### PLOTTING
+##############################################################################
+
+plot_temp <- function(minOBS,minSIM,maxOBS=NULL,maxSIM=NULL)
 {
 	graphics.off()
-	plot(xVar,yVar,type="l")
+	plot(c(min(c(minOBS,minSIM),na.rm=T),max(c(maxOBS,maxSIM),na.rm=T)),c(min(c(minOBS,minSIM),na.rm=T),max(c(maxOBS,maxSIM),na.rm=T)),type="n",xlab="base",ylab="perturbed",main="tmin and tmax")
+	x<--100:1000
+
+	points(minOBS,minSIM,pch="+",col="blue")
+	if(!is.null(maxSIM))	points(maxOBS,maxSIM,pch="+",col="red")
+	lines(x,x)
+	
+	# stat
+	minM <- lm(minSIM~minOBS)
+	abline(minM,lw=2,lt=2)
+	if(!is.null(maxSIM)){
+		maxM <- lm(maxSIM~maxOBS)
+		abline(maxM,lw=2,lt=2)
+	}
+}
+
+plot_rain <- function(OBS,SIM)
+{
+	graphics.off()
+	plot(c(0,max(c(OBS,SIM),na.rm=T)),c(0,max(c(OBS,SIM),na.rm=T)),type="n",xlab="base",ylab="perturbed",main="rainfall")
+	x<--100:1000
+
+	points(OBS,SIM,pch="+",col="blue")
+	lines(x,x)
+	
+	# stat
+	rainM <- lm(SIM~OBS)
+	abline(rainM,lw=2,lt=2)
 }
 
 #### OBSOLETE
