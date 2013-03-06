@@ -1,0 +1,23 @@
+Forwords about solar radiation and ETo estimations.
+
+Minimum and maximum temperatures as well as rainfall amounts have been downscaled.
+NOT solar radiation (APSIM) NOR potential evapotranspiration (DSSAT, AquaCrop).
+
+For solar radiation, we followed [Allen et al., 1998] and [Ball et al., 2004]. Solar radiation has been estimated according to the minimum and maximum temperatures, julian day, latitude, altitude and an empirical parameter. We estimated solar radiation with 2 values of this empirical parameter. In the literature, the one is used to describe coastal conditions (inLandIsF), the other inland conditions (inLandIsT). Those have been defined at the best of our knowledge at the time, and we encourage solar radiation and ETo users to improve their parametrisations for a better estimation (requires actual solar radiation data).
+
+For ETo, most of the intermediary calculations are computed according to [Allen et al., 1998]. The authors used the Peinman-Montheith ETo estimation which requires wind speeds. Wind speed being unavailable in projected daily downscaled data, we therefore use the Priestley-Taylor ETo estimation approach [Priestley and Taylor, 1972]. Eventually the ETo estimation formulae used requires daily data for minimum and maximum temperatures, solar radiation and extraterrestrial radiation, as well as station latitude and elevation. Please note, that the solar radiation has been estimated (see above).
+
+Regarding the coastl and in land empirical parameter, [Allen et al., 1998] say ""The adjustment coefficient kRs is empirical and differs for 'interior' or 'coastal' regions:
+- for 'interior' locations, where land mass dominates and air masses are not strongly influenced by a large water body, kRs ≅ 0.16;
+- for 'coastal' locations, situated on or adjacent to the coast of a large land mass and where air masses are influenced by a nearby water body, kRs ≅ 0.19."
+
+It is very hard to advise for one or the other in Malawi, especially since the empirical parameter have not been tested in situ. I would suggest to use the coastal conditions for stations less than 10km away from the Malawi lake and less than 500m high. Of course do addapt this according to local expert knowledge and experience.
+
+[Allen et al., 1998]
+Richard G. Allen and Luis S. Pereira and Dirk Raes and Martin Smith, Crop evapotranspiration - Guidelines for computing crop water requirements, FAO Irrigation and drainage papers, vol.56, 1998, http://www.fao.org/docrep/x0490e/x0490e00.htm#Contents.
+
+[Priestley and Taylor, 1972]
+C. H. B. PRIESTLEY and R. J. TAYLOR, On the Assessment of Surface Heat Flux and Evaporation Using Large-Scale Parameters, Monthly Weather Review, vol.100(2), pp.81-92, 1972.
+
+[Ball et al., 2004]
+Rosalind A. Ball and Larry C. Purcell and Sean K. Carey, Evaluation of Solar Radiation Prediction Models in North America, Agronomy Journal, vol.96(2), pp.391-397, 2004.

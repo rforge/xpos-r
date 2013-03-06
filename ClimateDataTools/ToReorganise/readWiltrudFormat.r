@@ -92,7 +92,7 @@ formatToCSAG <- function(data,head,outF,v)
 	);
 #	table <- format(table,digits=1,nsmall=2);
 
-# write it into a .eto file
+# write it into a .txt file
 	outName <- paste(outF,head$sta$id,".txt",sep="");
 	if(!file.exists(outF)){	# create output dir if does not exists
 		dir.create(outF, showWarnings = FALSE, recursive = FALSE, mode = "0777");

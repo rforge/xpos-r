@@ -73,6 +73,8 @@ return(obs);
 ##############################################################################
 temp_quantiles <- function(metDat,figTit=figTitDef)
 {
+browser()
+
 	yeaC <- metDat$yeaC;
 	julC <- metDat$julC;
 	tmnC <- metDat$tmnC;
