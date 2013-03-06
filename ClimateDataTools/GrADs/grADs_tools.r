@@ -4,7 +4,7 @@
  ####################################################################
 
 ## for test purpose only
-ctlFile<-'/terra/blue/users/mtadross/umdata/caafa/Grads/ppt.monmn.1960-2008.ctl'
+ctl<-'/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/watch_africa/format_grads/BNU-ESM-rcp45/ppt/BNU-ESM-rcp45_ppt.ctl'
 path2world<-'~/Desktop/Optimisation/Sensitivity/DataMap/world.txt'
 path2africaBdy<-'~/Desktop/Optimisation/Sensitivity/DataMap/my-africa-bdy.txt'
 path2africaCil<-'~/Desktop/Optimisation/Sensitivity/DataMap/my-africa-cil.txt'
@@ -13,7 +13,7 @@ path2africaRiv<-'~/Desktop/Optimisation/Sensitivity/DataMap/my-africa-riv.txt'
 ## read the descriptor file
  # REF http://www.iges.org/grads/gadoc/aboutgriddeddata.html#descriptor
  ####################################################################
-read_desctiptorFile<-function(ctlFile)
+read_desctiptorFile<-function(ctlFile=ctl)
 {
 	## test that it is a descriptor file ('.ctl')
 	extension <- strsplit(ctlFile,"\\.")[[1]];
@@ -29,7 +29,6 @@ read_desctiptorFile<-function(ctlFile)
 	for (i in 2:(length(temp)-1)){
 		path2file <- paste(path2file,temp[i],sep="/");
 	}
-	path2file <- paste(path2file,"/",sep="");
 
 	meta <- vector("list",10);
 	names(meta)[[1]]<-"path";	meta$path<-path2file;
@@ -127,7 +126,7 @@ return (meta);
  ####################################################################
  # CSAG: lon=18.459910 lat=-33.957257
  ####################################################################
-read_coordBinaryFile<-function(ctlFile,lon=89,lat=44,alt=1)
+read_coordBinaryFile<-function(ctlFile=ctl,lon=89,lat=44,alt=1)
 {
 	if(dev.cur()!=1)	dev.off();
 
@@ -138,15 +137,10 @@ read_coordBinaryFile<-function(ctlFile,lon=89,lat=44,alt=1)
 	nTim <- as.integer(meta$tdef$num);
 	gridSize <- nLon*nLat*nAlt*nTim;
 
-## read binary file
-	data <- array(readBin(paste(meta$dset$path,meta$dset$name,sep="/"),numeric(),n=gridSize,size=4),dim=c(nLon,nLat,nAlt,nTim));
-
-# translate lon and lat in row and col
-#	row <- floor((lon-lonStart)/lonIncr);
-	row <- (lon-lonStart)/lonIncr;
-#	col <- floor((lat-latStart)/latIncr);
-	col <- (lat-latStart)/latIncr;
-browser();
+#alt is 0, why???
+browser()
+	## read binary file
+	data <- array(readBin(paste(meta$dset$path,meta$dset$name,sep="/"),what=numeric(),n=gridSize,size=4),dim=c(nLon,nLat,nAlt,nTim));
 
 return(data);
 }
