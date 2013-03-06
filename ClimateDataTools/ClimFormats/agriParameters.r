@@ -55,7 +55,7 @@ compute_radn_1day <- function(julDay,tmx,tmn,staLat,staAlt,inland)
 	Krs <- ifelse(inland,0.16,0.19);		# Krs in [0.1,1.2] for example 0.16 inland, 0.19 coastal
 	# estimate of the atmospheric transmissivity
 	Tt <- Krs *(1+2.7*10^(-5)*staAlt)*sqrt(abs(tmx-tmn));
-		
+
 	# Solar radiation at earth's surface [MJ.m^(-2).day^(-1)]
 	Rs <- Ra*Tt;
 

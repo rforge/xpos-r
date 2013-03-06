@@ -8,7 +8,8 @@
  #
  ###############################################################################
 
-##
+
+## OBSOLETE? see climAgro.r
  # COMPUTE tav AND amp APSIM CONSTANTS
  # annual average ambient temperature (TAV)
  # annual amplitude in mean monthly temperature (AMP)
@@ -66,7 +67,6 @@ compute_tavNamp <- function(data)
 	data<-list("tmn"=data$tmn,"tmx"=data$tmx,"ppt"=data$ppt,"year"=data$year,"julDay"=data$julDay,"sRad"=data$sRad,"amp"=amp,"tav"=tav);
 return(data);
 }
-
 ##
  # CREATE YEAR AND JULIAN DAYS
  ###############################################################################

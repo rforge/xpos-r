@@ -21,6 +21,7 @@ compute_radn <- function(data,station,inland=NULL)
 	}
 
 	for (line in 1:dim(data$year)){
+
 		radn<-compute_radn_1day(data$julDay[line],data$tmx[line],data$tmn[line],station$lat,station$alt,inland);
 		
 		if(line==1){

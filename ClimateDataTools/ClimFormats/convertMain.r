@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/bruce_format";
+	input <- "/home/crespo/Desktop/HERE";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/terra/data/downscaled/lcoop/dscl-pca/cmip5/output/malawi_usaid/APSIM_format/InLandIsF";
+		output <- "/home/crespo/Desktop/THERE";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -85,7 +85,7 @@ return(list("input"=input,"output"=output,"folder"=folder));
  # 	init_paths and init_stat anyway,
  #	+ init_GCMs if allGCM is TRUE
  ###############################################################################
-convert <- function(model,allRCP=TRUE,allPara=TRUE,allStat=TRUE,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)	# ,allSRES=TRUE,allGCM=TRUE
+convert <- function(model,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)	# ,allSRES=TRUE,allGCM=TRUE
 {
 ### crop models
 	if(model=="all") model <- 1;
@@ -101,145 +101,54 @@ convert <- function(model,allRCP=TRUE,allPara=TRUE,allStat=TRUE,inLand=TRUE,seeS
 	}
 
 ### initialisation
-	path <- init_paths(iteration);
-	staNames <- NULL;
+	path <- init_paths(iteration)
+	parentFolder <- path$input
+	rcp_t <- list.files(parentFolder)
+	for (r in 1:length(rcp_t)){
+		print(paste("   ",rcp_t[r],sep=" > "),quote=FALSE)
+		RCPFolder <- paste(parentFolder,rcp_t[r],sep="/")
+		tPe_t <- list.files(RCPFolder)
+		for (t in 1:length(tPe_t)){
+			print(paste("   ",rcp_t[r],tPe_t[t],sep=" > "),quote=FALSE)
+			pptFolder <- paste(RCPFolder,tPe_t[t],"ppt",sep="/")
+			sta_t <- list.files(pptFolder)
+			for (s in 1:length(sta_t)){
+				print(paste("   ",rcp_t[r],tPe_t[t],sta_t[s],sep=" > "),quote=FALSE);
+				pathToStation <-	list(	"input"=paste(path$input,rcp_t[r],tPe_t[t],"",sep="/"),
+								"output"=paste(path$output,rcp_t[r],tPe_t[t],"",sep="/"),
+								"folder"=	list(	"tmn"=path$folder$tmn,
+											"tmx"=path$folder$tmx,
+											"ppt"=path$folder$ppt
+										),
+								"file"=		list(	"temp"=sta_t[s],
+											"prec"=sta_t[s]
+										),
+								"inland"=inLand,
+								"arid"='A'
+							);
+				switch(model,
+					{	# all
+						convertOne("ap",pathToStation,seeSteps,fillIn);
+						convertOne("aq",pathToStation,seeSteps,fillIn);
+#						convertOne("cs",pathToStation,seeSteps,fillIn);
+						convertOne("ds",pathToStation,seeSteps,fillIn);
+#						convertOne("ag",pathToStation,seeSteps,fillIn);
+					},{	# apsim only
+						convertOne("ap",pathToStation,seeSteps,fillIn);
+					},{	# aquacrop only
+						convertOne("aq",pathToStation,seeSteps,fillIn);
+					},{	# csag like only
+						convertOne("cs",pathToStation,seeSteps,fillIn);
+					},{	# dssat only
+						convertOne("ds",pathToStation,seeSteps,fillIn);
+					},{	# AgMIP only
+						convertOne("ag",pathToStation,seeSteps,fillIn);
+					}
+				);
 
-	## SRES
-#	if(allSRES){
-#		sres <- list.files(path$input);
-#		for (es in 1:length(sres)){
-#			tmp <- list("t"=NULL)
-#			staNames <- c(staNames,tmp);
-#			names(staNames)[es]<-sres[es];
-#		}
-#	}else{	
-#		print("make a folder with ONLY the SRES you want to deal with !!");
-#		browser();
-#	}
-
-	## GCMs
-#	if(allGCM){
-#		for (es in 1:length(staNames)){
-#			gcms <- list.files(paste(path$input,names(staNames)[es],sep="/"));
-#			for (gc in 1:length(gcms)){
-#				tmp <- list("t"=NULL)
-#				staNames[[es]] <- c(staNames[[es]],tmp);
-#				names(staNames[[es]])[gc] <- gcms[gc];
-#			}
-#		}
-#	}else{
-#		print("make a folder with ONLY the GCMs you want to deal with !!");
-#		browser();
-#	}
-
-	## RCPs
-	if(allRCP){
-		rcp <- list.files(path$input);
-		for (rc in 1:length(rcp)){
-			tmp <- list("t"=NULL)
-			staNames <- c(staNames,tmp);
-			names(staNames)[rc]<-rcp[rc];
+			}
 		}
-	}else{	
-		print("make a folder with ONLY the RCP you want to deal with !!");
-		browser();
 	}
-
-	## parameters
-	if(allPara){
-#		for (es in 1:length(staNames)){
-		for (rc in 1:length(staNames)){
-#			for (gc in 1:length(staNames[[es]])){
-#				para <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],sep="/"));
-				para <- list.files(paste(path$input,names(staNames)[rc],sep="/"));
-				for(pa in 1:length(para)){
-					tmp <- list("t"=NULL)
-#					staNames[[es]][[gc]] <- c(staNames[[es]][[gc]],tmp);
-					staNames[[rc]] <- c(staNames[[rc]],tmp);
-#					names(staNames[[es]][[gc]])[pa] <- para[pa];
-					names(staNames[[rc]])[pa] <- para[pa];
-				}
-#			}
-		}
-	}else{
-		print("make a folder with ONLY the parameters you want to deal with !!");
-		browser();
-	}
-
-	## staNames
-	if(allStat){
-#		for (es in 1:length(staNames)){
-		for (rc in 1:length(staNames)){
-#			for (gc in 1:length(staNames[[es]])){
-				for(pa in 1:length(para)){
-#					stat <- list.files(paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],names(staNames[[es]][[gc]])[pa],sep="/"));
-#					staNames[[es]][[gc]][[pa]] <- stat;
-					stat <- list.files(paste(path$input,names(staNames)[rc],names(staNames[[rc]])[pa],sep="/"));
-					staNames[[rc]][[pa]] <- stat;
-				}
-#			}
-		}
-	}else{
-		print("make a folder with ONLY the stations you want to deal with !!");
-		browser();
-	}
-
-## given last structure, just go through all staNames of 1 param of all GCMs of all SRES included in staNames
-### multiple GCMs routine
-#		for (es in 1:length(staNames)){
-		for (rc in 1:length(staNames)){
-#			print(paste(" > SRES : ",names(staNames)[es],sep=""),quote=FALSE);
-			print(paste(" > RCP : ",names(staNames)[rc],sep=""),quote=FALSE);
-#			for (gc in 1:length(staNames[[es]])){
-#				print(paste(" > > GCMs : ",names(staNames[[es]])[gc],sep=""),quote=FALSE);
-#				for(st in 1:length(staNames[[es]][[gc]][[1]])){
-				for(st in 1:length(staNames[[rc]][[1]])){
-#					print(paste(" > > > station : ",staNames[[es]][[gc]][[1]][st],sep=""),quote=FALSE);
-					print(paste(" > > > station : ",staNames[[rc]][[1]][st],sep=""),quote=FALSE);
-#					if (is.null(stat[[s]]$arid) || (is.numeric(stat[[s]]$arid) && (stat[[s]]$arid < 1 || stat[[s]]$arid > 5)) || (is.character(stat[[s]]$arid)&& stat[[s]]$arid!='A')){
-#						print("# WARNING: wrong arid parameter -> assuming automatic condition",quote=FALSE);
-#						stat[[s]]$arid <- 'A';
-#					}
-					pathToStation <-	list(	#"input"=paste(path$input,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
-									"input"=paste(path$input,names(staNames)[rc],"",sep="/"),
-									#"output"=paste(path$output,names(staNames)[es],names(staNames[[es]])[gc],"",sep="/"),
-									"output"=paste(path$output,names(staNames)[rc],"",sep="/"),
-									"folder"=	list(	"tmn"=path$folder$tmn,
-												"tmx"=path$folder$tmx,
-												"ppt"=path$folder$ppt
-											),
-									"file"=		list(	#"temp"=staNames[[es]][[gc]][[1]][st],
-												"temp"=staNames[[rc]][[1]][st],
-												#"prec"=staNames[[es]][[gc]][[1]][st]
-												"prec"=staNames[[rc]][[1]][st]
-											),
-									"inland"=inLand,
-									"arid"='A'
-								);
-
-					switch(model,
-						{	# all
-							convertOne("ap",pathToStation,seeSteps,fillIn);
-							convertOne("aq",pathToStation,seeSteps,fillIn);
-							convertOne("cs",pathToStation,seeSteps,fillIn);
-							convertOne("ds",pathToStation,seeSteps,fillIn);
-							convertOne("ag",pathToStation,seeSteps,fillIn);
-						},{	# apsim only
-							convertOne("ap",pathToStation,seeSteps,fillIn);
-						},{	# aquacrop only
-							convertOne("aq",pathToStation,seeSteps,fillIn);
-						},{	# csag like only
-							convertOne("cs",pathToStation,seeSteps,fillIn);
-						},{	# dssat only
-							convertOne("ds",pathToStation,seeSteps,fillIn);
-						},{	# AgMIP only
-							convertOne("ag",pathToStation,seeSteps,fillIn);
-						}
-					);
-
-				}
-#			}
-		}
 print(" ... process completed ...");
 }
 
@@ -252,11 +161,11 @@ print(" ... process completed ...");
 convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 {
 ### sources
-	source("checkFunctions.r");
-	source("bruceFormat.r");
-	source("metTransformations.r");
-	source("agriParameters.r");
-	source("agriParameters_loops.r");
+	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/checkFunctions.r");
+	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/bruceFormat.r");
+	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/metTransformations.r");
+	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters.r");
+	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters_loops.r");
 
 	if(is.null(pathToStation)){
 		print("### ERROR: no station specified !!",quote=FALSE);
@@ -304,7 +213,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 ## then starts the crop model related operations
 	switch(targetModel,
 		{	#################### APSIM #
-			source('convertToApsim.r');
+			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToApsim.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
@@ -315,7 +224,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 		{	################# AQUACROP #
 			# aquacrop deals with day, 10-days and monthly records
 			# so far we deal only with day records
-			source('convertToAquacrop.r');
+			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToAquacrop.r');
 			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
 			if(is.numeric(pathToStation$arid)){
 				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
@@ -360,9 +269,10 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 			# formatToTmnCSAG(data,fileHead,pathToStation);
 		},	# CSAG ########################
 		{	####################### DSSAT #
-			source('convertToDssat.r');
+			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToDssat.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
+
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
 			data <- compute_tavNamp(data);
 			if(seeSteps)	print("... format and write data into .WTH file ...",quote=FALSE);
@@ -373,118 +283,3 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 if(seeSteps)	print("... conversion completed ...",quote=FALSE);
 }
 
-
-###############################################################################
-#
-#	I AM NOT SURE I NEED THOSE ANYMORE ... ?
-#
-###############################################################################
-
-
-##
- # STATION NAMES - from one to multiple stat
- ###############################################################################
- # temp and prec names are separated because they are different in some cases
- ###############################################################################
-init_stat <- function(all=T,input)
-{
-if (all){
-	stat <- list.files()
-}else{
-	stat <- list(#	list(	"temp"="templateName1.txt",		# name for temp data file
-#				"prec"="templateName2.txt",		# name for prec data file (could be the same)
-#				"arid"= 'A',				# default='A' - humidity conditions from 1 (humid) to 6 (hyper-arid)
-#				"inLand"=TRUE),				# is the station in land (TRUE) or on the coast (FALSE)
-#			list(	"temp"="0331520.1.txt",
-#				"prec"="0331520.1.txt",
-#				"arid"= 'A',
-#				"inLand"=TRUE),
-			list(	"temp"="quin5410.txt",
-				"prec"="quin5410.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0261516.1.txt",
-				"prec"="0261516.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0293597.2.txt",
-				"prec"="0293597.2.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0327101.1.txt",
-				"prec"="0327101.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0331520.1.txt",
-				"prec"="0331520.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0331585.1.txt",
-				"prec"="0331585.2.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0399894.1.txt",
-				"prec"="0399894.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE),
-			list(	"temp"="0400730.1.txt",
-				"prec"="0400730.1.txt",
-				"arid"= 'A',
-				"inLand"=TRUE)
-		);
-}
-return(stat);
-}
-
-##
- # GC MODELS NAMES
- ###############################################################################
- # you need it only for multiple GCMs routine conversion
- ###############################################################################
-init_GCMs <- function()
-{
-#GCMs <- list(#	"obs"=	list(	"con"=	"FltStnData/"),
-#		"ncep"=	list(	"con"=	"ncep2.2009/"),
-#		"cccm"=	list(	"con"=	"cccma_cgcm3_1/",
-#				"futA"=	"cccma_cgcm3_1-fa/",
-#				"futB"=	"cccma_cgcm3_1-fb/"),
-#		"cnrm"=	list(	"con"=	"cnrm_cm3/",
-#				"futA"=	"cnrm_cm3-fa/",
-#				"futB"=	"cnrm_cm3-fb/"),
-#		"csiro35"=list(	"con"=	"csiro_mk3_5/",
-#				"futA"=	"csiro_mk3_5-fa/",
-#				"futB"=	"csiro_mk3_5-fb/"),
-#		"gfdl0"=list(	"con"=	"gfdl_cm2_0/",
-#				"futA"=	"gfdl_cm2_0-fa/",
-#				"futB"=	"gfdl_cm2_0-fb/"),
-#		"gfdl1"=list(	"con"=	"gfdl_cm2_1/",
-#				"futA"=	"gfdl_cm2_1-fa/",
-#				"futB"=	"gfdl_cm2_1-fb/"),
-#		"giss"=	list(	"con"=	"giss_model_e_r/",
-#				"futA"=	"giss_model_e_r-fa/",
-#				"futB"=	"giss_model_e_r-fb/"),
-#		"ipsl"=	list(	"con"=	"ipsl_cm4/",
-#				"futA"=	"ipsl_cm4-fa/",
-#				"futB"=	"ipsl_cm4-fb/"),
-#		"echam"=list(	"con"=	"mpi_echam5/",
-#				"futA"=	"mpi_echam5-fa/",
-#				"futB"=	"mpi_echam5-fb/"),
-#		"mri"=list(	"con"=	"mri_cgcm2_3_2a/",
-#				"futA"=	"mri_cgcm2_3_2a-fa/",
-#				"futB"=	"mri_cgcm2_3_2a-fb/"),
-#		"echo"=	list(	"con"=	"miub_echo_g/",
-#				"futA"=	"miub_echo_g-fa/",
-#				"futB"=	"miub_echo_g-fb/")
-#		"caafx"=list(	"a"=	"caafa/",
-#				"b"=	"caafb/",
-#				"c"=	"caafc/",
-#				"d"=	"caafd/",
-#				"e"=	"caafe/",
-#				"f"=	"caaff/",
-#				"g"=	"caafg/",
-#				"h"=	"caafh/",
-#				"i"=	"caafi/",
-#				"j"=	"caafj/")
-#	);
-#return(GCMs);
-}
