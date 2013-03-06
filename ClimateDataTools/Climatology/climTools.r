@@ -1,4 +1,9 @@
 ##
+ # FILE climTools.r
+ # AUTHOR olivier crespo
+ # https://r-forge.r-project.org/projects/xpos-r/
+ ###############################################################################
+##
  # is that year a leap year?
  ###############################################################################
 is.leapYear <- function(year)
