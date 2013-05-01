@@ -41,7 +41,7 @@
 compute_radn_1day <- function(julDay,tmx,tmn,staLat,staAlt,inland)
 {	
 	Gsc <- 0.0820;					# solar constant = 0.0820 MJ.m^(-2).min^(-1)
-	phi <- pi*staLat/180;				# latitude [rad] (N.B. South lat shouls be negative)
+	phi <- pi*staLat/180;				# latitude [rad] (N.B. South lat should be negative)
 	J <- julDay;					# julian day of the year
 
 	delta <- 0.409*sin((2*pi*J/365)-1.39);		# solar decimation [rad]

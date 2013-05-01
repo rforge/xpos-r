@@ -82,7 +82,7 @@ rm(table,v,header)
 ########################################################################
 ##### oldCSAG
 ########################################################################
-#outFometD<-'/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/WorkingDir'
+#outFometD<-'/home/crespo/Desktop/TMP/CSAG'
 write_oldCSAGformat <- function(metD,outFolder=outFometD)
 {
 	# if you built a full set, then switch type to 0
@@ -137,7 +137,6 @@ write_oldCSAGformat <- function(metD,outFolder=outFometD)
 	header <- sub("v_type",		metD$period$type,			header)
 	header <- sub("v_description",	metD$station$comm,			header)
 	write.table(header,outTmin,append=FALSE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline)
-
 	# duplicate header
 	if(!file.copy(outTmin,outTmax,overwrite=TRUE)){
 		print("### > FAILED TO COPY TMIN HEADER INTO TMAX",quote=F)

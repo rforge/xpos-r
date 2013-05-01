@@ -21,6 +21,7 @@ agro_tavamp <- function(metD)
 	yearlyAMP <- array(NA,dim=(metD$data$yyyy[length(metD$data$yyyy)]-metD$data$yyyy[1]+1))
 
 	# want only full years
+	lastIncomplete <- FALSE;
 	line <-1
 	while(metD$data$mm[line]!=1) line <-line+1
 
@@ -34,7 +35,7 @@ agro_tavamp <- function(metD)
 			monthlyMean[,3] <- 0
 			monthlyMean[,4] <- 0
 			if(year==metD$data$yyyy[length(metD$data$yyyy)]){
-				if(metD$data$mm[length(metD$data$mm)]!=12 || metD$data$dd[length(metD$data$dd)]!=31) break
+				if(metD$data$mm[length(metD$data$mm)]!=12 || metD$data$dd[length(metD$data$dd)]!=31)	break
 			}
 		}
 
@@ -48,9 +49,12 @@ agro_tavamp <- function(metD)
 		}
 	}
 	
-	# complete
-	yearlyAMP[year-metD$data$yyyy[1]+1] <- max(monthlyMean[,3]/monthlyMean[,4])-min(monthlyMean[,3]/monthlyMean[,4])
+	# finalise computation
+	yearlyAMP[year-metD$data$yyyy[1]+1] <- max(monthlyMean[,3]/monthlyMean[,4],na.rm=T)-min(monthlyMean[,3]/monthlyMean[,4],na.rm=T)
 	monthlyMean[,5] <- monthlyMean[,1]/monthlyMean[,2]
+
+	# check for incomplete last year, if incomplete, max-min will be 'Inf'
+	if(any(is.infinite(yearlyAMP)))	yearlyAMP <- yearlyAMP[!is.infinite(yearlyAMP)]
 
 	amp <- ifelse(all(is.na(yearlyAMP)),NA,mean(yearlyAMP,na.rm=T))
 	tav <- ifelse(all(is.na(monthlyMean[,5])),NA,mean(monthlyMean[,5]))
@@ -63,8 +67,8 @@ agro_tavamp <- function(metD)
 		browser()
 	}
 
-	metD$clim$amp <- amp
-	metD$clim$tav <- tav	
+	metD$clim$amp <- round(amp,2)
+	metD$clim$tav <- round(tav,2)
 
 return(metD)
 rm(dMean,yearlyAMP,monthlyMean,year,line,l,month,amp,tav)

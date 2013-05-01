@@ -53,7 +53,6 @@ maxNo_days <- function(year,month)
 		dayNo <- 31
 		}
 	)
-
 return(dayNo)
 }
 

@@ -27,6 +27,19 @@ return(l)
 }
 
 ########################################################################
+## replace any kind of missing value by NA
+replace_missing <- function(data)
+{
+	for (d in 1:length(data)){
+		data[[d]][data[[d]][]<(-90)] <- NA 
+		data[[d]][is.na(data[[d]][])] <- NA
+# add whatever you think of
+	}
+
+return(data)
+}
+
+########################################################################
 ##### AGMIP
 ########################################################################
 # input:
@@ -36,20 +49,25 @@ return(l)
 # list filled up acording to empty list above
 #########################################################################
 #inFi<-'/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
-# inFi<-'/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
+#inFi<-'/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
 ## AgMIP
 read_AgMIPformat <- function(inFile=inFi)
 {
-	# read AgMIP format data
-	data <-	scan(inFile,skip=5)
-	data <- matrix(data,ncol=12,byrow=T)
-	colnames(data) <- scan(inFile,what='raw',skip=4,nlines=1)
+	sLine <- readLines(inFile)
+	sData <- grep("DATE",sLine)
+	sHead <- grep("INSI",sLine)
+	rm(sLine)
 
+	# read AgMIP data
+	data <-	scan(inFile,what='raw',skip=sData)
+	data <- matrix(data,ncol=(dim(read.table(inFile,skip=sData,nrows=1))[2]),byrow=T)
+	colnames(data) <- scan(inFile,what='raw',skip=(sData-1),nlines=1)
 	# read header
-	head <- scan(inFile,what='raw',skip=3,nlines=1)
-	head <- matrix(head,ncol=8,byrow=T)
-	nam <- scan(inFile,what='raw',skip=2,nlines=1)
-	colnames(head) <- nam[2:length(nam)]
+	head <- read.table(inFile,skip=sHead,nrows=1)
+
+	tmp <- scan(inFile,what='raw',skip=(sHead-1),nlines=1)	# because there is a space in between @ and INSI ...
+	colnames(head) <- tmp[2:length(tmp)]
+	rm(tmp)
 
 	agmip <- createNULLlist()
 	agmip$file <- 	inFile
@@ -65,34 +83,112 @@ read_AgMIPformat <- function(inFile=inFi)
 	agmip$clim$refht <- 	as.numeric(head[colnames(head)=="REFHT"])
 	agmip$clim$wndht <- 	as.numeric(head[colnames(head)=="WNDHT"])
 
-	agmip$data$date <- 	data[,colnames(data)=="@DATE"]
-	agmip$data$yyyy <- 	data[,colnames(data)=="YYYY"]
-	agmip$data$mm <- 	data[,colnames(data)=="MM"]
-	agmip$data$dd <- 	data[,colnames(data)=="DD"]
-	agmip$data$juld <- 	as.numeric(format(as.Date(paste(agmip$data$yyyy,agmip$data$mm,agmip$data$dd,sep="-")),"%j"))
-
-	agmip$data$srad <- 	data[,colnames(data)=="SRAD"]
-	agmip$data$tmax <- 	data[,colnames(data)=="TMAX"]
-	agmip$data$tmin <- 	data[,colnames(data)=="TMIN"]
-	agmip$data$rain <- 	data[,colnames(data)=="RAIN"]
-	agmip$data$wind <- 	data[,colnames(data)=="WIND"]
-	agmip$data$dewp <- 	data[,colnames(data)=="DEWP"]
-	agmip$data$vprs <- 	data[,colnames(data)=="VPRS"]
-	agmip$data$rhum <- 	data[,colnames(data)=="RHUM"]
-
-	agmip$period$start <- 	as.Date(as.character(paste(agmip$data$yyyy[1],agmip$data$mm[1],agmip$data$dd[1],sep="-")))
-	agmip$period$end <-	as.Date(as.character(paste(agmip$data$yyyy[length(agmip$data$yyyy)],agmip$data$mm[length(agmip$data$mm)],agmip$data$dd[length(agmip$data$dd)],sep="-")))
+	agmip$period$start <-	as.Date(as.character(data[1,colnames(data)=="@DATE"]),"%Y%j")
+	agmip$period$end <- 	as.Date(as.character(data[dim(data)[1],colnames(data)=="@DATE"]),"%Y%j")
 	agmip$period$type <-	0
 
-	# missing values
-	for (d in 1:length(agmip$data)){
-		agmip$data[[d]][agmip$data[[d]][]==-999] <- NA 
-		agmip$data[[d]][agmip$data[[d]][]==-99] <- NA 
-		agmip$data[[d]][agmip$data[[d]][]==NaN] <- NA 
+	agmip$data$date <- 	seq(agmip$period$start,agmip$period$end,1)
+	agmip$data$yyyy <- 	as.numeric(format(agmip$data$date,"%Y"))
+	agmip$data$mm <- 	as.numeric(format(agmip$data$date,"%m"))
+	agmip$data$dd <- 	as.numeric(format(agmip$data$date,"%d"))
+	agmip$data$juld <- 	as.numeric(format(agmip$data$date,"%j"))
+	agmip$data$date <- 	as.numeric(format(agmip$data$date,"%Y%j"))
+
+	agmip$data$srad <- 	as.numeric(data[,colnames(data)=="SRAD"])
+	agmip$data$tmax <- 	as.numeric(data[,colnames(data)=="TMAX"])
+	agmip$data$tmin <- 	as.numeric(data[,colnames(data)=="TMIN"])
+	agmip$data$rain <- 	as.numeric(data[,colnames(data)=="RAIN"])
+	if(any(colnames(data)=="WIND"))	{	agmip$data$wind <- 	as.numeric(data[,colnames(data)=="WIND"])
+	}else{					agmip$data$wind <- 	NULL
 	}
+	if(any(colnames(data)=="DEWP"))	{	agmip$data$dewp <- 	as.numeric(data[,colnames(data)=="DEWP"])
+	}else{					agmip$data$dewp <- 	NULL
+	}
+	if(any(colnames(data)=="VPRS"))	{	agmip$data$vprs <- 	as.numeric(data[,colnames(data)=="VPRS"])
+	}else{					agmip$data$vprs <- 	NULL
+	}
+	if(any(colnames(data)=="RHUM"))	{	agmip$data$rhum <- 	as.numeric(data[,colnames(data)=="RHUM"])
+	}else{					agmip$data$rhum <- 	NULL
+	}
+
+	# missing values
+	agmip$data <- replace_missing(agmip$data)
 
 return(agmip)
 rm(data,head)
+}
+
+########################################################################
+##### DSSAT
+########################################################################
+# input:
+# path to the file to read in
+#
+# output:
+# list filled up acording to empty list above
+#########################################################################
+#inFi<-'~/Desktop/MZ_00.WTH'
+read_DSSATformat <- function(inFile=inFi)
+{
+	sLine <- readLines(inFile)
+	sData <- grep("@DATE",sLine)
+	sHead <- grep("@INSI",sLine)
+	rm(sLine)
+	# read DSSAT format data
+	data <-	scan(inFile,what='raw',skip=sData)
+	data <- matrix(data,ncol=(dim(read.table(inFile,skip=sData,nrows=1))[2]),byrow=T)
+	colnames(data) <- scan(inFile,what='raw',skip=(sData-1),nlines=1)
+	# read header
+	head <- read.table(inFile,skip=sHead,nrows=1)
+	colnames(head) <- scan(inFile,what='raw',skip=(sHead-1),nlines=1)
+
+	dssat <- createNULLlist()
+	dssat$file <- 	inFile
+
+	dssat$station$id <- 	as.character(head[1,colnames(head)=="@INSI"])
+	dssat$station$lat <- 	as.numeric(head[1,colnames(head)=="LAT"])
+	dssat$station$lon <- 	as.numeric(head[1,colnames(head)=="LONG"])
+	dssat$station$alt <- 	as.numeric(head[1,colnames(head)=="ELEV"])
+	dssat$station$comm <- 	scan(inFile,what='character',sep="\n",nlines=1)
+
+	dssat$clim$tav <- 	as.numeric(head[colnames(head)=="TAV"])
+	dssat$clim$amp <- 	as.numeric(head[colnames(head)=="AMP"])
+	dssat$clim$refht <- 	as.numeric(head[colnames(head)=="REFHT"])
+	dssat$clim$wndht <- 	as.numeric(head[colnames(head)=="WNDHT"])
+
+	dssat$period$start <-	as.Date(as.character(data[1,colnames(data)=="@DATE"]),"%y%j")
+	dssat$period$end <- 	as.Date(as.character(data[dim(data)[1],colnames(data)=="@DATE"]),"%y%j")
+	dssat$period$type <-	0
+
+	dssat$data$date <- 	seq(dssat$period$start,dssat$period$end,1)
+	dssat$data$yyyy <- 	as.numeric(format(dssat$data$date,"%Y"))
+	dssat$data$mm <- 	as.numeric(format(dssat$data$date,"%m"))
+	dssat$data$dd <- 	as.numeric(format(dssat$data$date,"%d"))
+	dssat$data$juld <- 	as.numeric(format(dssat$data$date,"%j"))
+	dssat$data$date <- 	as.numeric(format(dssat$data$date,"%Y%j"))
+
+	dssat$data$srad <- 	as.numeric(data[,colnames(data)=="SRAD"])
+	dssat$data$tmax <- 	as.numeric(data[,colnames(data)=="TMAX"])
+	dssat$data$tmin <- 	as.numeric(data[,colnames(data)=="TMIN"])
+	dssat$data$rain <- 	as.numeric(data[,colnames(data)=="RAIN"])
+	if(any(colnames(data)=="WIND"))	{	dssat$data$wind <- 	as.numeric(data[,colnames(data)=="WIND"])
+	}else{					dssat$data$wind <- 	NULL
+	}
+	if(any(colnames(data)=="DEWP"))	{	dssat$data$dewp <- 	as.numeric(data[,colnames(data)=="DEWP"])
+	}else{					dssat$data$dewp <- 	NULL
+	}
+	if(any(colnames(data)=="VPRS"))	{	dssat$data$vprs <- 	as.numeric(data[,colnames(data)=="VPRS"])
+	}else{					dssat$data$vprs <- 	NULL
+	}
+	if(any(colnames(data)=="RHUM"))	{	dssat$data$rhum <- 	as.numeric(data[,colnames(data)=="RHUM"])
+	}else{					dssat$data$rhum <- 	NULL
+	}
+
+	# missing values
+	dssat$data <- replace_missing(dssat$data)
+
+return(dssat)
+rm(sData,sHead,data,head)
 }
 
 ########################################################################
@@ -217,7 +313,11 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 			csag$data$tmax <- c(csag$data$tmax[1:(w-1)],NA,csag$data$tmax[w:length(csag$data$tmax)]) 
 			csag$data$rain <- c(csag$data$rain[1:(w-1)],NA,csag$data$rain[w:length(csag$data$rain)]) 
 		}
+		if(all(is.na(csag$data$tmin[(length(csag$data$date)+1):length(csag$data$tmin)])))	csag$data$tmin<-csag$data$tmin[1:length(csag$data$date)]
+		if(all(is.na(csag$data$tmax[(length(csag$data$date)+1):length(csag$data$tmax)])))	csag$data$tmax<-csag$data$tmax[1:length(csag$data$date)]
+		if(all(is.na(csag$data$rain[(length(csag$data$date)+1):length(csag$data$rain)])))	csag$data$rain<-csag$data$rain[1:length(csag$data$date)]
 	}	
+
 	if (csag$period$type==2){
 		# on non-leap year add
 		add_l <- NULL
@@ -233,6 +333,12 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 			csag$data$tmax <- c(csag$data$tmax[1:(w-1)],NA,csag$data$tmax[w:length(csag$data$tmax)]) 
 			csag$data$rain <- c(csag$data$rain[1:(w-1)],NA,csag$data$rain[w:length(csag$data$rain)]) 
 		}
+		if(all(is.na(csag$data$tmin[(length(csag$data$date)+1):length(csag$data$tmin)])))	csag$data$tmin<-csag$data$tmin[1:length(csag$data$date)]
+		if(all(is.na(csag$data$tmax[(length(csag$data$date)+1):length(csag$data$tmax)])))	csag$data$tmax<-csag$data$tmax[1:length(csag$data$date)]
+		if(all(is.na(csag$data$rain[(length(csag$data$date)+1):length(csag$data$rain)])))	csag$data$rain<-csag$data$rain[1:length(csag$data$date)]
+
+		print("please check that this work properly")
+		browser()
 	}	
 
 	# possible different data length
@@ -461,7 +567,8 @@ print(inFile)
 
 	# missing values
 	for (d in 1:length(ascii$data)){
-		ascii$data[[d]][ascii$data[[d]][]<(-99)] <- NA 
+		ascii$data[[d]][ascii$data[[d]][]<(-99999)] <- NA 	#NAM data
+		ascii$data[[d]][ascii$data[[d]][]<(-99)] <- NA
 		ascii$data[[d]][ascii$data[[d]][]==NaN] <- NA 
 	}
 
@@ -469,131 +576,127 @@ return(ascii)
 rm(cVar,ascii,fiName,inFile,v,feb29,l,d)
 }
 
-
-### for Mduduzi
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
-read_mduCLICOM <- function(fileN=fileName)
+######################################################################################
+######################################################################################
+### template for a 30-31 days per line
+### down year-months
+read_YMlines <- function(newD,rawD,var,init=FALSE)
 {
-	# read lines
-	Lin <- readLines(fileN)
 
-	# create your list
-	mduCLICOM <- createNULLlist()
-	
-	# store file path
-	mduCLICOM$file<-fileN
-	
-	# store start date (1st line)
-	fLin <- strsplit(Lin[1],split=",")
-	mduCLICOM$period$start<- as.Date(paste(fLin[[1]][5],"01",sep="-"))	
-	
-	# store end date (last line)
-	ifelse(length(Lin[length(Lin)])==1,lLin <- strsplit(Lin[length(Lin)-1],split=","),lLin <- strsplit(Lin[length(Lin)],split=","))
-	dat <- as.Date(paste(lLin[[1]][5],"01",sep="-"))
-	mduCLICOM$period$end<- as.Date(paste(lLin[[1]][5],as.character(maxNo_days(as.numeric(format(dat,"%Y")),as.numeric(format(dat,"%m")))),sep="-"))	
-	
-	# set type (observed==0)
-	mduCLICOM$period$type<-0
+#	rawD<-read.csv("~/Desktop/wine_shared/12_AgMIP/LES-AMIIP/Baseline/mejametalana1.csv")
+#	newD <- createNULLlist()
+#	newD$station$ ...
+#	newD$period$ ...
 
-	# create daily date info
-	mduCLICOM$data$date <- 	seq(mduCLICOM$period$start,mduCLICOM$period$end,1)
-	mduCLICOM$data$yyyy <- 	as.numeric(format(mduCLICOM$data$date,"%Y"))
-	mduCLICOM$data$mm <- 	as.numeric(format(mduCLICOM$data$date,"%m"))
-	mduCLICOM$data$dd <- 	as.numeric(format(mduCLICOM$data$date,"%d"))
-	mduCLICOM$data$juld <- 	as.numeric(format(mduCLICOM$data$date,"%j"))
-	mduCLICOM$data$date <- 	as.numeric(format(mduCLICOM$data$date,"%Y%j"))
-
-	# initialisetmin, tmax, rain
-	mduCLICOM$data$tmin <- 	array(NA,dim=length(mduCLICOM$data$date))
-	mduCLICOM$data$tmax <- 	array(NA,dim=length(mduCLICOM$data$date))
-	mduCLICOM$data$rain <- 	array(NA,dim=length(mduCLICOM$data$date))
-
-	# loop for every line
-	for (l in 1:ifelse(length(Lin[length(Lin)])==1,length(Lin)-1,length(Lin))){
-		# avoid empty lines
-		if(Lin[l]=="") next
-		# split 1 line
-		sLin <- strsplit(Lin[l],split=",")
-		
-		# remove empty item	
-		rLin <- array(sLin[[1]][sLin[[1]]!=""],dim=length(sLin[[1]][sLin[[1]]!=""]))
-		rLin <- array(rLin[rLin!=" "],dim=length(rLin[rLin!=" "]))
-		rLin <- array(rLin[rLin!="M"],dim=length(rLin[rLin!="M"]))
-
-		# get date of the line (item 4)
-		dat <- as.Date(paste(rLin[4],"01",sep="-"))	
-
-		# store station id (item 2)
-		mduCLICOM$station$id<-rLin[2]
-
-		# depending on variable {tmin,tmax,rain} data (the rest)
-		switch(as.numeric(rLin[3]),{
-			#1
-			},{
-			#2:tmax
-				dayInMonth <- maxNo_days(as.numeric(format(dat,"%Y")),as.numeric(format(dat,"%m")))
-				# where to put the data
-				r <- which(mduCLICOM$data$yyyy==as.numeric(format(dat,"%Y")) & mduCLICOM$data$mm==as.numeric(format(dat,"%m")))[1]
-				# store the data at the right position
-				mduCLICOM$data$tmax[r:(r+dayInMonth-1)] <- as.numeric(rLin[5:(5+dayInMonth-1)])
-			},{
-			#3:tmin
-				dayInMonth <- maxNo_days(as.numeric(format(dat,"%Y")),as.numeric(format(dat,"%m")))
-				r <- which(mduCLICOM$data$yyyy==as.numeric(format(dat,"%Y")) & mduCLICOM$data$mm==as.numeric(format(dat,"%m")))[1]
-				mduCLICOM$data$tmin[r:(r+dayInMonth-1)] <- as.numeric(rLin[5:(5+dayInMonth-1)])
-			},{
-			#4
-			},{
-			#5:rain
-				dayInMonth <- maxNo_days(as.numeric(format(dat,"%Y")),as.numeric(format(dat,"%m")))
-				r <- which(mduCLICOM$data$yyyy==as.numeric(format(dat,"%Y")) & mduCLICOM$data$mm==as.numeric(format(dat,"%m")))[1]
-				mduCLICOM$data$rain[r:(r+dayInMonth-1)] <- as.numeric(rLin[5:(5+dayInMonth-1)])
-			}
-		)	
+	if (init){
+		newD$data$date <- 	seq(newD$period$start,newD$period$end,1)
+		newD$data$yyyy <- 	as.numeric(format(newD$data$date,"%Y"))
+		newD$data$mm <- 	as.numeric(format(newD$data$date,"%m"))
+		newD$data$dd <- 	as.numeric(format(newD$data$date,"%d"))
+		newD$data$juld <- 	as.numeric(format(newD$data$date,"%j"))
+		newD$data$date <- 	as.numeric(format(newD$data$date,"%Y%j"))
+		newD$data$tmin <- 	array(NA,dim=length(newD$data$date))
+		newD$data$tmax <- 	array(NA,dim=length(newD$data$date))
+		newD$data$rain <- 	array(NA,dim=length(newD$data$date))
 	}
 
+	#first column/line/day
+	day_1to31 <- 4:34
+	yearmm_c <- 3
+	var_c <- 2 	
+
+	cur_r <-1
+	while((cur_r<=dim(rawD)[1])&&(rawD[cur_r,var_c]!=var))	{cur_r <- cur_r+1}
+	while(!is.na(rawD[cur_r,yearmm_c])){
+		ym <- as.Date(paste(as.character(rawD[cur_r,yearmm_c]),"01",sep="-"))
+		dayInMonth<-maxNo_days(as.numeric(format(ym,"%Y")),as.numeric(format(ym,"%m")))
+		day<-0
+		for(col in day_1to31){
+			# depending on variable {tmin,tmax,rain} data (the rest)
+			year <- as.numeric(format(ym,"%Y"))
+			month <- as.numeric(format(ym,"%m"))
+			day <- day+1
+			if (day>dayInMonth) {break}
+			switch(var,{	#1
+				},{	#2:tmax
+					newD$data$tmax[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,col]
+				},{	#3:tmin
+					newD$data$tmin[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,col]
+				},{	#4
+				},{	#5:rain
+					newD$data$rain[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,col]
+				}
+			)
+		}
+		cur_r <- cur_r+1
+		while((cur_r<=dim(rawD)[1])&&(rawD[cur_r,var_c]!=var))	{cur_r <- cur_r+1}
+	}
 	# missing values
-	for (d in 1:length(mduCLICOM$data)){
-		mduCLICOM$data[[d]][mduCLICOM$data[[d]][]==-99999] <- NA 
-		mduCLICOM$data[[d]][mduCLICOM$data[[d]][]==-999] <- NA 
-		mduCLICOM$data[[d]][mduCLICOM$data[[d]][]==-99] <- NA 
-		mduCLICOM$data[[d]][mduCLICOM$data[[d]][]==NaN] <- NA
+	for (d in 1:length(newD$data)){
+		newD$data[[d]][newD$data[[d]][]<(-90)] <- NA 
+		newD$data[[d]][is.na(newD$data[[d]][])] <- NA
 	}
 	
 
-return(mduCLICOM)
-rm()
+return(newD)
+rm(day_1to31,yearmm_c,var_c,cur_r,ym,day,year,month)
 }
 
-# var: 1:tmin, 2:tmax, 3:rain
-read_mdu2 <- function(fileName,var)
+######################################################################################
+######################################################################################
+### template for a 1 day per line
+### down year-month-day
+read_YMDlines <- function(newD,rawD,var,init=FALSE)
 {
-	# uncomplete
-	tab1 <- read.table(fileName,sep=";",colClasses="character")
 
-	# create mduCLISYS
+#	rawD<-read.csv("~/Desktop/wine_shared/12_AgMIP/LES-AMIIP/Baseline/mejametalana1.csv")
+#	newD <- createNULLlist()
+#	newD$station$ ...
+#	newD$period$ ...
 
-	# take the station code into mduCLISYS$station$id
+	if (init){
+		newD$data$date <- 	seq(newD$period$start,newD$period$end,1)
+		newD$data$yyyy <- 	as.numeric(format(newD$data$date,"%Y"))
+		newD$data$mm <- 	as.numeric(format(newD$data$date,"%m"))
+		newD$data$dd <- 	as.numeric(format(newD$data$date,"%d"))
+		newD$data$juld <- 	as.numeric(format(newD$data$date,"%j"))
+		newD$data$date <- 	as.numeric(format(newD$data$date,"%Y%j"))
+		newD$data$tmin <- 	array(NA,dim=length(newD$data$date))
+		newD$data$tmax <- 	array(NA,dim=length(newD$data$date))
+		newD$data$rain <- 	array(NA,dim=length(newD$data$date))
+	}
 
-	# get start date (first row of table) into mduCLISYS$period$start
+	#init column/line/day
+	day_c <- 7
+	month_c <- 6
+	year_c <- 5
+	var_c <- 3
+	val <- 8
+	cur_r <-1
+	while((cur_r<=dim(rawD)[1])&&(rawD[cur_r,var_c]!=var))	{cur_r <- cur_r+1}
+	while(!is.na(rawD[cur_r,yearmm_c])){
+		# depending on variable {tmin,tmax,rain} data (the rest)
+		year <- rawD[cur_r,year_c]
+		month <- rawD[cur_r,month_c]
+		day <- rawD[cur_r,day_c]
+		switch(var,{	#1
+			},{	#2:tmax
+				newD$data$tmax[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,val]
+			},{	#3:tmin
+				newD$data$tmin[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,val]
+			},{	#4
+			},{	#5:rain
+				newD$data$rain[(newD$data$yyyy==year)&(newD$data$mm==month)&(newD$data$dd==day)] <- rawD[cur_r,val]
+			}
+		)
+		cur_r <- cur_r+1
+	}
+	# missing values
+	for (d in 1:length(newD$data)){
+		newD$data[[d]][newD$data[[d]][]<(-90)] <- NA 
+		newD$data[[d]][is.na(newD$data[[d]][])] <- NA
+	}
 
-	# get end date (last row of table) into mduCLISYS$period$ednd
-
-	# create date,yyyy,mm,dd,juld from start to end
-	
-	# initialisetmin, tmax, rain
-	
-	# for every row
-		
-		# extract second column value
-
-		# transform it into year month day
-
-		# save the third column value in the right variable (mduCLISYS$data${tmin,tmax,rain})
-		# according to the date you read above (SAME LINE) fitting into the date mduCLISYS$data${date,yyyy,mm,dd,jul}
-		# !!! how do you define which variable it is ? tmin, tmax, rain? maybe an additional function input
-
-	# close for loop
-
+return(newD)
+rm(day_1to31,yearmm_c,var_c,cur_r,ym,day,year,month)
 }
-

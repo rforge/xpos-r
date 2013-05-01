@@ -160,7 +160,7 @@ pert_temp <- function(metD,pTmin,pTmax=pTmin,tDif=NULL,check=FALSE)
 	if(is.null(tDif)){
 		tDif <- array(NA,dim=12)
 		for(m in 1:12){
-			tDif[m] <- mean(oDif[metD$data$mm==m])	# assume it is a simple shift
+			tDif[m] <- mean(oDif[metD$data$mm==m],na.rm=T)	# assume it is a simple shift
 		}
 	}
 
@@ -186,7 +186,6 @@ pert_temp <- function(metD,pTmin,pTmax=pTmin,tDif=NULL,check=FALSE)
 	if (check){
 		m <- stat_monthlyMeans(metD$data)
 		n <- stat_monthlyMeans(newD$data)
-
 		print("### > actual monthly means shift",quote=F)
 		actualChanges <- array(NA,dim=c(2,12))
 		for (i in 1:12){
@@ -196,8 +195,8 @@ pert_temp <- function(metD,pTmin,pTmax=pTmin,tDif=NULL,check=FALSE)
 		rownames(actualChanges) <- c('tmin','tmax')
 		colnames(actualChanges) <- c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 		print(round(actualChanges,digits=1))
-		print(paste("old tmin mean",mean(m$tmin),"old tmax mean",mean(m$tmax),sep=" : "),quote=FALSE)
-		print(paste("new tmin mean",mean(n$tmin),"new tmax mean",mean(n$tmax),sep=" : "),quote=FALSE)
+		print(paste("old tmin mean",mean(m$tmin,na.rm=T),"old tmax mean",mean(m$tmax,na.rm=T),sep=" : "),quote=FALSE)
+		print(paste("new tmin mean",mean(n$tmin,na.rm=T),"new tmax mean",mean(n$tmax,na.rm=T),sep=" : "),quote=FALSE)
 	}
 
 return(newD)
@@ -219,7 +218,9 @@ pert_facRain <- function(metD,pRain,check=FALSE)
 	for(l in 1:length(newD$data$rain)){
 		if (is.na(newD$data$rain[l])) next
 		newD$data$rain[l] <- round(newD$data$rain[l]*pRain[newD$data$mm[l]],digits=1)
-		if(newD$data$rain[l]<0) newD$data$rain[l]<-0
+		if(!is.na(newD$data$rain[l])){
+			if(newD$data$rain[l]<0) newD$data$rain[l]<-0
+		}
 	}
 
 	if (check){
@@ -233,8 +234,8 @@ pert_facRain <- function(metD,pRain,check=FALSE)
 		}
 		rownames(actualChanges) <- c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 		print(round(actualChanges,digits=1))
-		print(paste("old mean",mean(m$rain),sep=" : "),quote=FALSE)
-		print(paste("new mean",mean(n$rain),sep=" : "),quote=FALSE)
+		print(paste("old mean",mean(m$rain,na.rm=T),sep=" : "),quote=FALSE)
+		print(paste("new mean",mean(n$rain,na.rm=T),sep=" : "),quote=FALSE)
 	}
 
 return(newD)
@@ -246,8 +247,7 @@ rm(newD,l,m_vec,check,m,n,actualChanges)
 pert_shiRain <- function(metD,shift,check=FALSE)
 {
 	m <- stat_monthlyTotals(metD$data)
-	pRain <- array((mean(m$rain)+shift)/mean(m$rain),dim=12)
-
+	pRain <- array((mean(m$rain,na.rm=T)+shift)/mean(m$rain,na.rm=T),dim=12)
 	newD <- pert_facRain(metD,pRain,check)
 
 return(newD)

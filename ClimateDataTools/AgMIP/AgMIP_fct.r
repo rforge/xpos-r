@@ -11,21 +11,22 @@ source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/da
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
-#inFo <- '/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/CLIP/D_RCP45_raw/CSAG'
-#outFo <- '/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/CLIP/E_RCP45_split'
-outFo <- '/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/CLIP/F_fut85'
-inGCM <- '/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/CLIP/E_RCP85_split'
-inObs <- '/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/CLIP/C_presCorectedObs'
-oID <- 'nkayi.txt'
+#inFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-CLIP/D_RCP85_raw'
+#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-CLIP/E_RCP85_split/Lambani'
+inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/E_RCP85_split/Malmesbury'
+outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/F_fut85'
+inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/C_presCorrectedObs/Malmesbury/CSAG/Control'
+oID <- '0041347.1.txt'
+
 
  ###############################################################################
  ###############################################################################
 agmip_period<-function(per)
 {
 	switch(per,{	# 1 - control
-			start<-as.Date("1970-01-01")
+			start<-as.Date("1980-01-01")
 			end<-as.Date("2010-12-31")
-			folder<-"1970_2010"
+			folder<-"1980_2010"
 		},{	# 2 - near future
 			start<-as.Date("2010-01-01")
 			end<-as.Date("2040-12-31")
@@ -35,9 +36,10 @@ agmip_period<-function(per)
 			end<-as.Date("2070-12-31")
 			folder<-"2040_2070"
 		},{	# 4 - end century # do not take after 2094 for downscaled data
-			start<-as.Date("2068-01-01")	# start<-as.Date("2064-01-01")
-			end<-as.Date("2098-12-31")	# end<-as.Date("2094-12-31")
-			folder<-"2068_2098"		# folder<-"2064_2094"
+			# be carefull, not only the same number of year, but needs the same number of days (different number of leap years?)
+			start<-as.Date("2068-12-31")	# start<-as.Date("2064-01-01")
+			end<-as.Date("2099-12-31")	# end<-as.Date("2094-12-31")
+			folder<-"2069_2099"		# folder<-"2064_2094"
 		}
 	)
 
@@ -63,7 +65,7 @@ agmip_splitPeriods <- function(inFolder=inFo,outFolder=outFo)
 			print(paste("",rcp_t[r],sta_t[s],sep=" > "),quote=F)
 			# read it
 			metD <- read_oldCSAGformat(tmpIn,sta_t[s])				# requires dataRead.r
-			# AgMIP periods are: 1970-2009, 2010-2039, 2040-2069, 2070-2099
+			# AgMIP periods are defined above
 			con <- pert_period(metD,agmip_period(1)$start,agmip_period(1)$end)	# requires dataPerturbe.r
 			fu1 <- pert_period(metD,agmip_period(2)$start,agmip_period(2)$end)	#
 			fu2 <- pert_period(metD,agmip_period(3)$start,agmip_period(3)$end)	#
@@ -119,7 +121,7 @@ agmip_pertObs <- function(inFoGCM=inGCM,inFoObs=inObs,outFolder=outFo,obsID=oID,
 				print(paste("",rcp_t[r]," > ",tPe_t[t]," > ",sta_t[s],sep=""),quote=F)
 				# read it
 				obsD <- read_oldCSAGformat(inFoObs,sta_t[s])				# requires dataRead.r
-				
+
 				# update dates
 				obsD$period$start <- agmip_period(agPeriod)$start
 				obsD$period$end <- agmip_period(agPeriod)$end
@@ -134,8 +136,9 @@ agmip_pertObs <- function(inFoGCM=inGCM,inFoObs=inObs,outFolder=outFo,obsID=oID,
 				# check length (may be more/less leap years?)
 				if (length(obsD$data$date)!=(difftime(obsD$period$end,obsD$period$start,units='days')+1)){
 					if (length(obsD$data$date)==(difftime(obsD$period$end,obsD$period$start,units='days')+2)){
-						print(paste("####","WARNING","1 day difference : leap year in R ?",sep=" > "),quote=F)
+						print("#### you are trying to fit a 30 years period (01-01 until 12-31) with another 30 years period (01-01 until 12-31 as well) but with different amount of leap years so that it crashes. play with the start or end of the one you can play with",quote=F)
 						browser()
+	
 					}else{
 						print(paste("####","WARNING","data lenght issue in AgMIP_fct.r",sep=" > "),quote=F)
 						browser()
