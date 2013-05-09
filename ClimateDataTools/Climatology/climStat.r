@@ -107,7 +107,7 @@ stat_windowMeans <- function(data,maxMV=10,winWidth=31)
 			window <- c(windowA,windowP[2:length(windowP)])
 			if(length(window[is.na(window)])<=mMV){
 				if(v<=5){ # date, yyyy, mm, dd and juld
-					tmp[l] <- median(window,na.rm=T)	
+					tmp[l] <- window[floor(winWidth/2)]	
 				}else{	tmp[l] <- mean(window,na.rm=T)
 				}
 			}
@@ -223,10 +223,10 @@ stat_windowTotals <- function(data,maxMV=5,winWidth=31)
 			ifelse(pHalfWidth>=(length(data$date)-l),windowP[1:(length(data$date)-l+1)]<-data[[v]][l:length(data$date)],windowP<-data[[v]][l:(l+pHalfWidth)])
 			window <- c(windowA,windowP[2:length(windowP)])
 			if(length(window[is.na(window)])<=mMV){
-					if(v<=5){ # date, yyyy, mm, dd and juld
-						tmp[l] <- window[floor(winWidth/2)]	
-					}else{	tmp[l] <- sum(window,na.rm=T)
-					}
+				if(v<=5){ # date, yyyy, mm, dd and juld
+					tmp[l] <- window[floor(winWidth/2)]	
+				}else{	tmp[l] <- sum(window,na.rm=T)
+				}
 			}
 		}
 		wTotals <- c(wTotals,list(tmp))

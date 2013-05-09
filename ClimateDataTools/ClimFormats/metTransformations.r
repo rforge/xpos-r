@@ -201,14 +201,11 @@ transform_type1 <- function(data,head,fillIn)
 	table <- cbind(table,data$ppt);
 
 	for(y in format(head$period$start,"%Y"):format(head$period$end,"%Y")){
-		if (is.leapYear(y)){
+		dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
+		if (is.leapYear(y) && dayNo_bef>=0){
 			# cut before
-			dayNo_bef <- as.Date(paste("01","01",y,sep="-"),"%d-%m-%Y") - head$period$start;
-			if(dayNo_bef>0){
-				table_bef <- table[1:dayNo_bef,1:dim(table)[2]];
-			}else{
-				table_bef <- NULL;
-			}
+			if (dayNo_bef==0)	table_bef <- NULL
+			if (dayNo_bef>0)	table_bef <- table[1:dayNo_bef,1:dim(table)[2]]
 			# pull out section
 			oldSection <- table[(dayNo_bef+1):(dayNo_bef+365),1:dim(table)[2]];
 			# cut after

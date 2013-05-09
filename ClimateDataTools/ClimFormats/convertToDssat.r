@@ -42,12 +42,12 @@ formatToWTHfile <- function(data,fileHead,path)
 # write it into a .WTH file
 	outName <- paste(path$output,strsplit(path$file$temp,"\\.")[[1]][1],".WTH",sep="");
 	if(!file.exists(path$output)){	# create output dir if does not exists
-		dir.create(path$output, showWarnings = FALSE, recursive = FALSE, mode = "0777");
+		dir.create(path$output, showWarnings = FALSE, recursive = TRUE, mode = "0777");
 	}else{				# remove output file if does exists
 		if(file.exists(outName))	file.remove(outName);
 	}
 	# head
-	file.copy(	"/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dssatTemplates/dssatTemplate.WTH",			outName,overwrite=TRUE);
+	file.copy(	"/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dssatTemplates/dssatTemplate.WTH",outName,overwrite=TRUE);
 	changeVar(	"station_id",	fileHead$station$id,			outName,outName);
 	changeVar(	"station_comm",	fileHead$comment,			outName,outName);
 	changeVar(	"stat_lat",	format(fileHead$station$lat,nsmall=3),	outName,outName);

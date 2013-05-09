@@ -38,29 +38,6 @@ is.leapYear <- function(year)
 return(leap);
 }
 
-################################################################################
-# TOOLS TO COPY DEVICE INTO SPECIFIC GRAPHICAL FORMATS
-################################################################################
-
-## EPS
-copyDev2eps <- function(title="title",file)
-{
-	dev.print(device=postscript,title=title,paper="special",horizontal=FALSE,file=file);
-}
-
-## JPG
-copyDev2jpg <- function(file)
-{
-	savePlot(filename=file,type="jpeg",device=dev.cur());
-}
-
-## FIG
-## HAS TO BE SMALLER THAN AN A4 FORMAT
-copyDev2fig <- function(file)
-{
-	dev.print(device=xfig,file=file);
-}
-
 ##############################################################################
 load_obs <- function(path=pathDef,yeaC=2,julC=3,tmnC=4,tmxC=5,pptC=6,solC=7){
 
@@ -71,20 +48,21 @@ return(obs);
 }
 
 ##############################################################################
-temp_quantiles <- function(metDat,figTit=figTitDef)
+temp_quantiles <- function(metD,figTit=figTitDef)
 {
 browser()
 
-	yeaC <- metDat$yeaC;
-	julC <- metDat$julC;
-	tmnC <- metDat$tmnC;
-	tmxC <- metDat$tmxC;
-	pptC <- metDat$pptC;
-	solC <- metDat$solC;
+	yeaC <- metD$data$yeaC;
+	julC <- metD$data$julC;
+	tmnC <- metD$data$tmnC;
+	tmxC <- metD$data$tmxC;
+	pptC <- metD$data$pptC;
+	solC <- metD$data$solC;
 
 	## put NA on 29-FEB when leap year
-	met365<-metDat$data;
+	met365<-metD$data;
 	remove29feb <- FALSE;
+
 	for(l in seq(dim(met365)[1],1,-1)){
 		if(met365[l,julC]==366){
 			remove29feb <- TRUE;
