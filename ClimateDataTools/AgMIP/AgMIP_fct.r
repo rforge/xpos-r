@@ -11,15 +11,12 @@ source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/da
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
-inFo <- '/home/crespo/Desktop/wine_shared/13_START/MetData/Downscaling/RCP85_Full'
-outFo <- '/home/crespo/Desktop/wine_shared/13_START/MetData/Downscaling/RCP85_Split'
-#inFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-CLIP/D_RCP85_raw'
-#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-CLIP/E_RCP85_split/Lambani'
-#inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/E_RCP85_split/Malmesbury'
-#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/F_fut85'
-#inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/C_presCorrectedObs/Malmesbury/CSAG/Control'
-#oID <- '0041347.1.txt'
-
+#inFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/D_RCP85_raw'
+#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP85_split'
+inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
+outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
+inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
+oID <- '183-PAN2.txt'
 
  ###############################################################################
  ###############################################################################

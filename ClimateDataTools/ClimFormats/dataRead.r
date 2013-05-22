@@ -141,7 +141,6 @@ read_DSSATformat <- function(inFile=inFi)
 	# read header
 	head <- read.table(inFile,skip=sHead,nrows=1)
 	colnames(head) <- scan(inFile,what='raw',skip=(sHead-1),nlines=1)
-
 	dssat <- createNULLlist()
 	dssat$file <- 	inFile
 
