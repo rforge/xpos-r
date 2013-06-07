@@ -13,10 +13,10 @@ source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/cl
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
 #inFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/D_RCP85_raw'
 #outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP85_split'
-inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
-outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
-inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
-oID <- '183-PAN2.txt'
+#inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
+#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
+#inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
+#oID <- '183-PAN2.txt'
 
  ###############################################################################
  ###############################################################################
@@ -196,6 +196,28 @@ agmip_plot <- function(metD_obs, metD_p1, metD_p2)
 
 }
 
+ ###############################################################################
+ ###############################################################################
+# version 2 take my baseline, and create a AgMIP baseline
+inFi <- '/home/crespo/Desktop/Link to WinShared/OLD_ONLY/12_pro_AgMIP/RZA-AMIIP/2012-12_fasttrack/G_formatCon/FT_010.WTH'
+sID <- 'BBBB'
+outFo <- '/home/crespo/Desktop/Link to WinShared/NEW_ONLY/12_pro_AgMIP/AgMIP_baselineAMIIP/ToRun'
+agmip_formatBaseline<-function(inFile=inFi,staID=sID,outFolder=outFo)
+{
+	# read the APSIM (check it reads sRad)
+	tmp <-read_DSSATformat(inFile)
+
+	# cut down to 1980-2009 only
+#	tmp_cut <- pert_period(tmp,as.Date("1980-01-01"),as.Date("2009-12-31"))
+	
+	# change what need to be changed
+	tmp$station$id <- staID
+	tmp <- agro_tavamp(tmp)
+	tmp$clim$wndht <- -99
+
+	# save as AgMIP format
+	write_AgMIPformat(tmp,paste(outFolder,"/",staID,"0XXX.AgMIP",sep=''))
+}
 
  ###############################################################################
  ###############################################################################
@@ -226,4 +248,3 @@ translate <- function(inFolder=inFo,outFolder=outFo)
 
 rm(lat,lon,alt,col,comm,sDate,eDate,gcm,id,f,metD)
 }
-

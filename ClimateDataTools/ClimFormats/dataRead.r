@@ -59,7 +59,7 @@ read_AgMIPformat <- function(inFile=inFi)
 	rm(sLine)
 
 	# read AgMIP data
-	data <-	scan(inFile,what='raw',skip=sData)
+	data <- scan(inFile,what='raw',skip=sData)
 	data <- matrix(data,ncol=(dim(read.table(inFile,skip=sData,nrows=1))[2]),byrow=T)
 	colnames(data) <- scan(inFile,what='raw',skip=(sData-1),nlines=1)
 	# read header
@@ -171,16 +171,16 @@ read_DSSATformat <- function(inFile=inFi)
 	dssat$data$tmin <- 	as.numeric(data[,colnames(data)=="TMIN"])
 	dssat$data$rain <- 	as.numeric(data[,colnames(data)=="RAIN"])
 	if(any(colnames(data)=="WIND"))	{	dssat$data$wind <- 	as.numeric(data[,colnames(data)=="WIND"])
-	}else{					dssat$data$wind <- 	NULL
+	}else{						dssat$data$wind <- 	array(NA,dim=length(dssat$data$date))
 	}
 	if(any(colnames(data)=="DEWP"))	{	dssat$data$dewp <- 	as.numeric(data[,colnames(data)=="DEWP"])
-	}else{					dssat$data$dewp <- 	NULL
+	}else{						dssat$data$dewp <- 	array(NA,dim=length(dssat$data$date))
 	}
 	if(any(colnames(data)=="VPRS"))	{	dssat$data$vprs <- 	as.numeric(data[,colnames(data)=="VPRS"])
-	}else{					dssat$data$vprs <- 	NULL
+	}else{						dssat$data$vprs <- 	array(NA,dim=length(dssat$data$date))
 	}
 	if(any(colnames(data)=="RHUM"))	{	dssat$data$rhum <- 	as.numeric(data[,colnames(data)=="RHUM"])
-	}else{					dssat$data$rhum <- 	NULL
+	}else{						dssat$data$rhum <- 	array(NA,dim=length(dssat$data$date))
 	}
 
 	# missing values
@@ -377,11 +377,11 @@ rm(cVar,head,line,d,o,jD,startD,endD)
 read_APSIMformat <- function(inFile=inFi)
 {
 	# read APSIM format data
-	head <-	readLines(inFile,n=50)
+	head <- readLines(inFile,n=50)
 	dTop <- grep("MJ/m2",head)
 	tmp <- strsplit(head[(dTop-1)],split=" ")
 	cNames <- array(tmp[[1]][tmp[[1]]!=""],dim=length(tmp[[1]][tmp[[1]]!=""]))
-	data <-	scan(inFile,what='raw',skip=(dTop+1))
+	data <- scan(inFile,what='raw',skip=dTop)
 	data <- matrix(data,ncol=length(cNames),byrow=T)
 	colnames(data) <- cNames
 
@@ -395,6 +395,7 @@ read_APSIMformat <- function(inFile=inFi)
 	rLat <- head[[grep("atitude",head)]]	# row with lat
 	rLon <- ifelse(length(grep("ongitude",head))==0,NA,head[[grep("ongitude",head)]])	# row with lon (if exists, not mandatory in APSIM format)
 	rAlt <- ifelse(length(grep("ltitude",head))==0,NA,head[[grep("ltitude",head)]])		# row with alt (if exists, not mandatory in APSIM format)
+# apparently problems with getting lon and alt
 	
 	apsim <- createNULLlist()
 	apsim$file <- inFile
@@ -442,8 +443,7 @@ read_APSIMformat <- function(inFile=inFi)
 
 	# missing values
 	for (d in 1:length(apsim$data)){
-		apsim$data[[d]][apsim$data[[d]][]==-999] <- NA 
-		apsim$data[[d]][apsim$data[[d]][]==-99] <- NA 
+		apsim$data[[d]][apsim$data[[d]][]<(-99)] <- NA 
 		apsim$data[[d]][apsim$data[[d]][]==NaN] <- NA
 	}
 

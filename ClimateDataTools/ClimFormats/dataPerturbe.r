@@ -113,30 +113,33 @@ rm(newD,periodL,dayDiff,v)
 ## lengths have to match
 pert_mask <- function(NA_V,fullV)
 {
-	if(class(NA_V)!="numeric" || class(fullV)!="numeric"){ # but a data set with only NA is class:"logical"
-		print("### > one of the data set is not numeric",quote=F)
-		stop("NAfill_mask: cannot resolve")
-	}
-	if (length(NA_V)!=length(fullV)){
-		print("### > the 2 data sets are not of the same lenght",quote=F)
-		stop("NAfill_mask: cannot resolve")
-	}
-	if (length(fullV[is.na(fullV)])>0){
-		print("### > there is missing values in the supposidely full set",quote=F)
-		print("    > keep going, we'll check at the end if you're lucky",quote=F)
-	}
+#	if(class(NA_V)!="numeric" || class(fullV)!="numeric"){ # but a data set with only NA is class:"logical"
+#		print("### > one of the data set is not numeric",quote=F)
+#		stop("NAfill_mask: cannot resolve")
+#	}
+#	if (length(NA_V)!=length(fullV)){
+#		print("### > the 2 data sets are not of the same lenght",quote=F)
+#		stop("NAfill_mask: cannot resolve")
+#	}
+#	if (length(fullV[is.na(fullV)])>0){
+#		print("### > there is missing values in the supposidely full set",quote=F)
+#		print("    > keep going, we'll check at the end if you're lucky",quote=F)
+#	}
 
 	newV <- NA_V
-	newV[is.na(newV)] <- fullV[is.na(newV)]
-
-	# check that there is no NAs left
-	if (length(newV[is.na(newV)])>0){
-		print("### > there is missing values in the final set",quote=F)
-		print("    > either there is a error I missed, or you're unlucky",quote=F)
-		print("    > sort it out",quote=F)
-		stop("NAfill_mask: failed")
+	for (r in 1:length(newV$data$date)){
+		if(is.na(newV$data$tmin[r])||is.na(newV$data$tmax[r])||is.na(newV$data$rain[r])){
+			newV$data$tmin[r] <- fullV$data$tmin[r]
+			newV$data$tmax[r] <- fullV$data$tmax[r]
+			newV$data$rain[r] <- fullV$data$rain[r]		
+		}
 	}
-	
+
+	if(any(is.na(newV$data$tmin))||any(is.na(newV$data$tmax))||any(is.na(newV$data$rain))){
+		print('missing value where there should not be')
+		browser()
+	}
+browser()
 return(newV)
 rm(newV)
 }

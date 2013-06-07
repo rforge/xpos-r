@@ -45,38 +45,60 @@ write_AgMIPformat <- function(metD,outFile=outFiAgmip,checkMiss=TRUE)
 	for (d in 1:length(metD$data)){
 		if(any(is.na(metD$data[[d]][]))){
 			print("### > WARNING missing values",quote=F)
-			print("    > Do you expect any at this stage?",quote=F)
-			browser()
+			print("    > Replacing by -99",quote=F)
 		}
-	}}	
+	}}
+	for(r in 1:dim(table)[1]){
+		for(c in 1:dim(table)[2]){
+			if(is.na(table[r,c]))	table[r,c]<-(-99)
+		}
+	}
 
 	# file name
-	if(!file.copy("./agmipTemplate.AgMIP",outFile,overwrite=TRUE)){
+	if(!file.copy("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agmipTemplates/agmipTemplate.AgMIP",outFile,overwrite=TRUE)){
 		print("### > FAILED TO CREATE OUTPUT FILE",quote=F)
 		stop("cannot resolve")
 	}
 	ifelse(Sys.info()["sysname"]=="Linux",newline <- "\r\n",newline<-"\n")
 
-	# change header
-	header <- readLines(outFile)
-	header <- sub("v_staLocation",	paste(metD$station$comm,"(metD-",metD$station$id,")",sep=""),	header)
-	header <- sub("v_lat",		round(metD$station$lat,2),					header)
-	header <- sub("v_lon",		round(metD$station$lon,2),					header)
-	header <- sub("v_alt",		round(metD$station$alt,0),					header)
-	header <- sub("v_tav",		round(metD$clim$tav,1),						header)
-	header <- sub("v_amp",		round(metD$clim$amp,1),						header)
-	header <- sub("v_ref",		round(metD$clim$refht,2),					header)
-	header <- sub("v_wnd",		round(metD$clim$wndht,2),					header)
-	write.table(header,outFile,append=FALSE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline)
+	write.table(paste("*WEATHER DATA : ",metD$station$id,sep=''),outFile,append=FALSE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline);
+	write.table('',outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline);
+	write.table(format.AsIs(t(c('@ INSI','LAT','LONG','ELEV','TAV','AMP','REFHT','WNDHT')),justify="right",width=4),outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline)
+	h1 <- array(c(paste('  ',metD$station$id,sep=''),round(metD$station$lat,2),round(metD$station$lon,2),round(metD$station$alt,0),round(metD$clim$tav,1),round(metD$clim$amp,1),round(metD$clim$refht,2),round(metD$clim$wndht,2)),dim=8)
+	write.table(format.AsIs(t(h1),justify="right",width=4),outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline)
 
-	# add up body
-	table[,1] <- format.AsIs(table[,1],justify="right")		# DATE
-	table[,2] <- format.AsIs(table[,2],justify="right")		# YYYY
-	table[,3:4] <- format.AsIs(table[,3:4],justify="right")		# MM and DD
-	table[,5:12] <- format.AsIs(table[,5:12],justify="right")	# all the rest
-	write.table(table,outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline,sep=" ")
 
-rm(table,v,header)
+#	h2 <- array(NA,dim=12)
+#	h2[1] <- format.AsIs('@DATE',justify="right",width=8)
+#	h2[2:12] <- format.AsIs(c('YYYY','MM','DD','SRAD','TMAX','TMIN','RAIN','WIND','DEWP','VPRS','RHUM'),justify="right",width=4)
+#	write.table(t(h2),outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline)
+
+	tmp <- array(NA,dim=c(dim(table)[1]+1,dim(table)[2]))
+	tmp[,1] <- format.AsIs(c('@DATE',table[,1]),justify="left")
+	tmp[,2] <- format.AsIs(c('YYYY',table[,2]),justify="right")
+	tmp[,3] <- format.AsIs(c('MM',table[,3]),justify="right")
+	tmp[,4] <- format.AsIs(c('DD',table[,4]),justify="right")
+	tmp[,5] <- format.AsIs(c('SRAD',table[,5]),justify="right")
+	tmp[,6] <- format.AsIs(c('TMAX',table[,6]),justify="right")
+	tmp[,7] <- format.AsIs(c('TMIN',table[,7]),justify="right")
+	tmp[,8] <- format.AsIs(c('RAIN',table[,8]),justify="right")
+	tmp[,9] <- format.AsIs(c('WIND',table[,9]),justify="right")
+	tmp[,10] <- format.AsIs(c('DEWP',table[,10]),justify="right")
+	tmp[,11] <- format.AsIs(c('VPRS',table[,11]),justify="right")
+	tmp[,12] <- format.AsIs(c('RHUM',table[,12]),justify="right")
+#	write.table(table,outFile,append=TRUE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline,sep=" ")
+
+#	tmp <- format.AsIs(t(table),justify="right",width=4)
+#	write.table(tmp,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
+	write(t(tmp),outFile,ncolumns=dim(table)[2],append=TRUE)
+
+	## to handle the linux/windows format issue
+	if(Sys.info()["sysname"]=="Linux"){
+		tempFile <- readLines(outFile,n=-1,warn=FALSE);
+		writeLines(tempFile,outFile,sep="\r\n");
+	}
+
+rm(table,v,h1)
 }
 
 ########################################################################
