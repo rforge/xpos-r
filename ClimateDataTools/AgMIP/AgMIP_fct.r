@@ -11,8 +11,8 @@ source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/da
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
 source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
-#inFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/D_RCP85_raw'
-#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP85_split'
+inFo <- '/home/crespo/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Full'
+outFo <- '/home/crespo/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Split'
 #inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
 #outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
 #inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
@@ -36,9 +36,9 @@ agmip_period<-function(per)
 			folder<-"2040_2070"
 		},{	# 4 - end century # do not take after 2094 for downscaled data
 			# be carefull, not only the same number of year, but needs the same number of days (different number of leap years?)
-			start<-as.Date("2068-12-31")	# start<-as.Date("2064-01-01")
-			end<-as.Date("2099-12-31")	# end<-as.Date("2094-12-31")
-			folder<-"2069_2099"		# folder<-"2064_2094"
+			start<-as.Date("2069-01-01")	# start<-as.Date("2068-12-31")
+			end<-as.Date("2099-12-31")	# end<-as.Date("2099-12-31")
+			folder<-"2069_2099"		# folder<-"2069_2099"
 		}
 	)
 
@@ -156,42 +156,46 @@ rm(rcp_t,r)
 ###############################################################################
 ###############################################################################
 ### AgMIP plots
-agmip_plot <- function(metD_obs, metD_p1, metD_p2)
+agmip_plot <- function(metD_obs, metD_p1, metD_p2=NULL, metD_p3=NULL)
 {
 	x <- 1:length(metD_obs$data$date)
 #	mainTitle <- "Bloemfontein - SA-AMIIP fast track - 30 years"
-	mainTitle <- "Nkayi - SA-CLIP fast track - 30 years"
+#	mainTitle <- "Nkayi - SA-CLIP fast track - 30 years"
+	mainTitle <- "Linyanti - Caprivi - Namibia - 30 years - RCP 8.5"
 
 	# tmin
-#	plot(	x,y=metD_p2$data$tmin,type="l", lwd=.5, col="red", xlab="day", ylab="Minimum daily temperatures (oC)",main=mainTitle)#
+#	plot(	x,y=metD_p3$data$tmin,type="l", lwd=.5, col="yellow", xlab="day", ylab="Minimum daily temperatures (oC)",main=mainTitle)#
+#	lines(	x,y=metD_p2$data$tmin,type="l", lwd=.5, col="red")
 #	lines(	x,y=metD_p1$data$tmin,type="l", lwd=.5, col="green")
 #	lines(	x,y=metD_obs$data$tmin,type="l", lwd=.5, col="blue")
 	# tmax
-#	plot(	x,y=metD_p2$data$tmax,type="l", lwd=.5, col="red", xlab="day", ylab="Maximum daily temperatures (oC)",main=mainTitle)
+#	plot(	x,y=metD_p3$data$tmax,type="l", lwd=.5, col="yellow", xlab="day", ylab="Maximum daily temperatures (oC)",main=mainTitle)
+#	lines(	x,y=metD_p2$data$tmax,type="l", lwd=.5, col="red")
 #	lines(	x,y=metD_p1$data$tmax,type="l", lwd=.5, col="green")
 #	lines(	x,y=metD_obs$data$tmax,type="l", lwd=.5, col="blue")
 	# legend
-#	legend(	"bottomright",
-#		legend=c("observations (1980-2010)","RCP45-BNU (2040-2070)","RCP85-BNU (2040-2070)"),
-#		col=c("blue","green","red"),
-#		lty=c(1,1,1)
+#	legend(	"topleft",
+#		legend=c("historical (1980-2010)","BNU-ESM (2010-2040)","BNU-ESM (2040-2070)","BNU-ESM (2070-2100)"),
+#		col=c("blue","green","red","yellow"),
+#		lty=c(1,1,1,1)
 #	);
 
 	# rain-obs
-#	plot(	x,y=metD_p2$data$rain,type="l", lwd=.5, col="blue", xlab="day", ylab="Daily rainfall (mm)",main=mainTitle)
+#	plot(	x,y=metD_obs$data$rain,type="l", lwd=.5, col="blue", xlab="day", ylab="Daily rainfall (mm)",main=mainTitle)
 #	legend(	"topright",
-#		legend=c("observations (1980-2010)"),
+#		legend=c("MERRA (1980-2010)"),
 #		col=c("blue"),
 #		lty=c(1)
 #	);
 
 	# rain - difference
-	plot(	x,y=(metD_p2$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="red", xlab="day", ylab="Daily rainfall difference from baseline (mm)",main=mainTitle)
+	plot(	x,y=(metD_p3$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="yellow", xlab="day", ylab="Daily rainfall difference from baseline (mm)",main=mainTitle)
+	lines(	x,y=(metD_p2$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="red")
 	lines(	x,y=(metD_p1$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="green")
-	legend(	"topright",
-		legend=c("RCP45-BNU (2040-2070)","RCP85-BNU (2040-2070)"),
-		col=c("green","red"),
-		lty=c(1,1)
+	legend(	"bottomleft",
+		legend=c("BNU-ESM (2010-2040)","BNU-ESM (2040-2070)","BNU-ESM (2070-2100)"),
+		col=c("green","red","yellow"),
+		lty=c(1,1,1)
 	);
 
 }
@@ -199,9 +203,9 @@ agmip_plot <- function(metD_obs, metD_p1, metD_p2)
  ###############################################################################
  ###############################################################################
 # version 2 take my baseline, and create a AgMIP baseline
-inFi <- '/home/crespo/Desktop/Link to WinShared/OLD_ONLY/12_pro_AgMIP/RZA-AMIIP/2012-12_fasttrack/G_formatCon/FT_010.WTH'
-sID <- 'BBBB'
-outFo <- '/home/crespo/Desktop/Link to WinShared/NEW_ONLY/12_pro_AgMIP/AgMIP_baselineAMIIP/ToRun'
+#inFi <- '/home/crespo/Desktop/wine_shared/12_pro_AgMIP/RZA-AMIIP/G_formatCon/CropModelFormat/Control/fs01.WTH'
+#sID <- 'SAV2'
+#outFo <- '/home/crespo/Desktop/wine_shared/12_pro_AgMIP/AgMIP_baselineAMIIP/ToRun'
 agmip_formatBaseline<-function(inFile=inFi,staID=sID,outFolder=outFo)
 {
 	# read the APSIM (check it reads sRad)

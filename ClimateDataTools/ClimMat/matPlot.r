@@ -39,7 +39,7 @@ map_drawLat <- function(lat,latMat)
 	for (l in 1:length(lat)){
 		c<-which(abs(latMat_R[1,]-(lat[l]))==min(abs(latMat_R[1,]-(lat[l]))))/dim(latMat_R)[2]
 		abline(h=c,lt=2)
-		mtext(lat[l],side=4,line=0,at=c(dim(latMat)[1],c))
+#		mtext(lat[l],side=4,line=0,at=c(dim(latMat)[1],c))
 	}
 rm(latMat_R,c)
 }
@@ -53,7 +53,7 @@ map_drawLon <- function(lon,lonMat)
 	for (l in 1:length(lon)){
 		r<-which(abs(lonMat_R[,1]-(lon[l]))==min(abs(lonMat_R[,1]-(lon[l]))))/dim(lonMat_R)[1]
 		abline(v=r,lt=2)
-		mtext(lon[l],side=3,line=0,at=c(r,dim(lonMat)[2]))
+#		mtext(lon[l],side=3,line=0,at=c(r,dim(lonMat)[2]))
 	}
 rm(lonMat_R,r)
 }

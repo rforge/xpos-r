@@ -61,7 +61,7 @@ read_AgMIPformat <- function(inFile=inFi)
 	# read AgMIP data
 	data <- scan(inFile,what='raw',skip=sData)
 	data <- matrix(data,ncol=(dim(read.table(inFile,skip=sData,nrows=1))[2]),byrow=T)
-	colnames(data) <- scan(inFile,what='raw',skip=(sData-1),nlines=1)
+	colnames(data) <- scan(inFile,what='raw',skip=(sData-1),nlines=1)[1:dim(data)[2]]
 	# read header
 	head <- read.table(inFile,skip=sHead,nrows=1)
 
@@ -231,7 +231,7 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 		head[v,8] <- line[[3]][1]	# COMM
 	
 		# data
-		if(cVar[v]=="ppt")				rain <- as.array(as.numeric(scan(inFile,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
+		if(cVar[v]=="ppt")			rain <- as.array(as.numeric(scan(inFile,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
 		if(any(cVar[v]=="tmax",cVar[v]=="tmx"))	tmax <- as.array(as.numeric(scan(inFile,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
 		if(any(cVar[v]=="tmin",cVar[v]=="tmn"))	tmin <- as.array(as.numeric(scan(inFile,what="numeric",sep="\n",skip=3,nlines=-1,quiet=TRUE)));
 
@@ -358,11 +358,7 @@ read_oldCSAGformat <- function(inFolder=inFo,fName=fNa)
 	}
 
 	# missing values
-	for (d in 1:length(csag$data)){
-		csag$data[[d]][csag$data[[d]][]==-999] <- NA 
-		csag$data[[d]][csag$data[[d]][]==-99] <- NA 
-		csag$data[[d]][csag$data[[d]][]==NaN] <- NA 
-	}
+	csag$data <- replace_missing(csag$data)
 
 return(csag)
 rm(cVar,head,line,d,o,jD,startD,endD)

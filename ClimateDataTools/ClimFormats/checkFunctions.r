@@ -249,19 +249,20 @@ checkTmpRain <- function(data)
 
 	stopProcess <- 0;
 # tmin
-	if (any(as.numeric(tmn)<(-50),na.rm=TRUE)){
+	if (any(as.numeric(tmn)<(-50),na.rm=TRUE)||any(as.numeric(tmn)>70,na.rm=TRUE)){
 		stopProcess <- 1;
-		print("# WARNING: there is min temperature < -50 !!",quote=FALSE);
+		print("# WARNING: there is min temperature < -50 !! or > 70",quote=FALSE);
 	}
 # tmax
-	if (any(as.numeric(tmx)>70,na.rm=TRUE)){
+	if (any(as.numeric(tmx)<(-50),na.rm=TRUE)||any(as.numeric(tmx)>70,na.rm=TRUE)){
 		stopProcess <- 2;
-		print("# WARNING: there is max temperature > 70 !!",quote=FALSE);
+		print("# WARNING: there is max temperature > 70 !! or < -50",quote=FALSE);
 	}
 # tmin - tmax
 	if (any((as.numeric(tmx)-as.numeric(tmn))<0,na.rm=TRUE)){
 #		stopProcess <- 3;
 		print("# WARNING: there is max temperature < min temperature !!",quote=FALSE);
+		browser()
 	}
 # ppt
 	if (any(as.numeric(ppt)<0,na.rm=TRUE)){

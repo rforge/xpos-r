@@ -109,7 +109,8 @@ rm(newD,periodL,dayDiff,v)
 }
 
 ########################################################################
-## fill up an incomplete vector (1 var) set by masking a complete (1 var) set
+## old : fill up an incomplete vector (1 var) set by masking a complete (1 var) set
+## new : all data set
 ## lengths have to match
 pert_mask <- function(NA_V,fullV)
 {
@@ -139,7 +140,6 @@ pert_mask <- function(NA_V,fullV)
 		print('missing value where there should not be')
 		browser()
 	}
-browser()
 return(newV)
 rm(newV)
 }
@@ -159,6 +159,11 @@ pert_temp <- function(metD,pTmin,pTmax=pTmin,tDif=NULL,check=FALSE)
 	# Same for rain given the maximum rain occurence
 	# N.B. mathematically it would not prevent tmin > tmax, but in practice, it should
 	#
+	# this is better I believe yet not the only reason
+	# sometimes only tmax or only tmin is replaced, and even though the other set may be good
+	# in some cases it ends up with tmin > tmax
+	# at this stage it happens so rarely I did not take care of that one
+	#
 	oDif <- metD$data$tmax - metD$data$tmin
 	if(is.null(tDif)){
 		tDif <- array(NA,dim=12)
@@ -166,6 +171,9 @@ pert_temp <- function(metD,pTmin,pTmax=pTmin,tDif=NULL,check=FALSE)
 			tDif[m] <- mean(oDif[metD$data$mm==m],na.rm=T)	# assume it is a simple shift
 		}
 	}
+
+	# something wrong here here MOZ case ended up with 3 (10219,10220,10964) above 100's
+	# in tmin case seems that a 2 of 20 is replaced by 13 or 14
 
 	# change start
 	newD$file <- paste("changed from :",metD$file,sep=" ")

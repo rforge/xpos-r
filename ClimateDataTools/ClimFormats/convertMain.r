@@ -37,15 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-#	input <- "/home/crespo/Desktop/12_AgMIP/MAL-CLIP/C_presCorrectedObs";
-#	input <- "/home/crespo/Desktop/12_AgMIP/MAL-CLIP/F_fut85";
-#	input <- "/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/C_presCorrectedObs/Malmesbury";
-	input <- "/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut85";
+	input <- "/home/crespo/Desktop/wine_shared/12_pro_AgMIP/ZIM-CLIP/Nkayi_met/CSAGformat";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-#		output <- "/home/crespo/Desktop/wine_shared/12_AgMIP/RZA-AMIIP/G_formatCon";
-		output <- "/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/G_formatFut85";
+		output <- "/home/crespo/Desktop/wine_shared/12_pro_AgMIP/ZIM-CLIP/Nkayi_met/CSAGformat";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
