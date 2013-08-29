@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/wine_shared/12_pro_AgMIP/ZIM-CLIP/Nkayi_met/CSAGformat";
+	input <- "/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Input";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/crespo/Desktop/wine_shared/12_pro_AgMIP/ZIM-CLIP/Nkayi_met/CSAGformat";
+		output <- "/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Output";
 	}else{
 		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
