@@ -1,6 +1,6 @@
 ##
  # FILE convertToDssat.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/convertBruceFormat
  ###############################################################################
  #
@@ -47,7 +47,7 @@ formatToWTHfile <- function(data,fileHead,path)
 		if(file.exists(outName))	file.remove(outName);
 	}
 	# head
-	file.copy(	"/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dssatTemplates/dssatTemplate.WTH",outName,overwrite=TRUE);
+	file.copy(	"/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dssatTemplates/dssatTemplate.WTH",outName,overwrite=TRUE);
 	changeVar(	"station_id",	fileHead$station$id,			outName,outName);
 	changeVar(	"station_comm",	fileHead$comment,			outName,outName);
 	changeVar(	"stat_lat",	format(fileHead$station$lat,nsmall=3),	outName,outName);

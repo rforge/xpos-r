@@ -1,13 +1,13 @@
 ##
  # FILE climFuture.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
 # EVENTUALLY I WANT TO MEASURE SOME CHANGE INDICATORS
 
 ###############################################################################
 ###############################################################################
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
 # compute the mean/total monthly change
 future_mtChange <- function(met1,met2)
 {
@@ -56,7 +56,7 @@ rm(s_mm_met1,s_mm_met2,s_mt_met1,s_mt_met2,ms_met1,ms_met2,change)
 
 ###############################################################################
 ###############################################################################
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
 # compute the quantiles monthly change
 future_qChange <- function(met1,met2)
 {

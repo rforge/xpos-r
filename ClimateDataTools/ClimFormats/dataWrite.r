@@ -1,6 +1,6 @@
 ##
  # FILE dataWrite.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
 
@@ -15,7 +15,7 @@
 ########################################################################
 ##### AGMIP
 ########################################################################
-#outFiAgmip<-'/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/WorkingDir/SABA0Qtest.AgMIP'
+#outFiAgmip<-'/home/olivier/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/WorkingDir/SABA0Qtest.AgMIP'
 write_AgMIPformat <- function(metD,outFile=outFiAgmip,checkMiss=TRUE)
 {
 	
@@ -54,22 +54,40 @@ write_AgMIPformat <- function(metD,outFile=outFiAgmip,checkMiss=TRUE)
 		}
 	}
 
+	if (file.exists(outFile)){	file.remove(outFile)}
+
 	# file name
-	if(!file.copy("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agmipTemplates/agmipTemplate.AgMIP",outFile,overwrite=TRUE)){
-		print("### > FAILED TO CREATE OUTPUT FILE",quote=F)
-		stop("cannot resolve")
+#	if(!file.copy("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agmipTemplates/agmipTemplate.AgMIP",outFile,overwrite=TRUE)){
+#		print("### > FAILED TO CREATE OUTPUT FILE",quote=F)
+#		stop("cannot resolve")
+#	}
+#	ifelse(Sys.info()["sysname"]=="Linux",newline <- "\r\n",newline<-"\n")
+
+## INSPIRED FROM ALEX CODE
+	sink(outFile)
+	cat(c('*WEATHER DATA :', metD$station$comm))
+	cat('\n')
+	cat('\n')
+	cat(sprintf('%54s', '@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT'),'\n')
+	cat(sprintf('%6s%9.3f%9.3f%6.0f%6.1f%6.1f%6.1f%6.1f', metD$station$id, metD$station$lat, metD$station$lon,metD$station$alt,metD$clim$tav,metD$clim$amp,metD$clim$refht,metD$clim$wndht), '\n')
+	cat(sprintf('%s', '@DATE    YYYY  MM  DD  SRAD  TMAX  TMIN  RAIN  WIND  DEWP  VPRS  RHUM'),'\n')
+  
+	for (dd in 1:dim(table)[1]){
+		cat(sprintf('%7s%6s%4s%4s%6.1f%6.1f%6.1f%6.1f%6.1f%6.1f%6.1f%6.0f', as.character(table[dd,1]), as.character(table[dd,2]), as.character(table[dd,3]), as.character(table[dd,4]), table[dd,5], table[dd,6], table[dd,7], table[dd,8], table[dd,9], table[dd,10], table[dd,11], table[dd,12]),'\n')
+#		  cat(sprintf('%7s%6s%4s%4s%6.1f%6.1f%6.1f%6.1f', as.character(table[dd,1]), as.character(table[dd,2]), as.character(table[dd,3]), as.character(table[dd,4]), table[dd,5], table[dd,6], table[dd,7], table[dd,8]),'\n')
 	}
-	ifelse(Sys.info()["sysname"]=="Linux",newline <- "\r\n",newline<-"\n")
+	sink()
+
 
 ## INSPIRED FROM L.ESTES
-  	output <- rbind(	sprintf("%s %s", "*WEATHER DATA :", metD$station$comm),	# First row of WTH file
-				c(""),
-			 	c('@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT'),	# Second tier
-			 	sprintf("%6s %8.2f %8.2f %5.0f %5.1f %5.1f %5.2f %5.2f", metD$station$id, round(metD$station$lat,2),round(metD$station$lon,2),round(metD$station$alt,0),round(metD$clim$tav,1),round(metD$clim$amp,1),round(metD$clim$refht,2),round(metD$clim$wndht,2)),
-				c('@DATE    YYYY  MM  DD  SRAD  TMAX  TMIN  RAIN  WIND  DEWP  VPRS  RHUM'),	# Data tier
-				cbind(sprintf("%5i %5i %3i %3i %5.1f %5.1f %5.1f %5.1f %5i %5i %5i %5i", table[,1], table[,2], table[,3], table[,4], table[,5], table[,6], table[,7], table[,8], table[,9], table[,10], table[,11], table[,12]))
-		)
-	write(output,outFile)
+#  	output <- rbind(	sprintf("%s %s", "*WEATHER DATA :", metD$station$comm),	# First row of WTH file
+#				c(""),
+#			 	c('@ INSI      LAT     LONG  ELEV   TAV   AMP REFHT WNDHT'),	# Second tier
+#			 	sprintf("%6s %8.2f %8.2f %5.0f %5.1f %5.1f %5.2f %5.2f", metD$station$id, round(metD$station$lat,2),round(metD$station$lon,2),round(metD$station$alt,0),round(metD$clim$tav,1),round(metD$clim$amp,1),round(metD$clim$refht,2),round(metD$clim$wndht,2)),
+#				c('@DATE    YYYY  MM  DD  SRAD  TMAX  TMIN  RAIN  WIND  DEWP  VPRS  RHUM'),	# Data tier
+#				cbind(sprintf("%5i %5i %3i %3i %5.1f %5.1f %5.1f %5.1f %5i %5i %5i %5i", table[,1], table[,2], table[,3], table[,4], table[,5], table[,6], table[,7], table[,8], table[,9], table[,10], table[,11], table[,12]))
+#		)
+#	write(output,outFile)
 
 ### OLD
 #	write.table(paste("*WEATHER DATA : ",metD$station$id,sep=''),outFile,append=FALSE,quote=FALSE,col.names=FALSE,row.names=FALSE,eol=newline);
@@ -108,13 +126,13 @@ write_AgMIPformat <- function(metD,outFile=outFiAgmip,checkMiss=TRUE)
 		writeLines(tempFile,outFile,sep="\r\n");
 	}
 
-rm(table,output)
+rm(table)
 }
 
 ########################################################################
 ##### oldCSAG
 ########################################################################
-#outFometD<-'/home/crespo/Desktop/TMP/CSAG'
+#outFometD<-'/home/olivier/Desktop/TMP/CSAG'
 write_oldCSAGformat <- function(metD,outFolder=outFometD)
 {
 	# if you built a full set, then switch type to 0
@@ -152,7 +170,7 @@ write_oldCSAGformat <- function(metD,outFolder=outFometD)
 	outTmin <- paste(outFolder,"tmin",paste(metD$station$id,"txt",sep="."),sep="/")
 	outTmax <- paste(outFolder,"tmax",paste(metD$station$id,"txt",sep="."),sep="/")
 	outPpt <- paste(outFolder,"ppt",paste(metD$station$id,"txt",sep="."),sep="/")
-	if(!file.copy("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/csagTemplates/csagTemplate.txt",outTmin,overwrite=TRUE)){
+	if(!file.copy("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/csagTemplates/csagTemplate.txt",outTmin,overwrite=TRUE)){
 		print("### > FAILED TO CREATE OUTPUT FILE",quote=F)
 		stop("cannot resolve")
 	}

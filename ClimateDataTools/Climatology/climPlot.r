@@ -63,3 +63,41 @@ plot_rain <- function(bas,per)
 	abline(rainM,lw=2,lt=2)
 }
 
+# var : 1:date 2:year 3:month 4:day 5:julianDay 6:tmin 7:tmax 8:rain
+compute_radar <- function(data,var=6)
+{
+	graphics.off()
+
+	data_virt <- make_virtual365(data)
+	data_swm<-stat_windowMeans(data_virt,maxMV=10,winWidth=31)
+
+	tmp_vec <- array(NA,dim=(ceiling(length(data_virt[[1]])/365)*365))
+	for(i in 1:(length(data_virt[[1]]))){
+#		tmp_vec[i] <- data_virt[[var]][i] 
+		tmp_vec[i] <- data_swm[[var]][i] 
+	}
+
+return(tmp_vec)
+}
+
+plot_radar <- function(radar)
+{
+	graphics.off()
+	full_mat<-matrix(radar,ncol=365,byrow=TRUE)
+	period_ave<-mean(full_mat,na.rm=TRUE)
+	daily_ave<-daily_1_20<-daily_31_50<-daily_61_80<-array(NA,dim=365)
+	for(i in 1:365){
+		daily_ave[i]<-mean(full_mat[,i],na.rm=TRUE)
+		daily_1_20[i]<-mean(full_mat[1:20,i],na.rm=TRUE)
+		daily_31_50[i]<-mean(full_mat[31:50,i],na.rm=TRUE)
+		daily_61_80[i]<-mean(full_mat[61:80,i],na.rm=TRUE)
+	}
+	
+#	stars(matrix(radar,ncol=365,byrow=TRUE),locations=c(0,0),scale=FALSE,radius=FALSE,frame.plot=TRUE,col.lines=heat.colors(length(radar)/365))
+	stars(rbind(period_ave,daily_1_20,daily_31_50,daily_61_80),locations=c(0,0),scale=FALSE,radius=FALSE,frame.plot=TRUE,col.lines=c("black","green","orange","red"))
+	abline(h=0)
+	abline(v=0)
+
+}
+
+

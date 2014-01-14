@@ -1,6 +1,6 @@
 ##
  # FILE dataPerturbe.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
 
@@ -16,7 +16,7 @@
 
 ## CHANGE THE PERIOD
 ########################################################################
-#source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
+#source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
 # metD for the major list
 # sDate and eDate as.Date
 pert_period <- function(metD,sDate,eDate)
@@ -270,7 +270,7 @@ rm(newD,m,check,pRain)
 # merge 2 data sets
 # create a set of max(length(metD1),length(metD2))
 # take tmin from metTmin, tmax from metTmax, and rain from metRain
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
 pert_merge <- function(metTmin,metTmax,metRain)
 {
 	merD<-createNULLlist()

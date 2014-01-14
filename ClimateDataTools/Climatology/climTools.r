@@ -3,6 +3,46 @@
  # AUTHOR olivier crespo
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
+
+### MAKE VIRTUAL always 365 days long years
+########################################################################
+# tmin and tmax: average 28-29-FEB (when exist)
+# rain: sum 28-29-FEB (when exist)
+########################################################################
+make_virtual365 <- function(data)
+{
+	virt_data <- data
+
+	i<-j<-1
+	while(i<=length(data$yyyy)){
+		if(data$mm[i]==2 && data$dd[i]==29){
+			j<-j-1
+			virt_data$tmin[j]<-	mean(data$tmin[i],data$tmin[i-1],na.rm=TRUE)
+			virt_data$tmax[j]<-	mean(data$tmax[i],data$tmax[i-1],na.rm=TRUE)
+			virt_data$rain[j]<-	sum(data$rain[i],data$rain[i-1],na.rm=TRUE)
+		}else{
+			virt_data$date[j]<-	data$date[i]
+			virt_data$yyyy[j]<-	data$yyyy[i]
+			virt_data$mm[j]<-	data$mm[i]
+			virt_data$dd[j]<-	data$dd[i]
+			virt_data$tmin[j]<-	data$tmin[i]
+			virt_data$tmax[j]<-	data$tmax[i]
+			virt_data$rain[j]<-	data$rain[i]
+		}
+		i<-i+1
+		j<-j+1
+	}
+	virt_data$juld <- rep(1:365,length.out=length(virt_data$juld))
+
+	#rm somehow NA at the end
+	for(i in 1:length(virt_data)){
+		virt_data[[i]]<-virt_data[[i]][1:(j-1)]			
+	}
+
+return(virt_data)
+rm(data,virt_data,i,j)
+}
+
 ##
  # is that year a leap year?
  ###############################################################################

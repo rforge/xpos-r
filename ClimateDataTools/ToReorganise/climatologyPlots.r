@@ -1,26 +1,41 @@
 # INIT ALL OVER
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
-outFo <- '/home/crespo/Desktop/09_WRC/Metfiles/A2/Graphics/VredendalB1'
-inGCM <- '/home/crespo/Desktop/09_WRC/Metfiles/B1/VredendalDscl'
-loc <- 'Vredendal'
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climPlot.r')
+inFi <- '/home/olivier/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Baselines/SZBB0XXX.AgMIP'
+outFo <- '/home/olivier/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Graphics'
+loc <- 'SWA_test'
 
-plotClim <- function(inFoGCM=inGCM,outFolder=outFo)
+m00<-1
+m01<-31
+m02<-m01+28
+m03<-m02+31
+m04<-m03+30
+m05<-m04+31
+m06<-m05+30
+m07<-m06+31
+m08<-m07+31
+m09<-m08+30
+m10<-m09+31
+m11<-m10+30
+m12<-m11+31
+
+plotClim <- function(inFile=inFi,outFolder=outFo)
 {
 	# for every GCM-RCP
-	rcp_t <- list.files(inFoGCM)
-	for(r in 1:length(rcp_t)){
-		print(paste("    > ",rcp_t[r],sep=""),quote=F)
-		tmpIn1 <- paste(inFoGCM,rcp_t[r],sep="/")
+#	rcp_t <- list.files(inFoGCM)
+#	for(r in 1:length(rcp_t)){
+#		print(paste("    > ",rcp_t[r],sep=""),quote=F)
+#		tmpIn1 <- paste(inFoGCM,rcp_t[r],sep="/")
 
 		# for every stations
-		sta_t <- list.files(paste(tmpIn1,"ppt",sep="/"))
-		if(length(sta_t)==0) next			
-		for(s in 1:length(sta_t)){
-			print(paste("",rcp_t[r]," > ",sta_t[s],sep=""),quote=F)
+#		sta_t <- list.files(paste(tmpIn1,"ppt",sep="/"))
+#		if(length(sta_t)==0) next			
+#		for(s in 1:length(sta_t)){
+#			print(paste("",rcp_t[r]," > ",sta_t[s],sep=""),quote=F)
 
 			# read it
-			obsD <- read_oldCSAGformat(tmpIn1,sta_t[s])	# requires dataRead.r
+			obsD <- read_AgMIPformat(inFile)	# requires dataRead.r
 		
 			# compute totals
 			s_wt <- stat_windowTotals(obsD$data,maxMV=5,winWidth=31)
@@ -38,17 +53,17 @@ plotClim <- function(inFoGCM=inGCM,outFolder=outFo)
 			}
 
 			# plot stat
-			tit<-paste(loc,rcp_t[r],obsD$period$start,obsD$period$end,sep=", ")
-			fil<-paste(loc,rcp_t[r],'temp',sep="_")
+			tit<-paste(loc,obsD$period$start,obsD$period$end,sep=", ")
+			fil<-paste(loc,'temp',sep="_")
 			outFi<-paste(outFo,fil,sep="/")
 			plotTemp(obsD$data,quaTmn,quaTmx,tit,outFi)
-			fil<-paste(loc,rcp_t[r],'rain',sep="_")
+			fil<-paste(loc,'rain',sep="_")
 			outFi<-paste(outFo,fil,sep="/")
 			plotRain(obsD$data,quaPpt,tit,outFi)
-		}
-	}
+#		}
+#	}
 
-rm(rcp_t,r)
+#rm(rcp_t,r)
 }
 
 plotTemp <- function(metD,quaTmn,quaTmx,figTit,outFi)

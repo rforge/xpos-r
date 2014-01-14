@@ -1,21 +1,21 @@
 ##
  # FILE AgMIP_fct.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
 # AgMIP specific fct
 
 # INIT ALL OVER
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataWrite.r')
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
-inFo <- '/home/crespo/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Full'
-outFo <- '/home/crespo/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Split'
-#inGCM <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
-#outFo <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
-#inObs <- '/home/crespo/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataWrite.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
+inFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Full'
+outFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Split'
+#inGCM <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
+#outFo <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
+#inObs <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
 #oID <- '183-PAN2.txt'
 
  ###############################################################################
@@ -203,9 +203,9 @@ agmip_plot <- function(metD_obs, metD_p1, metD_p2=NULL, metD_p3=NULL)
  ###############################################################################
  ###############################################################################
 # version 2 take my baseline, and create a AgMIP baseline
-#inFi <- '/home/crespo/Desktop/wine_shared/12_pro_AgMIP/RZA-AMIIP/G_formatCon/CropModelFormat/Control/fs01.WTH'
+#inFi <- '/home/olivier/Desktop/wine_shared/12_pro_AgMIP/RZA-AMIIP/G_formatCon/CropModelFormat/Control/fs01.WTH'
 #sID <- 'SAV2'
-#outFo <- '/home/crespo/Desktop/wine_shared/12_pro_AgMIP/AgMIP_baselineAMIIP/ToRun'
+#outFo <- '/home/olivier/Desktop/wine_shared/12_pro_AgMIP/AgMIP_baselineAMIIP/ToRun'
 agmip_formatBaseline<-function(inFile=inFi,staID=sID,outFolder=outFo)
 {
 	# read the APSIM (check it reads sRad)
@@ -252,3 +252,22 @@ translate <- function(inFolder=inFo,outFolder=outFo)
 
 rm(lat,lon,alt,col,comm,sDate,eDate,gcm,id,f,metD)
 }
+
+ ###############################################################################
+ ###############################################################################
+# make AgMIP space separated, in a format for QuAD
+# for AgMIP files in a Folder
+AgMIP_reFormat <- function(inFolder)
+{
+	file_l <- list.files(inFolder)
+	
+	for (f in 1:length(file_l)){
+		if(strsplit(file_l[f],split="\\.")[[1]][2]!="AgMIP"){	next;}
+
+		# read the AgMIP
+		tmp <-read_AgMIPformat(paste(inFolder,file_l[f],sep="/"))
+		# save as AgMIP reFormat
+		write_AgMIPformat(tmp,paste(inFolder,file_l[f],sep="/"))	
+	}
+}
+

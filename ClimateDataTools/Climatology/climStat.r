@@ -1,6 +1,6 @@
 ##
  # FILE climStat.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/
  ###############################################################################
 
@@ -45,7 +45,7 @@ rm(tmp,v,y,maxMV,mMV,c,fullY)
 # compute the monthly mean
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per month
 # data format defined in readFormats.r
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
 stat_monthlyMeans <- function(data,maxMV=10)
 {
 	mMeans <- NULL
@@ -162,7 +162,7 @@ rm(tmp,v,y,maxMV,mMV,c,fullY)
 # compute the monthly totals
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per month
 # data format defined in readFormats.r
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
 stat_monthlyTotals <- function(data,maxMV=5)
 {
 	mTotals <- NULL
@@ -277,7 +277,7 @@ rm(tmp,v,y,maxMV,mMV,c,fullY)
 # compute the monthly quantiles (0,0.1,0.25,0.5,0.75,0.9,1)
 # over months with no more than maxMV% (maxMV: maximum missing value percentage) missing data per month
 # data format defined in readFormats.r
-source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
+source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climTools.r')
 stat_monthlyQuantiles <- function(data,maxMV=5)
 {
 	mQuantiles <- NULL

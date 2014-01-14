@@ -1,6 +1,6 @@
 ##
  # FILE convertMain.r
- # AUTHOR olivier crespo
+ # AUTHOR olivier olivier
  # https://r-forge.r-project.org/projects/xpos-r/convertBruceFormat
  ###############################################################################
  #
@@ -37,13 +37,13 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Input";
+	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate/Translate";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/Output";
+		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate";
 	}else{
-		output <- paste("/home/crespo/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
+		output <- paste("/home/olivier/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
 
 	# what are the name of the data folders
@@ -161,11 +161,11 @@ print(" ... process completed ...");
 convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 {
 ### sources
-	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/checkFunctions.r");
-	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/bruceFormat.r");
-	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/metTransformations.r");
-	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters.r");
-	source("/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters_loops.r");
+	source("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/checkFunctions.r");
+	source("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/bruceFormat.r");
+	source("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/metTransformations.r");
+	source("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters.r");
+	source("/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/agriParameters_loops.r");
 
 	if(is.null(pathToStation)){
 		print("### ERROR: no station specified !!",quote=FALSE);
@@ -213,7 +213,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 ## then starts the crop model related operations
 	switch(targetModel,
 		{	#################### APSIM #
-			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToApsim.r');
+			source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToApsim.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
@@ -224,7 +224,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 		{	################# AQUACROP #
 			# aquacrop deals with day, 10-days and monthly records
 			# so far we deal only with day records
-			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToAquacrop.r');
+			source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToAquacrop.r');
 			if(seeSteps)	print("... compute ETo ...",quote=FALSE);
 			if(is.numeric(pathToStation$arid)){
 				data <- compute_ETo(data,fileHead,pathToStation$inland,pathToStation$arid);
@@ -269,7 +269,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 			# formatToTmnCSAG(data,fileHead,pathToStation);
 		},	# CSAG ########################
 		{	####################### DSSAT #
-			source('/home/crespo/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToDssat.r');
+			source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/convertToDssat.r');
 			if(seeSteps)	print("... compute radiation ...",quote=FALSE);
 			data <- compute_radn(data,fileHead$station,pathToStation$inland);
 

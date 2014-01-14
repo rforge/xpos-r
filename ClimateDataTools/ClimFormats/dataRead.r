@@ -40,6 +40,145 @@ return(data)
 }
 
 ########################################################################
+##### NEW CSAG
+########################################################################
+#inFo<- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate/CSAGn'
+#fNa<- '0078227_9.txt'
+#fNa<- '0078227A3.txt'
+#fNa<- '0078617_A.txt'
+# inFolder is the direct parent folder of !! CAPITALES !! TMIN, TMAX, PPT
+# fName is the station file name
+# e.g. the tmax file is here: inFolder/tmax/fName
+read_newCSAGformat <- function(inFolder=inFo,fName=fNa)
+{
+	cVar <- list.files(inFolder)	# very likely tmin, tmax, ppt
+	head <- array(NA,dim=c(length(cVar),8))
+	colnames(head) <- c('ID','LAT','LON','ALT','sDate','eDate','TYPE','COMM')
+	rownames(head) <- cVar
+
+	csag <- createNULLlist()
+	csag$file <- 	paste(inFolder,'{TMIN,TMAX,PPT,RAD}',fName,sep="/")
+
+	# read header
+	inconsistences <- FALSE
+	for (v in 1:length(cVar)){
+		inFile<- paste(inFolder,cVar[v],fName,sep="/")
+		line <- readLines(inFile,n=66)
+		line<-	strsplit(line,split=" ")
+		# rm blank cells
+		for(l in 1:length(line)){
+			line[[l]] <- line[[l]][line[[l]][]!=""]
+		}
+		# fill in head
+		head[v,1] <- line[[grep("ID",line)[length(grep("ID",line))]]][3]	# ID
+		head[v,2] <- line[[grep("LATITUDE",line)[length(grep("LATITUDE",line))]]][3]	# LAT
+		head[v,3] <- line[[grep("LONGITUDE",line)[length(grep("LONGITUDE",line))]]][3]	# LON
+		head[v,4] <- line[[grep("ALTITUDE",line)[length(grep("ALTITUDE",line))]]][3]	# ALT
+		head[v,5] <- as.character(as.Date(line[[grep("START_DATE",line)[length(grep("START_DATE",line))]]][3],"%Y%m%d"))	# sDate
+		head[v,6] <- as.character(as.Date(line[[grep("END_DATE",line)[length(grep("END_DATE",line))]]][3],"%Y%m%d"))	# eDate
+## WATCH OUT !!!!
+		head[v,7] <- 0	# TYPE
+		head[v,8] <- line[[grep("NAME",line)[length(grep("NAME",line))]]][3]	# COMM
+	
+		# data
+		if(cVar[v]=="PPT")	rain <- read.csv(inFile,skip=67,as.is=TRUE,nrows=-1)[,4]
+		if(cVar[v]=="TMAX")	tmax <- read.csv(inFile,skip=67,as.is=TRUE,nrows=-1)[,4]
+		if(cVar[v]=="TMIN")	tmin <- read.csv(inFile,skip=67,as.is=TRUE,nrows=-1)[,4]
+
+		if(v>1){
+			if(!all(head[v,]==head[1,])) inconsistences <- TRUE
+		}
+	}
+	if(inconsistences){
+		print("### > WARNING")
+		print("#     there is inconsistencies in the file headers")
+		print("#     we will assume ppt (id,lat,lon,alt,type) header")
+		print("#     and take the longest possible period (filling with NA)")
+		print(head[,1:7])
+#		browser()
+	}
+
+	# make the local format
+	csag$station$id <- 	head[rownames(head)=="PPT",colnames(head)=='ID']
+	csag$station$lat <- 	as.numeric(head[rownames(head)=="PPT",colnames(head)=='LAT'])
+	csag$station$lon <- 	as.numeric(head[rownames(head)=="PPT",colnames(head)=='LON'])
+	csag$station$alt <- 	as.numeric(head[rownames(head)=="PPT",colnames(head)=='ALT'])
+	csag$station$comm <- 	head[rownames(head)=="PPT",colnames(head)=='COMM']
+
+	csag$clim$tav <- 	NA
+	csag$clim$amp <- 	NA
+	csag$clim$refht <- 	2	# WMO standard, may be different in some cases...
+	csag$clim$wndht <- 	NA
+
+#	csag$period$start <- 	as.Date(max(head[,5]))
+#	csag$period$end <-	as.Date(min(head[,6]))
+	csag$period$start <- 	as.Date(min(head[,5]))
+	csag$period$end <-	as.Date(max(head[,6]))
+	csag$period$type <-	as.numeric(head[rownames(head)=="PPT",7])
+
+	csag$data$date <- 	seq(csag$period$start,csag$period$end,1)
+	csag$data$yyyy <- 	as.numeric(format(csag$data$date,"%Y"))
+	csag$data$mm <- 	as.numeric(format(csag$data$date,"%m"))
+	csag$data$dd <- 	as.numeric(format(csag$data$date,"%d"))
+	csag$data$juld <- 	as.numeric(format(csag$data$date,"%j"))
+	csag$data$date <- 	as.numeric(format(csag$data$date,"%Y%j"))
+
+	csag$data$tmin <- 	array(NA,dim=length(csag$data$date))
+	csag$data$tmax <- 	array(NA,dim=length(csag$data$date))
+	csag$data$rain <- 	array(NA,dim=length(csag$data$date))
+
+	csag$data$srad <- 	array(NA,dim=length(csag$data$date))
+	csag$data$wind <- 	array(NA,dim=length(csag$data$date))
+	csag$data$dewp <- 	array(NA,dim=length(csag$data$date))
+	csag$data$vprs <- 	array(NA,dim=length(csag$data$date))
+	csag$data$rhum <- 	array(NA,dim=length(csag$data$date))
+
+	# longest possible period
+	for (v in 1:length(cVar)){
+		#start
+		startD <- as.numeric(difftime(as.Date(head[rownames(head)==cVar[v],5]),csag$period$start,units="days"))
+#		if (startD>0){
+			if(cVar[v]=="PPT")	csag$data$rain[(startD+1):(length(rain)+startD)] <- rain
+			if(cVar[v]=="TMAX")	csag$data$tmax[(startD+1):(length(tmax)+startD)] <- tmax
+			if(cVar[v]=="TMIN")	csag$data$tmin[(startD+1):(length(tmin)+startD)] <- tmin
+#		}
+		#end
+#		endD <- difftime(csag$period$end,as.Date(head[rownames(head)==cVar[v],6]),units="days")
+#		if (endD>0){
+#			if(cVar[v]=="ppt")			csag$data$rain <- csag$data$rain[1:(length(csag$data$rain)-endD)]
+#			if(any(cVar[v]=="tmax",cVar[v]=="tmx"))	csag$data$tmax <- csag$data$tmax[1:(length(csag$data$tmax)-endD)]
+#			if(any(cVar[v]=="tmin",cVar[v]=="tmn"))	csag$data$tmin <- csag$data$tmin[1:(length(csag$data$tmin)-endD)]
+#		}
+	}
+
+	# different types (real,365,360)
+## fill in if necessary
+
+	# possible different data length
+	if (length(csag$data$tmin)!=length(csag$data$date)){
+		print(paste("tmin data length",length(csag$data$tmin),sep=" : "))
+		print(paste("date data length",length(csag$data$date),sep=" : "))
+		browser()
+	}
+	if (length(csag$data$tmax)!=length(csag$data$date)){
+		print(paste("tmax data length",length(csag$data$tmax),sep=" : "))
+		print(paste("date data length",length(csag$data$date),sep=" : "))
+		browser()
+	}
+	if (length(csag$data$rain)!=length(csag$data$date)){
+		print(paste("rain data length",length(csag$data$rain),sep=" : "))
+		print(paste("date data length",length(csag$data$date),sep=" : "))
+		browser()
+	}
+
+	# missing values
+	csag$data <- replace_missing(csag$data)
+
+return(csag)
+rm(cVar,head,line,d,o,jD,startD,endD)
+}
+
+########################################################################
 ##### AGMIP
 ########################################################################
 # input:
@@ -48,6 +187,7 @@ return(data)
 # output:
 # list filled up acording to empty list above
 #########################################################################
+#inFi<-'/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate/MERRA/ZAFB0QXX.AgMIP'
 #inFi<-'/home/crespo/Desktop/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
 #inFi<-'/home/crespo/Desktop/Link\ to\ WinShared/12_AgMIP/2012-10-01_fastTrack/AMIP/MerraData_CM/SABA0QXX.AgMIP'
 ## AgMIP
@@ -72,11 +212,12 @@ read_AgMIPformat <- function(inFile=inFi)
 	agmip <- createNULLlist()
 	agmip$file <- 	inFile
 
-	agmip$station$id <- 	head[colnames(head)=="INSI"]
+	agmip$station$id <- 	as.character(head[1,1])
 	agmip$station$lat <- 	as.numeric(head[colnames(head)=="LAT"])
 	agmip$station$lon <- 	as.numeric(head[colnames(head)=="LONG"])
 	agmip$station$alt <- 	as.numeric(head[colnames(head)=="ELEV"])
 	agmip$station$comm <- 	scan(inFile,what='character',sep="\n",nlines=1)
+	agmip$station$comm <- 	strsplit(agmip$station$comm,split=":")[[1]][length(strsplit(agmip$station$comm,split=":")[[1]])]
 
 	agmip$clim$tav <- 	as.numeric(head[colnames(head)=="TAV"])
 	agmip$clim$amp <- 	as.numeric(head[colnames(head)=="AMP"])
