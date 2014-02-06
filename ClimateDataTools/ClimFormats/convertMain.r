@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate/Translate";
+	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/CSAGo_split/RCP8.5";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate";
+		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/DSSAT_split.2/RCP8.5";
 	}else{
 		output <- paste("/home/olivier/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -109,6 +109,7 @@ convert <- function(model,inLand=TRUE,seeSteps=FALSE,fillIn=TRUE,iteration=NULL)
 		RCPFolder <- paste(parentFolder,rcp_t[r],sep="/")
 		tPe_t <- list.files(RCPFolder)
 		for (t in 1:length(tPe_t)){
+#if(tPe_t[t]!="2010_2040") next	
 			print(paste("   ",rcp_t[r],tPe_t[t],sep=" > "),quote=FALSE)
 			pptFolder <- paste(RCPFolder,tPe_t[t],"ppt",sep="/")
 			sta_t <- list.files(pptFolder)
@@ -276,6 +277,9 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 			if(seeSteps)	print("... compute tav and amp ...",quote=FALSE);
 			data <- compute_tavNamp(data);
 			if(seeSteps)	print("... format and write data into .WTH file ...",quote=FALSE);
+#for(l in 1:length(data$year)){
+#	data$year[l]<-as.character(as.numeric(data$year[l])-50)
+#}
 			formatToWTHfile(data,fileHead,pathToStation);
 		}	# DSSAT #########################
 	);

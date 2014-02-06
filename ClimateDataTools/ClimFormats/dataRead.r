@@ -298,6 +298,7 @@ read_DSSATformat <- function(inFile=inFi)
 
 	dssat$period$start <-	as.Date(as.character(data[1,colnames(data)=="@DATE"]),"%y%j")
 	dssat$period$end <- 	as.Date(as.character(data[dim(data)[1],colnames(data)=="@DATE"]),"%y%j")
+	if(dssat$period$end<dssat$period$star)	 dssat$period$end <- as.Date(paste((as.numeric(format(dssat$period$end,"%Y"))+100),format(dssat$period$end,"%m"),format(dssat$period$end,"%d"),sep="-"))
 	dssat$period$type <-	0
 
 	dssat$data$date <- 	seq(dssat$period$start,dssat$period$end,1)

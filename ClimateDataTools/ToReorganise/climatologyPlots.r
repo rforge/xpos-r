@@ -2,9 +2,10 @@
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataRead.r')
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climStat.r')
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climPlot.r')
-inFi <- '/home/olivier/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Baselines/SZBB0XXX.AgMIP'
-outFo <- '/home/olivier/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Graphics'
-loc <- 'SWA_test'
+#inFi <- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Baseline_EC/fortBeaufort.WTH'
+inFo <- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/DSSAT_split/RCP4.5'
+outFo <- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Graphics'
+loc <- 'FFC_test'
 
 m00<-1
 m01<-31
@@ -20,25 +21,33 @@ m10<-m09+31
 m11<-m10+30
 m12<-m11+31
 
-plotClim <- function(inFile=inFi,outFolder=outFo)
+#plotClim <- function(inFile=inFi,outFolder=outFo)
+plotClim <- function(inFolder=inFo,outFolder=outFo)
 {
 	# for every GCM-RCP
-#	rcp_t <- list.files(inFoGCM)
-#	for(r in 1:length(rcp_t)){
-#		print(paste("    > ",rcp_t[r],sep=""),quote=F)
-#		tmpIn1 <- paste(inFoGCM,rcp_t[r],sep="/")
+	gcm_t <- list.files(inFo)
+	for(g in 1:length(gcm_t)){
+		tmpIn1 <- paste(inFo,gcm_t[g],"2040_2070",sep="/")
 
 		# for every stations
 #		sta_t <- list.files(paste(tmpIn1,"ppt",sep="/"))
+#		sta_t <- list.files(inFile)
+		sta_t <- list.files(paste(tmpIn1,sep="/"))
 #		if(length(sta_t)==0) next			
-#		for(s in 1:length(sta_t)){
-#			print(paste("",rcp_t[r]," > ",sta_t[s],sep=""),quote=F)
+		for(s in 1:length(sta_t)){
+			print(paste(gcm_t[g],strsplit(sta_t[s],split="\\.")[[1]][1],sep="  >  "))
+#			locprint(paste("",rcp_t[r]," > ",sta_t[s],sep=""),quote=F)
+#			loc <- strsplit(sta_t[s],split="\\.")[[1]][1]
+#			loc <- strsplit(strsplit(inFile,split="\\.")[[1]][1],split="/")[[1]][length(strsplit(strsplit(inFile,split="\\.")[[1]][1],split="/")[[1]])]
+			loc <- paste(gcm_t[g],strsplit(sta_t[s],split="\\.")[[1]][1],sep="_")
 
 			# read it
-			obsD <- read_AgMIPformat(inFile)	# requires dataRead.r
+#			obsD <- read_AgMIPformat(inFile)	# requires dataRead.r
+#			metD <- read_DSSATformat(inFile)	# requires dataRead.r
+			metD <- read_DSSATformat(paste(tmpIn1,sta_t[s],sep="/"))	# requires dataRead.r
 		
 			# compute totals
-			s_wt <- stat_windowTotals(obsD$data,maxMV=5,winWidth=31)
+			s_wt <- stat_windowTotals(metD$data,maxMV=5,winWidth=31)
 
 			# compute stat to plot
 			quaTmn <- array(NA,dim=c(365,3));
@@ -47,21 +56,22 @@ plotClim <- function(inFile=inFi,outFolder=outFo)
 			for (day in 1:365){
 				m <- as.numeric(format(as.Date(day,origin="1999-01-01"),"%m"))
 				d <- as.numeric(format(as.Date(day,origin="1999-01-01"),"%d"))
-				quaTmn[day,]<-quantile(obsD$data$tmin[obsD$data$mm==m & obsD$data$dd==d],na.rm=T,probs=c(0.2,0.5,0.8))
-				quaTmx[day,]<-quantile(obsD$data$tmax[obsD$data$mm==m & obsD$data$dd==d],na.rm=T,probs=c(0.2,0.5,0.8))
+				quaTmn[day,]<-quantile(metD$data$tmin[metD$data$mm==m & metD$data$dd==d],na.rm=T,probs=c(0.2,0.5,0.8))
+				quaTmx[day,]<-quantile(metD$data$tmax[metD$data$mm==m & metD$data$dd==d],na.rm=T,probs=c(0.2,0.5,0.8))
 				quaPpt[day,]<-quantile(s_wt$rain[s_wt$mm==m & s_wt$dd==d],na.rm=T,probs=c(0.5,0.8,1))
 			}
 
 			# plot stat
-			tit<-paste(loc,obsD$period$start,obsD$period$end,sep=", ")
+			tit<-paste(loc,metD$period$start,metD$period$end,sep=", ")
 			fil<-paste(loc,'temp',sep="_")
 			outFi<-paste(outFo,fil,sep="/")
-			plotTemp(obsD$data,quaTmn,quaTmx,tit,outFi)
+			plotTemp(metD$data,quaTmn,quaTmx,tit,outFi)
 			fil<-paste(loc,'rain',sep="_")
 			outFi<-paste(outFo,fil,sep="/")
-			plotRain(obsD$data,quaPpt,tit,outFi)
-#		}
-#	}
+			plotRain(metD$data,quaPpt,tit,outFi)
+			graphics.off()
+		}
+	}
 
 #rm(rcp_t,r)
 }

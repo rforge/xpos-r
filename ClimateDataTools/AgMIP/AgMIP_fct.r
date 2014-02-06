@@ -11,8 +11,10 @@ source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/d
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/ClimFormats/dataPerturbe.r')
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climFuture.r')
 source('/home/olivier/Desktop/Optimisation/xpos-r/ClimateDataTools/Climatology/climAgro.r')
-inFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Full'
-outFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Split'
+#inFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Full'
+inFo <- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/CSAGo/RCP8.5'
+#outFo <- '/home/olivier/Desktop/wine_shared/13_pro_START/MetData/Downscaling/RCP85_Split'
+outFo <- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/SPLIT/RCP8.5'
 #inGCM <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/E_RCP45_split'
 #outFo <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/F_fut45'
 #inObs <- '/home/olivier/Desktop/wine_shared/12_AgMIP/BOT-AMIIP/C_presCorrectedObs/North/Control'
@@ -51,17 +53,17 @@ return(list("start"=start,"end"=end,"folder"=folder))
 # split CMIP5 continuous into AgMIP periods
 agmip_splitPeriods <- function(inFolder=inFo,outFolder=outFo)
 {
-	rcp_t <- list.files(inFolder)
-	for(r in 1:length(rcp_t)){
+	gcm_t <- list.files(inFolder)
+	for(r in 1:length(gcm_t)){
 		# not for ncep
-#		if(r == grep("ncep",rcp_t)) next		
-		tmpOut <- paste(outFolder,rcp_t[r],sep="/")	
+#		if(r == grep("ncep",gcm_t)) next		
+		tmpOut <- paste(outFolder,gcm_t[r],sep="/")	
 		if(!file.exists(tmpOut))	dir.create(tmpOut,showWarnings=TRUE,recursive=FALSE,mode="0777")
 
-		tmpIn <- paste(inFolder,rcp_t[r],sep="/")
+		tmpIn <- paste(inFolder,gcm_t[r],sep="/")
 		sta_t <- list.files(paste(tmpIn,"ppt",sep="/"))
 		for(s in 1:length(sta_t)){
-			print(paste("",rcp_t[r],sta_t[s],sep=" > "),quote=F)
+			print(paste("",gcm_t[r],sta_t[s],sep=" > "),quote=F)
 			# read it
 			metD <- read_oldCSAGformat(tmpIn,sta_t[s])				# requires dataRead.r
 			# AgMIP periods are defined above
@@ -81,7 +83,7 @@ agmip_splitPeriods <- function(inFolder=inFo,outFolder=outFo)
 		}
 	}
 
-rm(rcp_t,r,tmpOut,sta_t,s,con,fu1,fu2,fu3,tmpOutCon,tmpOutFu1,tmpOutFu2,tmpOutFu3)
+rm(gcm_t,r,tmpOut,sta_t,s,con,fu1,fu2,fu3,tmpOutCon,tmpOutFu1,tmpOutFu2,tmpOutFu3)
 }
 
  ###############################################################################
@@ -161,7 +163,7 @@ agmip_plot <- function(metD_obs, metD_p1, metD_p2=NULL, metD_p3=NULL)
 	x <- 1:length(metD_obs$data$date)
 #	mainTitle <- "Bloemfontein - SA-AMIIP fast track - 30 years"
 #	mainTitle <- "Nkayi - SA-CLIP fast track - 30 years"
-	mainTitle <- "Linyanti - Caprivi - Namibia - 30 years - RCP 8.5"
+#	mainTitle <- "Linyanti - Caprivi - Namibia - 30 years - RCP 8.5"
 
 	# tmin
 #	plot(	x,y=metD_p3$data$tmin,type="l", lwd=.5, col="yellow", xlab="day", ylab="Minimum daily temperatures (oC)",main=mainTitle)#
@@ -189,14 +191,14 @@ agmip_plot <- function(metD_obs, metD_p1, metD_p2=NULL, metD_p3=NULL)
 #	);
 
 	# rain - difference
-	plot(	x,y=(metD_p3$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="yellow", xlab="day", ylab="Daily rainfall difference from baseline (mm)",main=mainTitle)
-	lines(	x,y=(metD_p2$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="red")
-	lines(	x,y=(metD_p1$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="green")
-	legend(	"bottomleft",
-		legend=c("BNU-ESM (2010-2040)","BNU-ESM (2040-2070)","BNU-ESM (2070-2100)"),
-		col=c("green","red","yellow"),
-		lty=c(1,1,1)
-	);
+#	plot(	x,y=(metD_p3$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="yellow", xlab="day", ylab="Daily rainfall difference from baseline (mm)",main=mainTitle)
+#	lines(	x,y=(metD_p2$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="red")
+#	lines(	x,y=(metD_p1$data$rain-metD_obs$data$rain),type="l", lwd=.5, col="green")
+#	legend(	"bottomleft",
+#		legend=c("BNU-ESM (2010-2040)","BNU-ESM (2040-2070)","BNU-ESM (2070-2100)"),
+#		col=c("green","red","yellow"),
+#		lty=c(1,1,1)
+#	);
 
 }
 
