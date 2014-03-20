@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/CSAGo_split/RCP8.5";
+	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/CSAGo_split/RCP4.5";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/DSSAT_split.2/RCP8.5";
+		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/DSSAT_split.2/RCP4.5";
 	}else{
 		output <- paste("/home/olivier/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}
@@ -278,7 +278,7 @@ convertOne <- function(targetModel,pathToStation=NULL,seeSteps,fillIn)
 			data <- compute_tavNamp(data);
 			if(seeSteps)	print("... format and write data into .WTH file ...",quote=FALSE);
 #for(l in 1:length(data$year)){
-#	data$year[l]<-as.character(as.numeric(data$year[l])-50)
+#	data$year[l]<-as.character(as.numeric(data$year[l])-52)
 #}
 			formatToWTHfile(data,fileHead,pathToStation);
 		}	# DSSAT #########################

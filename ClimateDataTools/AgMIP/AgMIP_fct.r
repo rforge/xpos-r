@@ -259,17 +259,22 @@ rm(lat,lon,alt,col,comm,sDate,eDate,gcm,id,f,metD)
  ###############################################################################
 # make AgMIP space separated, in a format for QuAD
 # for AgMIP files in a Folder
-AgMIP_reFormat <- function(inFolder)
+inFolder<-""
+AgMIP_reFormat <- function(inFolder,outFolder)
 {
 	file_l <- list.files(inFolder)
 	
 	for (f in 1:length(file_l)){
-		if(strsplit(file_l[f],split="\\.")[[1]][2]!="AgMIP"){	next;}
-
 		# read the AgMIP
+		if(strsplit(file_l[f],split="\\.")[[1]][2]!="AgMIP"){	next;}
 		tmp <-read_AgMIPformat(paste(inFolder,file_l[f],sep="/"))
+#browser()
+#		# read DSSAT format
+#		if(strsplit(file_l[f],split="\\.")[[1]][2]!="WTH"){	next;}
+#		tmp <-read_DSSATformat(paste(inFolder,file_l[f],sep="/"))
+
 		# save as AgMIP reFormat
-		write_AgMIPformat(tmp,paste(inFolder,file_l[f],sep="/"))	
+		write_AgMIPformat(tmp,paste(outFolder,file_l[f],sep="/"))	
 	}
 }
 

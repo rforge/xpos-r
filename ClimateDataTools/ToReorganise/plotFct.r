@@ -1,5 +1,6 @@
 #setwd("/home/crespo/Link to WinShared/SSAtmp/");
 graphics.off();
+source('../Climatology/climStat.r')
 
 pathDef <- NULL;
 figTitDef <- "Title";
@@ -50,18 +51,22 @@ return(obs);
 ##############################################################################
 temp_quantiles <- function(metD,figTit=figTitDef)
 {
-browser()
-
-	yeaC <- metD$data$yeaC;
-	julC <- metD$data$julC;
-	tmnC <- metD$data$tmnC;
-	tmxC <- metD$data$tmxC;
-	pptC <- metD$data$pptC;
-	solC <- metD$data$solC;
+#"date","yyyy","mm","dd","juld","tmin","tmax","rain","srad","wind","dewp","vprs","rhum"
+	yeaC <- 2
+	julC <- 5
+	tmnC <- 6
+	tmxC <- 7
+	pptC <- 8
+	solC <- 9
 
 	## put NA on 29-FEB when leap year
-	met365<-metD$data;
-	remove29feb <- FALSE;
+	met365<-array(NA,dim=c(length(metD$data$date),length(metD$data)))
+	for (j in 1:dim(met365)[2]){
+		for (i in 1:dim(met365)[1]){
+			met365[i,j]<-metD$data[[j]][i]
+		}
+	}
+	remove29feb <- FALSE
 
 	for(l in seq(dim(met365)[1],1,-1)){
 		if(met365[l,julC]==366){
@@ -89,6 +94,7 @@ browser()
 	# plot
 	x11(width=11,height=8);
 	plot.new();
+
 
 	par(mar=c(5,5,2,0));
 	plot(	x=xDay,

@@ -22,28 +22,28 @@ fiveGCM_n <- c(grep("E",LETTERS),grep("I",LETTERS),grep("K",LETTERS),grep("O",LE
 fiveColors<- c(26,33,43,50,142)
 
 # MAL-CLIP
-##area <- "Mzimba - Malawi";baseFolder <- "../../MAL-CLIP/MAL-Baselines";futureFolder <- "../../MAL-CLIP/MAL-Futures";graphInFolder <- "../../MAL-CLIP/MAL-Graphics.2";baseP<-c(10,11,12,1,2,3,4)
+##area <- "Mzimba - Malawi";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MAL-CLIP/MAL-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MAL-CLIP/MAL-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MAL-CLIP/MAL-Graphics.2";baseP<-c(10,11,12,1,2,3,4)
 # MOZ-area
-##area <- "Sussundenga - Mozambique";baseFolder <- "../../MOZ-CLIP/MOZ-Baselines";futureFolder <- "../../MOZ-CLIP/MOZ-Futures";graphInFolder <- "../../MOZ-CLIP/MOZ-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Sussundenga - Mozambique";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MOZ-CLIP/MOZ-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MOZ-CLIP/MOZ-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/MOZ-CLIP/MOZ-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # RZA-CLIP
-##area <- "Limpopo - South Africa";baseFolder <- "../../RZA-CLIP/RZA-Baselines";futureFolder <- "../../RZA-CLIP/RZA-Futures";graphInFolder <- "../../RZA-CLIP/RZA-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Limpopo - South Africa";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-CLIP/RZA-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-CLIP/RZA-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-CLIP/RZA-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # ZIM-CLIP
-##area <- "Nkayi - Zimbabwe";baseFolder <- "../../ZIM-CLIP/ZIM-HS-Baselines";futureFolder <- "../../ZIM-CLIP/ZIM-HS-Futures-v2.1";graphInFolder <- "../../ZIM-CLIP/ZIM-HS-Graphics.2";baseP<-c(10,11,12,1,2,3)
+area <- "Nkayi - Zimbabwe";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/ZIM-CLIP/ZIM-HS-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/ZIM-CLIP/ZIM-HS-Futures-v2.1";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/ZIM-CLIP/ZIM-HS-Graphics.2";baseP<-c(10,11,12,1,2,3)
 
 # BOT-AMIIP
-##area <- "N/S - Botswana";baseFolder <- "../../BOT-AMIIP/BOT-Baselines";futureFolder <- "../../BOT-AMIIP/BOT-Futures";graphInFolder <- "../../BOT-AMIIP/BOT-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "N/S - Botswana";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/BOT-AMIIP/BOT-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/BOT-AMIIP/BOT-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/BOT-AMIIP/BOT-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # LES-AMIIP
-##area <- "Mohale's Hoek - Lesotho";baseFolder <- "../../LES-AMIIP/LES-Baselines";futureFolder <- "../../LES-AMIIP/LES-Futures";graphInFolder <- "../../LES-AMIIP/LES-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Mohale's Hoek - Lesotho";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/LES-AMIIP/LES-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/LES-AMIIP/LES-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/LES-AMIIP/LES-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # NAM-AMIIP-caprivi
-##area <- "Caprivi - Namibia";baseFolder <- "../../NAM-AMIIP/NAM-caprivi-Baselines";futureFolder <- "../../NAM-AMIIP/NAM-caprivi-Futures";graphInFolder <- "../../NAM-AMIIP/NAM-caprivi-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Caprivi - Namibia";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-caprivi-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-caprivi-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-caprivi-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # NAM-AMIIP-rundu
-##area <- "Rundu - Namibia";baseFolder <- "../../NAM-AMIIP/NAM-rundu-Baselines";futureFolder <- "../../NAM-AMIIP/NAM-rundu-Futures";graphInFolder <- "../../NAM-AMIIP/NAM-rundu-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Rundu - Namibia";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-rundu-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-rundu-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/NAM-AMIIP/NAM-rundu-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # RZA-AMIIP-HS
-##area <- "Free State - South Africa";baseFolder <- "../../RZA-AMIIP/RZA-HS-Baselines";futureFolder <- "../../RZA-AMIIP/RZA-HS-Futures-v2.1";graphInFolder <- "../../RZA-AMIIP/RZA-HS-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Free State - South Africa";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-HS-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-HS-Futures-v2.1";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-HS-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # RZA-AMIIP
-##area <- "Free State - South Africa";baseFolder <- "../../RZA-AMIIP/RZA-Baselines";futureFolder <- "../../RZA-AMIIP/RZA-Futures";graphInFolder <- "../../RZA-AMIIP/RZA-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Free State - South Africa";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/RZA-AMIIP/RZA-Graphics.2";baseP<-c(10,11,12,1,2,3)
 # SWA-AMIIP
-##area <- "Swaziland";baseFolder <- "../../SWA-AMIIP/SWA-Baselines";futureFolder <- "../../SWA-AMIIP/SWA-Futures";graphInFolder <- "../../SWA-AMIIP/SWA-Graphics.2";baseP<-c(10,11,12,1,2,3)
+##area <- "Swaziland";baseFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Baselines";futureFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Futures";graphInFolder <- "~/Desktop/Wine-shared/Projects/2012-2014_AgMIP/SWA-AMIIP/SWA-Graphics.2";baseP<-c(10,11,12,1,2,3)
 
 
 # time period and emmission
@@ -172,6 +172,7 @@ plot_tmpTrends <- function(baseInFile,figFile,location)
 #print(ttR.tmin)
 #print(ctR.tmin)
 #browser()
+
 	jpeg(filename=paste(figFile,"-BT.jpg",sep=""),width=480,height=480)
 
 	figT <- paste("Baseline trends, ",location,"\r\n","tmax ",signif(tr_tmax_a$coefficients[2]*(length(xVec)-runWin)/yearNo,digits=2)," and tmin ",signif(tr_tmin_a$coefficients[2]*length(xVec)/yearNo,digits=2)," oC/year",sep="")
