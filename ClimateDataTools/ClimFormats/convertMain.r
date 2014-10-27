@@ -37,11 +37,11 @@ loop_on_paths <- function()
 init_paths <- function(it)
 {
 	# in which folder to read the data
-	input <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/CSAGo_split/RCP4.5";
+	input <- "/home/olivier/Desktop/Wine-shared/Students/Benjamin/CSAGold";
 #	it<-1;
 	# in which folder to write out the data
 	if (is.null(it)){
-		output <- "/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/Climate/Future_DS/DSSAT_split.2/RCP4.5";
+		output <- "/home/olivier/Desktop/Wine-shared/Students/Benjamin/CSAG-ETo";
 	}else{
 		output <- paste("/home/olivier/Desktop/11_START/ApsimMetFiles/rep",it,"/",sep="");
 	}

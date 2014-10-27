@@ -107,16 +107,17 @@ formatToEToCSAG <- function(data,head,path)
 	}else{				# remove output file if does exists
 		if(file.exists(outName))	file.remove(outName);
 	}
+
 	# head
-	file.copy(	"./csagTemplates/csagTemplate",	outName,overwrite=TRUE);
-	changeVar(	"ID",		head$station$id,outName,outName);
-	changeVar(	"LAT",		format(head$station$lat,nsmall=2),outName,outName);
-	changeVar(	"LON",		format(head$station$lon,nsmall=2),outName,outName);
-	changeVar(	"ALT",		format(head$station$alt,nsmall=2),outName,outName);
-	changeVar(	"START",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
-	changeVar(	"END",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
-	changeVar(	"TYPE",		head$period$type,outName,outName);
-	changeVar(	"DESCRIPTION",	"ETo_ESTIMATION(TMN,TMX,PPT)",outName,outName);
+	file.copy(	"./csagTemplates/csagTemplate.txt",	outName,overwrite=TRUE);
+	changeVar(	"v_id",		head$station$id,outName,outName);
+	changeVar(	"v_lat",		format(head$station$lat,nsmall=2),outName,outName);
+	changeVar(	"v_lon",		format(head$station$lon,nsmall=2),outName,outName);
+	changeVar(	"v_alt",		format(head$station$alt,nsmall=2),outName,outName);
+	changeVar(	"v_sDate",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
+	changeVar(	"v_eDate",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
+	changeVar(	"v_type",		head$period$type,outName,outName);
+	changeVar(	"v_description",	"ETo_ESTIMATION(TMN,TMX,PPT)",outName,outName);
 	# body
 	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
 }
@@ -138,15 +139,15 @@ formatToRdnCSAG <- function(data,head,path)
 		if(file.exists(outName))	file.remove(outName);
 	}
 	# head
-	file.copy(	"./csagTemplates/csagTemplate",	outName,overwrite=TRUE);
-	changeVar(	"ID",		head$station$id,outName,outName);
-	changeVar(	"LAT",		format(head$station$lat,nsmall=2),outName,outName);
-	changeVar(	"LON",		format(head$station$lon,nsmall=2),outName,outName);
-	changeVar(	"ALT",		format(head$station$alt,nsmall=2),outName,outName);
-	changeVar(	"START",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
-	changeVar(	"END",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
-	changeVar(	"TYPE",		head$period$type,outName,outName);
-	changeVar(	"DESCRIPTION",	"Rdn_ESTIMATION(TMN,TMX,PPT)",outName,outName);
+	file.copy(	"./csagTemplates/csagTemplate.txt",	outName,overwrite=TRUE);
+	changeVar(	"v_id",		head$station$id,outName,outName);
+	changeVar(	"v_lat",		format(head$station$lat,nsmall=2),outName,outName);
+	changeVar(	"v_lon",		format(head$station$lon,nsmall=2),outName,outName);
+	changeVar(	"v_alt",		format(head$station$alt,nsmall=2),outName,outName);
+	changeVar(	"v_sDate",	paste(format(head$period$start,"%Y%m%d"),head$period$startH,sep=""),outName,outName);
+	changeVar(	"v_eDate",		paste(format(head$period$end,"%Y%m%d"),head$period$endH,sep=""),outName,outName);
+	changeVar(	"v_type",		head$period$type,outName,outName);
+	changeVar(	"v_description",	"Rdn_ESTIMATION(TMN,TMX,PPT)",outName,outName);
 	# body
 	write.table(table,outName,quote=FALSE,row.names=FALSE,col.names=FALSE,append=TRUE);
 }

@@ -178,7 +178,6 @@ compute_ETo_1Day <- function(tmx,tmn,staAlt,sRad,eRad,arid)
 
 ## AI requirements -> Relative Humidity (RH)
 	RH <- 100 * ea / eTmean;
-
 return(list("ETo"=PT,"RelHum"=RH,"cArray"=c));
 }
 

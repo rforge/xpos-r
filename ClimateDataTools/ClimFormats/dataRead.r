@@ -40,7 +40,7 @@ return(data)
 }
 
 ########################################################################
-##### NEW CSAG
+##### NEW CSAG get tmax, tmin, ppt folder names in UPPER CASE
 ########################################################################
 #inFo<- '/home/olivier/Desktop/Wine-shared/Projects/2013-2014_FFC/EasternCape/Climate/CSAGn'
 #fNa<- '0078227_9.txt'
@@ -133,6 +133,8 @@ read_newCSAGformat <- function(inFolder=inFo,fName=fNa)
 	csag$data$vprs <- 	array(NA,dim=length(csag$data$date))
 	csag$data$rhum <- 	array(NA,dim=length(csag$data$date))
 
+
+#browser()
 	# longest possible period
 	for (v in 1:length(cVar)){
 		#start
@@ -177,6 +179,7 @@ read_newCSAGformat <- function(inFolder=inFo,fName=fNa)
 return(csag)
 rm(cVar,head,line,d,o,jD,startD,endD)
 }
+
 
 ########################################################################
 ##### AGMIP
